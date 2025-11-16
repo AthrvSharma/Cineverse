@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cineverse - Curated World Cinema</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-color: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --primary-accent: #0ea5e9; /* sky-500 */
+            --secondary-accent: #6366f1; /* indigo-500 */
+            --text-primary: #f8fafc; /* slate-50 */
+            --text-secondary: #a1a1aa; /* zinc-400 */
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes kenBurns { 0% { transform: scale(1.1); } 100% { transform: scale(1.15); } }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+        .text-balance { text-wrap: balance; }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 20px; border: 3px solid transparent; }
+        .loader {
+            position: fixed; inset: 0; background-color: var(--background-color); z-index: 100;
+            display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease;
+        }
+        .loader.hidden { opacity: 0; pointer-events: none; }
+        .loader .spinner {
+            width: 50px; height: 50px; border: 5px solid var(--border-color);
+            border-top-color: var(--primary-accent); border-radius: 50%; animation: spin 1s linear infinite;
+        }
+        .glass-nav {
+            background-color: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .hero-slide {
+            position: absolute; inset: 0;
+            opacity: 0; transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1;
+        }
+        .hero-slide.active { opacity: 1; z-index: 2; }
+        .hero-gradient-overlay { background: linear-gradient(to top, var(--background-color) 5%, rgba(10, 10, 10, 0.6) 30%, transparent 60%); }
+        .hero-text-shadow { text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8); }
+        .hero-meta-item { display: flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.3); backdrop-filter: blur(5px); padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); }
+        .hero-component { animation: fadeIn 0.8s ease-out backwards; }
+        .hero-nav-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%); z-index: 20;
+            width: 3.5rem; height: 3.5rem; background: rgba(0,0,0,0.4);
+            border-radius: 9999px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .hero-nav-arrow:hover { background: rgba(0,0,0,0.7); transform: translateY(-50%) scale(1.1); }
+        .hero-dots-container {
+            position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+            z-index: 20; display: flex; gap: 0.75rem;
+        }
+        .hero-dot {
+            width: 0.75rem; height: 0.75rem; background: rgba(255,255,255,0.4);
+            border-radius: 9999px; transition: background-color 0.3s ease, transform 0.3s ease; cursor: pointer;
+        }
+        .hero-dot.active { background: white; transform: scale(1.2); }
+        .carousel-container { scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth; }
+        .carousel-container::-webkit-scrollbar { display: none; }
+        .carousel-item { transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.4s ease; }
+        .carousel-wrapper:hover .carousel-item { transform: translateX(-25%); }
+        .carousel-item:hover ~ .carousel-item { transform: translateX(25%); }
+        .carousel-item:hover {
+            transform: scale(1.1) !important;
+            opacity: 1 !important;
+        }
+        .carousel-wrapper:hover .carousel-item:not(:hover) { opacity: 0.4; }
+        .carousel-arrow {
+            opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(-50%) scale(0.8);
+        }
+        .carousel-wrapper:hover .carousel-arrow { opacity: 1; transform: translateY(-50%) scale(1); }
+        .carousel-wrapper {
+            opacity: 0; transform: translateY(40px); transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .carousel-wrapper.is-visible { opacity: 1; transform: translateY(0); }
+        .list-btn .icon-plus, .list-btn.in-list .icon-check { animation: fadeIn 0.3s ease; }
+        .list-btn.in-list .icon-plus, .list-btn .icon-check { display: none; }
+        .list-btn.in-list { background-color: #22c55e; border-color: #22c55e; } /* green-500 */
+        .animated-overlay { opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        .animated-overlay.active { opacity: 1; pointer-events: auto; }
+        .animated-overlay .content-wrapper { transform: scale(0.95); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .animated-overlay.active .content-wrapper { transform: scale(1); }
+        .modal-backdrop-gradient { background: linear-gradient(to top, var(--card-bg) 20%, rgba(26, 26, 26, 0.7) 60%, transparent 100%); }
+        .modal-backdrop-image { animation: kenBurns 20s ease-in-out infinite alternate; }
+        .modal-poster-glow {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, var(--primary-accent) 0%, transparent 60%);
+            opacity: 0.15;
+            filter: blur(40px);
+            z-index: -1;
+        }
+        .genre-filter-button.active {
+            background-color: var(--primary-accent); color: white;
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.5);
+        }
+        .profile-dropdown {
+            display: none; opacity: 0; transform: translateY(10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .profile-dropdown.active { display: block; opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body class="antialiased">
+    
+    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <nav class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+            <a href="/" class="text-3xl font-black text-white tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-indigo-500">CINEVERSE</a>
+            <div class="flex items-center space-x-4">
+                <button id="search-button" class="text-gray-300 hover:text-white transition"><i class="fas fa-search text-lg"></i></button>
+                <div class="relative">
+                    <% if (typeof user != 'undefined' && user) { %>
+                        <button id="profile-button" class="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold ring-2 ring-transparent hover:ring-sky-400 transition-all"><%= user.name.charAt(0).toUpperCase() %></button>
+                        <div id="profile-dropdown" class="profile-dropdown absolute top-12 right-0 w-48 bg-gray-800 rounded-lg shadow-2xl border border-gray-700 py-2">
+                            <% if (user.isAdmin) { %>
+                                <a href="/movies/add" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"><i class="fas fa-plus-circle w-6"></i>Add Movie</a>
+                            <% } %>
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"><i class="fas fa-user-circle w-6"></i>Account</a>
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"><i class="fas fa-cog w-6"></i>Settings</a>
+                            <hr class="border-gray-600 my-1">
+                            <a href="/users/logout" class="flex items-center px-4 py-2 text-sm text-red-400 hover:bg-red-500 hover:text-white"><i class="fas fa-sign-out-alt w-6"></i>Sign Out</a>
+                        </div>
+                    <% } else { %>
+                         <a href="/users/login" class="text-gray-300 hover:text-white transition font-semibold">Sign In</a>
+                    <% } %>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <%- body %>
+
+</body>
+</html>
+

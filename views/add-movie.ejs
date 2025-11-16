@@ -1,0 +1,78 @@
+<div class="container mx-auto max-w-2xl py-24 px-4">
+    <h1 class="text-4xl font-bold text-white mb-8">
+        <%= editing ? 'Edit Movie' : 'Add a New Movie' %>
+    </h1>
+
+    <% if (typeof errors != 'undefined' && errors.length > 0) { %>
+        <div class="bg-red-500/20 border border-red-500 text-red-300 px-4 py-3 rounded-lg relative mb-6" role="alert">
+            <strong class="font-bold">Error!</strong>
+            <ul class="mt-2 list-disc pl-5">
+                <% errors.forEach(function(error) { %>
+                <li><%= error.msg %></li>
+                <% }); %>
+            </ul>
+        </div>
+    <% } %>
+
+    <form action="<%= editing ? ('/movies/edit/' + _id) : '/movies/add' %>" method="POST" class="space-y-6">
+        <div>
+            <label for="title" class="block text-sm font-medium text-gray-300 mb-2">Title</label>
+            <input value="<%= typeof title !== 'undefined' ? title : '' %>" type="text" name="title" id="title" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" required>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label for="poster" class="block text-sm font-medium text-gray-300 mb-2">Poster URL</label>
+                <input value="<%= typeof poster !== 'undefined' ? poster : '' %>" type="url" name="poster" id="poster" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="e.g., https://image.tmdb.org/....jpg" required>
+            </div>
+            <div>
+                <label for="backdrop" class="block text-sm font-medium text-gray-300 mb-2">Backdrop URL</label>
+                <input value="<%= typeof backdrop !== 'undefined' ? backdrop : '' %>" type="url" name="backdrop" id="backdrop" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="e.g., https://image.tmdb.org/....jpg" required>
+            </div>
+        </div>
+
+        <div>
+            <label for="genres" class="block text-sm font-medium text-gray-300 mb-2">Genres (comma separated)</label>
+            <input value="<%= typeof genres !== 'undefined' ? genres : '' %>" type="text" name="genres" id="genres" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="e.g., Action, Sci-Fi, Adventure" required>
+        </div>
+
+        <div>
+            <label for="description" class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+            <textarea name="description" id="description" rows="4" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" required><%= typeof description !== 'undefined' ? description : '' %></textarea>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label for="year" class="block text-sm font-medium text-gray-300 mb-2">Year</label>
+                <input value="<%= typeof year !== 'undefined' ? year : '' %>" type="number" name="year" id="year" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="e.g., 2010" required>
+            </div>
+            <div>
+                <label for="director" class="block text-sm font-medium text-gray-300 mb-2">Director</label>
+                <input value="<%= typeof director !== 'undefined' ? director : '' %>" type="text" name="director" id="director" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" required>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label for="cast" class="block text-sm font-medium text-gray-300 mb-2">Cast (comma separated)</label>
+                <input value="<%= typeof cast !== 'undefined' ? cast : '' %>" type="text" name="cast" id="cast" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="e.g., Actor One, Actor Two" required>
+            </div>
+            <div>
+                <label for="rating" class="block text-sm font-medium text-gray-300 mb-2">Rating (out of 10)</label>
+                <input value="<%= typeof rating !== 'undefined' ? rating : '' %>" type="text" name="rating" id="rating" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="e.g., 8.8" required>
+            </div>
+        </div>
+        
+        <div>
+            <label for="runtime" class="block text-sm font-medium text-gray-300 mb-2">Runtime</label>
+            <input value="<%= typeof runtime !== 'undefined' ? runtime : '' %>" type="text" name="runtime" id="runtime" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="e.g., 2h 28m" required>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button type="submit" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-6 rounded-lg transition text-lg transform hover:scale-105">
+                <%= editing ? 'Update Movie' : 'Add Movie' %>
+            </button>
+            <a href="/" class="px-6 py-3 rounded-lg bg-gray-700/60 text-white hover:bg-gray-700 transition text-lg">Cancel</a>
+        </div>
+    </form>
+</div>

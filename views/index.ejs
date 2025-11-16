@@ -1,0 +1,564 @@
+<div id="loader" class="loader"><div class="spinner"></div></div>
+
+<main>
+    <section id="hero-section" class="relative min-h-[90vh] md:min-h-screen flex items-center overflow-hidden">
+        <!-- Hero slides will be injected here by JavaScript -->
+    </section>
+
+    <div id="genre-filter-bar-wrapper" class="sticky top-[68px] z-40 py-4 shadow-lg transition-all duration-300">
+         <div id="genre-filter-bar" class="container mx-auto px-4 sm:px-6 flex items-center space-x-2 overflow-x-auto"></div>
+    </div>
+
+    <div id="carousel-container-main" class="container mx-auto px-4 sm:px-6 py-12 space-y-16 relative z-20"></div>
+</main>
+
+<!-- Movie Details Modal -->
+<div id="movie-modal" class="animated-overlay fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4">
+    <div class="content-wrapper bg-card-bg rounded-xl shadow-2xl w-full max-w-5xl max-h-full overflow-hidden flex flex-col">
+        <div class="relative w-full h-64 md:h-96 flex-shrink-0 overflow-hidden">
+            <img id="modal-backdrop" src="" class="absolute inset-0 w-full h-full object-cover modal-backdrop-image" alt="Movie Backdrop" onerror="this.onerror=null;this.src='https://placehold.co/1280x720/0a0a0a/f8fafc?text=Backdrop+Not+Found';">
+            <div class="absolute inset-0 modal-backdrop-gradient"></div>
+            <button id="close-modal-button" class="absolute top-4 right-4 text-gray-300 hover:text-white transition z-20 bg-black/40 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-sm"><i class="fas fa-times text-xl"></i></button>
+        </div>
+        <div class="flex-grow overflow-y-auto custom-scrollbar">
+            <div class="p-6 md:p-10 -mt-24 md:-mt-32 relative z-10">
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div class="w-40 md:w-56 flex-shrink-0 relative">
+                        <div class="modal-poster-glow"></div>
+                        <img id="modal-poster" src="" class="w-full rounded-lg shadow-2xl relative z-10" alt="Movie Poster" onerror="this.onerror=null;this.src='https://placehold.co/500x750/1a1a1a/f8fafc?text=Poster+Not+Found';">
+                    </div>
+                    <div class="flex-grow pt-24 md:pt-32">
+                        <h2 id="modal-title" class="text-4xl md:text-5xl font-black hero-text-shadow text-balance"></h2>
+                        <div class="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-lg">
+                            <div class="flex items-center gap-2 font-bold text-yellow-400"><i class="fas fa-star"></i> <span id="modal-rating"></span></div>
+                            <div class="flex items-center gap-2"><i class="fas fa-calendar-alt text-gray-400"></i> <span id="modal-year"></span></div>
+                            <div class="flex items-center gap-2"><i class="fas fa-clock text-gray-400"></i> <span id="modal-runtime"></span></div>
+                        </div>
+                        <div id="modal-genres" class="flex flex-wrap gap-2 mt-4"></div>
+                    </div>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-8 mt-8">
+                    <div class="lg:w-2/3">
+                        <p id="modal-description" class="text-text-secondary text-base md:text-lg leading-relaxed mb-6"></p>
+                        <div class="space-y-3 border-t border-gray-800 pt-6">
+                            <p class="text-text-secondary"><span class="font-semibold text-text-primary">Director:</span> <span id="modal-director"></span></p>
+                            <p class="text-text-secondary"><span class="font-semibold text-text-primary">Starring:</span> <span id="modal-cast"></span></p>
+                        </div>
+                    </div>
+                    <div class="lg:w-1/3">
+                        <div class="flex flex-col gap-4 bg-gray-900/50 p-6 rounded-lg">
+                            <button class="w-full bg-white text-black font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-200 transition text-lg transform hover:scale-105"><i class="fas fa-play"></i><span>Play</span></button>
+                            <button id="modal-my-list-button" class="list-btn w-full border-2 border-gray-600 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 hover:border-white transition text-lg"></button>
+
+                            <% if (typeof user !== 'undefined' && user && user.isAdmin) { %>
+                            <!-- Admin-only actions -->
+                            <div class="mt-2 space-y-3">
+                                <a id="modal-edit-link" href="#" class="w-full border-2 border-sky-600 text-sky-400 font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 hover:bg-sky-600/10 transition text-lg">
+                                    <i class="fas fa-pen-to-square"></i><span>Edit</span>
+                                </a>
+                                <form id="modal-delete-form" action="#" method="POST">
+                                    <button id="modal-delete-button" class="w-full border-2 border-red-600 text-red-400 font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 hover:bg-red-600/10 transition text-lg">
+                                        <i class="fas fa-trash"></i><span>Delete</span>
+                                    </button>
+                                </form>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="similar-movies-section" class="px-6 md:px-10 pb-10 border-t border-gray-800 mt-8"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Overlay -->
+<div id="search-overlay" class="animated-overlay fixed inset-0 z-[70] bg-black/90 backdrop-blur-lg flex-col p-4 pt-24 overflow-y-auto" style="display: none;">
+    <div class="content-wrapper w-full max-w-5xl mx-auto">
+        <button id="close-search-button" class="absolute top-6 right-6 text-gray-400 hover:text-white transition"><i class="fas fa-times text-4xl"></i></button>
+        <div class="relative">
+            <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 text-2xl"></i>
+            <input type="text" id="search-input" placeholder="Search films, directors, genres..." class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-5 pl-16 pr-6 text-white text-2xl focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+        </div>
+        <div id="search-results-container" class="mt-8">
+            <div id="search-initial-state">
+                 <h3 class="font-bold text-white text-xl mb-4">Popular Genres</h3>
+                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="search-genres-grid"></div>
+            </div>
+            <div id="search-results-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+            <p id="search-no-results" class="text-center text-gray-400 text-lg hidden">No results found.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ** Server-passed data **
+    const allMovieData = <%- JSON.stringify(movies) %>;
+    const userMyList = <%- JSON.stringify(user && user.myList ? user.myList : []) %>;
+    const isAdmin = <%- JSON.stringify(!!(user && user.isAdmin)) %>;
+
+    const initialCarouselData = [
+        { title: 'Sci-Fi Epics', genres: ['Sci-Fi'] },
+        { title: 'Director\'s Spotlight: Christopher Nolan', director: 'Christopher Nolan' },
+        { title: 'Critically Acclaimed Dramas', genres: ['Drama'] },
+        { title: 'Action Packed', genres: ['Action'] },
+        { title: 'Animated Wonders', genres: ['Animation'] }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        let myList = userMyList;
+        let currentFilter = 'All';
+        let heroCarouselInterval;
+        let currentHeroSlide = 0;
+        const featuredHeroMovies = Object.keys(allMovieData).slice(0, 5);
+
+        const cache = {
+            loader: document.getElementById('loader'),
+            heroSection: document.getElementById('hero-section'),
+            modal: document.getElementById('movie-modal'),
+            searchOverlay: document.getElementById('search-overlay'),
+            mainCarouselContainer: document.getElementById('carousel-container-main'),
+            genreFilterBar: document.getElementById('genre-filter-bar'),
+        };
+        
+        function updateListButtonUI(button, movieTitle) {
+            if (!button) return;
+            const isInList = myList.includes(movieTitle);
+            button.classList.toggle('in-list', isInList);
+            const text = isInList ? 'In My List' : 'Add to My List';
+            button.innerHTML = `
+                <span class="icon-plus"><i class="fas fa-plus w-6"></i></span>
+                <span class="icon-check"><i class="fas fa-check w-6"></i></span>
+                <span>${text}</span>
+            `;
+        }
+
+        // Toggle My List via backend
+        function toggleMyList(movieTitle) {
+            const isInList = myList.includes(movieTitle);
+            const endpoint = isInList ? '/movies/list/remove' : '/movies/list/add';
+
+            fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ movieTitle })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (isInList) {
+                        myList = myList.filter(title => title !== movieTitle);
+                    } else {
+                        myList.push(movieTitle);
+                    }
+                    document.querySelectorAll(`[data-list-btn='${movieTitle}']`).forEach(btn => updateListButtonUI(btn, movieTitle));
+                    updateListButtonUI(document.getElementById('modal-my-list-button'), movieTitle);
+                    renderCarousels(currentFilter);
+                } else {
+                    alert('Could not update your list. Please try again.');
+                }
+            })
+            .catch(err => {
+                console.error('Error updating list:', err);
+                alert('An error occurred. Please try again.');
+            });
+        }
+        
+        function setupHeroCarousel() {
+            if (featuredHeroMovies.length === 0) {
+                if(cache.heroSection) cache.heroSection.innerHTML = `<div class="text-center w-full"><h2 class="text-3xl font-bold">No featured movies yet.</h2><p class="text-lg text-gray-400 mt-2">Add some movies to get started!</p></div>`;
+                return;
+            }
+            let slidesHTML = '';
+            let dotsHTML = '';
+            featuredHeroMovies.forEach((title, index) => {
+                const movie = allMovieData[title];
+                if (!movie) return;
+                slidesHTML += `
+                    <div class="hero-slide" data-slide-index="${index}">
+                        <div class="absolute inset-0 bg-black/30 z-10"></div>
+                        <img src="${movie.backdrop}" alt="${title} Background" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/1920x1080/0a0a0a/f8fafc?text=Backdrop+Not+Found';">
+                        <div class="absolute inset-0 hero-gradient-overlay"></div>
+                        <div class="relative h-full flex items-center z-20 container mx-auto px-4 sm:px-6 w-full lg:w-3/5 xl:w-1/2">
+                            <div>
+                                <h2 class="hero-component text-5xl md:text-7xl font-black hero-text-shadow text-balance">${title}</h2>
+                                <div class="hero-component flex flex-wrap items-center gap-4 mt-6 text-sm" style="animation-delay: 200ms;">
+                                    <div class="hero-meta-item"><i class="fas fa-star text-yellow-400"></i> <strong>${movie.rating || 'N/A'}</strong></div>
+                                    <div class="hero-meta-item"><span>${movie.year || 'Unknown'}</span></div>
+                                    <div class="hero-meta-item"><span>${(movie.genres || []).slice(0, 2).join(' &middot; ')}</span></div>
+                                </div>
+                                <p class="hero-component mt-4 text-gray-200 text-lg max-w-prose" style="animation-delay: 400ms;">${movie.description || 'No description available.'}</p>
+                                <div class="hero-component mt-8 flex flex-wrap gap-4" style="animation-delay: 600ms;">
+                                    <button class="bg-white text-black font-bold py-3 px-8 rounded-lg flex items-center space-x-2 hover:bg-gray-200 transition text-lg transform hover:scale-105"><i class="fas fa-play"></i><span>Play</span></button>
+                                    <button class="movie-modal-trigger bg-gray-700/50 text-white font-bold py-3 px-8 rounded-lg flex items-center space-x-2 hover:bg-gray-600/70 transition backdrop-blur-sm text-lg transform hover:scale-105" data-title="${title}"><i class="fas fa-info-circle"></i><span>More Info</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                dotsHTML += `<div class="hero-dot" data-dot-index="${index}"></div>`;
+            });
+            cache.heroSection.innerHTML = `
+                ${slidesHTML}
+                <button id="hero-prev" class="hero-nav-arrow left-4 md:left-8"><i class="fas fa-chevron-left"></i></button>
+                <button id="hero-next" class="hero-nav-arrow right-4 md:right-8"><i class="fas fa-chevron-right"></i></button>
+                <div class="hero-dots-container">${dotsHTML}</div>
+            `;
+            showHeroSlide(0);
+            startHeroCarousel();
+        }
+
+        function showHeroSlide(index) {
+            currentHeroSlide = index;
+            const slides = document.querySelectorAll('.hero-slide');
+            slides.forEach((slide, i) => {
+                const isActive = i === index;
+                slide.classList.toggle('active', isActive);
+                if (isActive) {
+                    slide.querySelectorAll('.hero-component').forEach((el, j) => {
+                        el.style.animationDelay = `${200 * (j + 1)}ms`;
+                    });
+                }
+            });
+            document.querySelectorAll('.hero-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+
+        function nextHeroSlide() {
+            if (featuredHeroMovies.length === 0) return;
+            const nextIndex = (currentHeroSlide + 1) % featuredHeroMovies.length;
+            showHeroSlide(nextIndex);
+        }
+
+        function prevHeroSlide() {
+            if (featuredHeroMovies.length === 0) return;
+            const prevIndex = (currentHeroSlide - 1 + featuredHeroMovies.length) % featuredHeroMovies.length;
+            showHeroSlide(prevIndex);
+        }
+
+        function startHeroCarousel() {
+            clearInterval(heroCarouselInterval);
+            heroCarouselInterval = setInterval(nextHeroSlide, 7000);
+        }
+
+        function createCarouselItem(title) {
+            const movie = allMovieData[title];
+            if (!movie) return '';
+            const isInList = myList.includes(title);
+            return `
+                <div class="carousel-item flex-shrink-0 w-48 md:w-56 group z-10">
+                    <div class="movie-modal-trigger cursor-pointer rounded-lg overflow-hidden relative" data-title="${title}">
+                        <img src="${movie.poster}" alt="${title}" class="w-full h-auto object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/500x750/1a1a1a/f8fafc?text=Poster+Not+Found';">
+                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
+                            <button class="w-12 h-12 bg-white/90 text-black rounded-full text-xl flex items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-200" style="transition-delay: 100ms;"><i class="fas fa-play"></i></button>
+                        </div>
+                    </div>
+                    <div class="mt-3 flex items-start justify-between">
+                        <h4 class="font-semibold text-white pr-2">${title}</h4>
+                        <button class="list-btn flex-shrink-0 w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center text-white transition-colors duration-300 ${isInList ? 'in-list' : ''}" data-list-btn="${title}">
+                            <span class="icon-plus"><i class="fas fa-plus"></i></span>
+                            <span class="icon-check"><i class="fas fa-check"></i></span>
+                        </button>
+                    </div>
+                    <p class="text-sm text-text-secondary">${movie.year || 'Unknown'}</p>
+                </div>
+            `;
+        }
+
+        function createCarouselHTML(title, movieTitles) {
+            if (movieTitles.length === 0) return '';
+            return `
+                <div class="carousel-wrapper relative">
+                    <h3 class="text-2xl font-bold text-white mb-6">${title}</h3>
+                    <div class="relative">
+                        <div class="carousel-container flex items-start space-x-6 pb-4 -mx-4 px-4 overflow-x-auto">
+                            ${movieTitles.map(createCarouselItem).join('')}
+                        </div>
+                        <button data-direction="left" class="carousel-arrow absolute top-1/2 -mt-8 left-0 -translate-x-1/2 w-14 h-14 bg-black/60 rounded-full text-white z-20 hidden md:flex items-center justify-center hover:bg-black"><i class="fas fa-chevron-left"></i></button>
+                        <button data-direction="right" class="carousel-arrow absolute top-1/2 -mt-8 right-0 translate-x-1/2 w-14 h-14 bg-black/60 rounded-full text-white z-20 hidden md:flex items-center justify-center hover:bg-black"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>`;
+        }
+
+        function renderCarousels(filterGenre = 'All') {
+            let html = '';
+            if (myList.length > 0) {
+                html += createCarouselHTML('My List', myList);
+            }
+            if (Object.keys(allMovieData).length === 0 && myList.length === 0) {
+                if(cache.mainCarouselContainer) cache.mainCarouselContainer.innerHTML = `<div class="text-center text-gray-400 py-16"><h3 class="text-2xl font-bold">No movies in the database yet.</h3><p>An admin can add movies to get started.</p></div>`;
+                return;
+            }
+            if (filterGenre === 'All') {
+                initialCarouselData.forEach(cat => {
+                    const movies = Object.keys(allMovieData).filter(title => {
+                        const movie = allMovieData[title];
+                        if (!movie) return false;
+                        if (cat.genres) return (movie.genres || []).some(g => cat.genres.includes(g));
+                        if (cat.director) return movie.director === cat.director;
+                        return false;
+                    });
+                    html += createCarouselHTML(cat.title, movies);
+                });
+            } else {
+                const movies = Object.keys(allMovieData).filter(title => (allMovieData[title].genres || []).includes(filterGenre));
+                html += createCarouselHTML(`${filterGenre} Films`, movies);
+            }
+            if(cache.mainCarouselContainer) cache.mainCarouselContainer.innerHTML = html || `<div class="text-center text-gray-400 py-16"><h3 class="text-2xl font-bold">No films found in "${filterGenre}"</h3></div>`;
+            setupCarouselObservers();
+        }
+
+        function renderGenreFilters() {
+            const genres = ['All', ...new Set(Object.values(allMovieData).flatMap(m => m.genres || []))].sort();
+            if(cache.genreFilterBar) {
+                cache.genreFilterBar.innerHTML = genres.map(genre => `
+                    <button class="genre-filter-button whitespace-nowrap px-5 py-2 rounded-full text-sm font-semibold bg-gray-800/50 text-gray-300 hover:bg-gray-700/70 flex-shrink-0 transition-all duration-300 border border-transparent" data-genre="${genre}">
+                        ${genre}
+                    </button>`).join('');
+                
+                const allButton = cache.genreFilterBar.querySelector('[data-genre="All"]');
+                if (allButton) {
+                    allButton.classList.add('active');
+                }
+            }
+        }
+
+        function renderSimilarMovies(genres = [], currentTitle) {
+            const similar = Object.keys(allMovieData)
+                .filter(title => {
+                    const movie = allMovieData[title];
+                    return title !== currentTitle && (movie.genres || []).some(g => genres.includes(g));
+                })
+                .slice(0, 5);
+            
+            const section = document.getElementById('similar-movies-section');
+            if (section) {
+                if (similar.length === 0) {
+                    section.innerHTML = '';
+                    return;
+                }
+                section.innerHTML = `
+                    <h3 class="text-2xl font-bold text-white mb-6">You Might Also Like</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                        ${similar.map(title => `
+                            <div class="movie-modal-trigger cursor-pointer group" data-title="${title}">
+                                <img src="${allMovieData[title].poster}" class="rounded-lg transition-transform group-hover:scale-105" onerror="this.onerror=null;this.src='https://placehold.co/500x750/1a1a1a/f8fafc?text=Poster+Not+Found';">
+                                <p class="text-sm text-white mt-2 truncate font-semibold">${title}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        function openModal(title) {
+            const movie = allMovieData[title];
+            if (!movie) return;
+
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-backdrop').src = movie.backdrop;
+            document.getElementById('modal-poster').src = movie.poster;
+            document.getElementById('modal-description').textContent = movie.description || 'No description available.';
+            document.getElementById('modal-rating').textContent = `${movie.rating || 'N/A'} / 10`;
+            document.getElementById('modal-year').textContent = movie.year || 'Unknown';
+            document.getElementById('modal-runtime').textContent = movie.runtime || 'N/A';
+            document.getElementById('modal-director').textContent = movie.director || 'Unknown';
+            document.getElementById('modal-cast').textContent = (movie.cast || []).join(', ');
+            document.getElementById('modal-genres').innerHTML = (movie.genres || []).map(g => `<span class="bg-gray-700/50 text-text-secondary text-xs font-semibold px-2.5 py-1 rounded backdrop-blur-sm">${g}</span>`).join('');
+            
+            const listButton = document.getElementById('modal-my-list-button');
+            if(listButton) {
+                listButton.dataset.listBtn = title;
+                updateListButtonUI(listButton, title);
+            }
+
+            // Admin actions
+            if (isAdmin) {
+                const editLink = document.getElementById('modal-edit-link');
+                const deleteForm = document.getElementById('modal-delete-form');
+                const deleteBtn = document.getElementById('modal-delete-button');
+
+                if (movie && movie._id) {
+                    if (editLink) editLink.href = `/movies/edit/${movie._id}`;
+                    if (deleteForm) deleteForm.action = `/movies/delete/${movie._id}`;
+                    if (deleteBtn && deleteForm) {
+                        deleteBtn.onclick = (e) => {
+                            e.preventDefault();
+                            if (confirm('Are you sure you want to delete this movie?')) {
+                                deleteForm.submit();
+                            }
+                        };
+                    }
+                } else {
+                    // Hide admin buttons if _id not available
+                    if (editLink) editLink.style.display = 'none';
+                    if (deleteBtn) deleteBtn.style.display = 'none';
+                }
+            }
+
+            renderSimilarMovies(movie.genres, title);
+            
+            if(cache.modal) {
+                cache.modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        const closeModal = () => {
+            if(cache.modal) {
+                cache.modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        };
+        
+        function handleSearch() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const resultsGrid = document.getElementById('search-results-grid');
+            const noResultsMsg = document.getElementById('search-no-results');
+            const initialState = document.getElementById('search-initial-state');
+
+            if (query.length < 2) {
+                if(resultsGrid) resultsGrid.innerHTML = '';
+                if(noResultsMsg) noResultsMsg.classList.add('hidden');
+                if(initialState) initialState.style.display = 'block';
+                return;
+            }
+            if(initialState) initialState.style.display = 'none';
+
+            const results = Object.entries(allMovieData).filter(([title, data]) => 
+                title.toLowerCase().includes(query) ||
+                (data.genres || []).some(g => g.toLowerCase().includes(query)) ||
+                (data.director || '').toLowerCase().includes(query)
+            );
+
+            if (results.length === 0) {
+                if(noResultsMsg) noResultsMsg.classList.remove('hidden');
+                if(resultsGrid) resultsGrid.innerHTML = '';
+            } else {
+                if(noResultsMsg) noResultsMsg.classList.add('hidden');
+                if(resultsGrid) resultsGrid.innerHTML = results.map(([title, data]) => `
+                    <div class="movie-modal-trigger cursor-pointer group" data-title="${title}">
+                        <img src="${data.poster}" alt="${title}" class="rounded-lg transition-transform group-hover:scale-105" onerror="this.onerror=null;this.src='https://placehold.co/500x750/1a1a1a/f8fafc?text=Poster+Not+Found';">
+                        <p class="text-sm text-white mt-2 truncate">${title}</p>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        function setupSearch() {
+            const genres = ['Sci-Fi', 'Drama', 'Action', 'Thriller', 'Animation', 'Comedy', 'Crime', 'Mystery'];
+            const colors = ['bg-sky-500', 'bg-indigo-500', 'bg-red-500', 'bg-emerald-500', 'bg-amber-500', 'bg-purple-500', 'bg-slate-500', 'bg-rose-500'];
+            const container = document.getElementById('search-genres-grid');
+            if(container) {
+                container.innerHTML = genres.map((genre, i) => `
+                    <div class="h-28 rounded-lg relative overflow-hidden ${colors[i]} flex items-center justify-center text-white text-2xl font-bold cursor-pointer transition-transform hover:scale-105">
+                        ${genre}
+                    </div>
+                `).join('');
+            }
+        }
+
+        function setupCarouselObservers() {
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.carousel-wrapper').forEach(cw => observer.observe(cw));
+        }
+
+        function setupEventListeners() {
+            const closeModalButton = document.getElementById('close-modal-button');
+            if (closeModalButton) closeModalButton.addEventListener('click', closeModal);
+            
+            if(cache.modal) cache.modal.addEventListener('click', e => {
+                if (e.target.closest('.content-wrapper') === null) closeModal();
+            });
+
+            document.body.addEventListener('click', e => {
+                const modalTrigger = e.target.closest('.movie-modal-trigger');
+                if (modalTrigger) {
+                    e.stopPropagation();
+                    openModal(modalTrigger.dataset.title);
+                }
+                const listBtn = e.target.closest('[data-list-btn]');
+                if (listBtn) toggleMyList(listBtn.dataset.listBtn);
+
+                const genreBtn = e.target.closest('.genre-filter-button');
+                if (genreBtn) {
+                    const genre = genreBtn.dataset.genre;
+                    if (genre === currentFilter) return;
+                    currentFilter = genre;
+                    document.querySelectorAll('.genre-filter-button').forEach(b => b.classList.remove('active'));
+                    genreBtn.classList.add('active');
+                    renderCarousels(genre);
+                }
+                
+                const arrowBtn = e.target.closest('.carousel-arrow');
+                if(arrowBtn){
+                    const carousel = arrowBtn.closest('.relative').querySelector('.carousel-container');
+                    if (carousel) carousel.scrollBy({ left: arrowBtn.dataset.direction === 'left' ? -carousel.offsetWidth * 0.8 : carousel.offsetWidth * 0.8, behavior: 'smooth' });
+                }
+
+                if (e.target.closest('#hero-next')) { nextHeroSlide(); startHeroCarousel(); }
+                if (e.target.closest('#hero-prev')) { prevHeroSlide(); startHeroCarousel(); }
+                const dot = e.target.closest('.hero-dot');
+                if (dot) {
+                    showHeroSlide(parseInt(dot.dataset.dotIndex));
+                    startHeroCarousel();
+                }
+                
+                const profileButton = e.target.closest('#profile-button');
+                const profileDropdown = document.getElementById('profile-dropdown');
+                if (profileButton && profileDropdown) {
+                    profileDropdown.classList.toggle('active');
+                } else if (profileDropdown && !e.target.closest('#profile-dropdown')) {
+                    profileDropdown.classList.remove('active');
+                }
+                
+                if (e.target.closest('#search-button') && cache.searchOverlay) {
+                    cache.searchOverlay.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                }
+                const closeSearchButton = e.target.closest('#close-search-button');
+                if (closeSearchButton && cache.searchOverlay) {
+                    cache.searchOverlay.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
+            });
+            
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) searchInput.addEventListener('input', handleSearch);
+
+            if (cache.heroSection) {
+                cache.heroSection.addEventListener('mouseenter', () => clearInterval(heroCarouselInterval));
+                cache.heroSection.addEventListener('mouseleave', () => startHeroCarousel());
+            }
+
+             window.addEventListener('scroll', () => {
+                const header = document.getElementById('main-header');
+                const genreBar = document.getElementById('genre-filter-bar-wrapper');
+                const heroSection = document.getElementById('hero-section');
+                if(header) header.classList.toggle('glass-nav', window.scrollY > 50);
+                if(genreBar && heroSection) genreBar.classList.toggle('glass-nav', window.scrollY > heroSection.offsetHeight - 70);
+            });
+        }
+
+        function init() {
+            setupHeroCarousel();
+            renderGenreFilters();
+            renderCarousels();
+            setupSearch();
+            setupEventListeners();
+            setTimeout(() => {
+                if(cache.loader) cache.loader.classList.add('hidden')
+            }, 500);
+        }
+
+        init();
+    });
+</script>

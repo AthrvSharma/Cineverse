@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Cineverse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes aurora { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        body { font-family: 'Inter', sans-serif; }
+        .video-bg {
+            position: fixed; top: 50%; left: 50%; min-width: 100%; min-height: 100%;
+            width: auto; height: auto; z-index: -1; transform: translateX(-50%) translateY(-50%);
+            object-fit: cover; filter: brightness(0.3);
+        }
+        .form-wrapper { position: relative; z-index: 1; }
+        .form-wrapper::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); width: 150%; height: 150%; z-index: -1;
+            background: linear-gradient(45deg, #0ea5e9, #4f46e5, #ec4899, #f97316);
+            background-size: 400% 400%; animation: aurora 15s ease infinite;
+            filter: blur(100px); opacity: 0.3;
+        }
+        .form-container {
+            background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px); border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        .brand-title {
+            background: linear-gradient(to right, #e0e7ff, #a5b4fc);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: fadeIn 0.8s ease-out 0.2s backwards;
+            text-shadow: 0 0 15px rgba(165, 180, 252, 0.3);
+        }
+        .input-group { position: relative; }
+        .input-field {
+            background: transparent; border: none; border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0; padding-left: 0; padding-right: 0;
+            transition: border-color 0.3s ease;
+        }
+        .input-field:focus { outline: none; border-color: #38bdf8; }
+        .input-field:focus ~ .input-label, .input-field:not(:placeholder-shown) ~ .input-label {
+            transform: translateY(-1.5rem); font-size: 0.75rem; color: #38bdf8;
+        }
+        .input-label {
+            position: absolute; left: 0; top: 0.8rem; color: #9ca3af;
+            pointer-events: none; transition: all 0.3s ease;
+        }
+        .shimmer-button::before {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        .shimmer-button:hover::before { left: 100%; }
+    </style>
+</head>
+<body class="bg-gray-900">
+
+    <video autoplay muted loop class="video-bg">
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-curvy-road-on-a-tree-covered-hill-41537-large.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="min-h-screen flex flex-col items-center justify-center px-4 py-8">
+        <a href="/"><h1 class="brand-title text-6xl font-black tracking-tighter mb-10">CINEVERSE</h1></a>
+        
+        <div class="form-wrapper w-full max-w-md">
+            <div class="form-container p-8 rounded-2xl shadow-2xl">
+                <h2 class="text-3xl font-bold text-white text-center mb-8">Create Account</h2>
+                <% if (error && error.length > 0) { %>
+                    <div class="bg-red-500 text-white p-3 rounded-lg mb-4 text-center">
+                        <%= error %>
+                    </div>
+                <% } %>
+                <form action="/users/register" method="POST">
+                    <div class="space-y-8">
+                        <div class="input-group">
+                            <input type="text" id="name" name="name" required
+                                   class="input-field w-full py-3 text-white placeholder-transparent focus:outline-none"
+                                   placeholder="Full Name">
+                            <label for="name" class="input-label">Full Name</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="email" id="email" name="email" required
+                                   class="input-field w-full py-3 text-white placeholder-transparent focus:outline-none"
+                                   placeholder="Email Address">
+                            <label for="email" class="input-label">Email Address</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" id="password" name="password" required
+                                   class="input-field w-full py-3 text-white placeholder-transparent focus:outline-none"
+                                   placeholder="Password">
+                            <label for="password" class="input-label">Password</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" id="password2" name="password2" required
+                                   class="input-field w-full py-3 text-white placeholder-transparent focus:outline-none"
+                                   placeholder="Confirm Password">
+                            <label for="password2" class="input-label">Confirm Password</label>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <button type="submit"
+                                class="shimmer-button relative overflow-hidden w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:from-sky-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-500 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-blue-500/50">
+                            Sign Up
+                        </button>
+                    </div>
+                </form>
+
+                <div class="mt-8 text-center">
+                    <p class="text-gray-400">Already have an account? <a href="/users/login" class="font-medium text-sky-400 hover:underline">Sign in</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+
