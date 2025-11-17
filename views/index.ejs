@@ -1,15 +1,312 @@
 <div id="loader" class="loader"><div class="spinner"></div></div>
 
 <main>
+    <% if (user && user.isAdmin) { %>
+    <section id="immersive-intro" class="container mx-auto px-4 sm:px-6 py-16 grid gap-10 lg:grid-cols-2 items-center">
+        <div class="space-y-6" data-animate>
+            <p class="floating-chip text-xs">Cinematic OS 2.0</p>
+            <h1 class="text-4xl sm:text-5xl xl:text-6xl font-black leading-tight text-white">
+                Streamlined rails for curators, critics, and cinephiles.
+            </h1>
+            <p class="text-lg text-gray-300 max-w-2xl">
+                MongoDB Atlas anchors secure logins while PostgreSQL powers the programmable catalog. Redis and sockets keep every interaction live, with GSAP weaving it all together.
+            </p>
+            <div class="flex flex-wrap gap-3">
+                <a href="/movies/add" class="neon-button px-6 py-3 border border-white/30 text-white font-semibold text-sm tracking-wide">
+                    Launch Creator Console
+                </a>
+                <button id="discover-flow" class="px-6 py-3 rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-500/30">
+                    Explore experience flow
+                </button>
+            </div>
+            <div class="flex gap-6 text-sm text-gray-400">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Latency</p>
+                    <p class="text-2xl font-black text-white">~60ms</p>
+                </div>
+                <div>
+                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Active sessions</p>
+                    <p class="text-2xl font-black text-white" id="hero-active-sessions">0</p>
+                </div>
+                <div>
+                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Curated rails</p>
+                    <p class="text-2xl font-black text-white" id="hero-rails">0</p>
+                </div>
+            </div>
+        </div>
+        <div class="neo-hero-panel" data-animate>
+            <div class="spark-badge">
+                <span class="spark-dot"></span>
+                Live sync enabled
+            </div>
+            <div class="neo-panel-card">
+                <p class="text-xs uppercase tracking-[0.3em] text-white/60 mb-2">Now streaming</p>
+                <h3 class="text-3xl font-black text-white leading-tight" id="hero-featured-title">Awaiting selection</h3>
+                <p class="text-sm text-gray-300" id="hero-featured-meta">Add a title to PostgreSQL to populate this rail.</p>
+            </div>
+            <div class="neo-panel-grid">
+                <article>
+                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Total titles</p>
+                    <p class="text-3xl font-black text-white" id="hero-total-titles">0</p>
+                </article>
+                <article>
+                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Avg. rating</p>
+                    <p class="text-3xl font-black text-white" id="hero-avg-rating">0</p>
+                </article>
+                <article>
+                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Watchlist saves</p>
+                    <p class="text-3xl font-black text-white" id="hero-watchlist-count">0</p>
+                </article>
+                <article>
+                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Genres tracked</p>
+                    <p class="text-3xl font-black text-white" id="hero-genre-count">0</p>
+                </article>
+            </div>
+            <div class="genre-pill-row" id="hero-genre-pills"></div>
+        </div>
+    </section>
+
     <section id="hero-section" class="relative min-h-[90vh] md:min-h-screen flex items-center overflow-hidden">
         <!-- Hero slides will be injected here by JavaScript -->
+        <div class="hero-spotlight"></div>
     </section>
+
+    <section class="container mx-auto px-4 sm:px-6 pb-12">
+        <div class="grid gap-5 md:grid-cols-3" id="experience-grid">
+            <article class="experience-card" data-animate>
+                <p class="floating-chip text-xs">Audience journey</p>
+                <h3 class="text-2xl font-semibold mt-3">Adaptive rails</h3>
+                <p class="text-gray-300 text-sm mt-3">Carousels respond to clicks, favorites, and sockets. The layout bends to each user with zero refreshes.</p>
+                <ul class="mt-4 space-y-2 text-sm text-gray-400">
+                    <li>GSAP motion choreography</li>
+                    <li>Redis-backed realtime sync</li>
+                    <li>Per-user watchlists</li>
+                </ul>
+            </article>
+            <article class="experience-card" data-animate>
+                <p class="floating-chip text-xs">Creator console</p>
+                <h3 class="text-2xl font-semibold mt-3">Instant publishing</h3>
+                <p class="text-gray-300 text-sm mt-3">New entries hit PostgreSQL, invalidate Redis, and ripple out to socket listeners with a toast.</p>
+                <ul class="mt-4 space-y-2 text-sm text-gray-400">
+                    <li>Validation + previews</li>
+                    <li>Bulk metadata editing</li>
+                    <li>Role-gated admin flows</li>
+                </ul>
+            </article>
+            <article class="experience-card" data-animate>
+                <p class="floating-chip text-xs">Community channel</p>
+                <h3 class="text-2xl font-semibold mt-3">Programmable watch rooms</h3>
+                <p class="text-gray-300 text-sm mt-3">Virtual rooms bootstrap themselves from the catalog. Use them as programming notes or scheduling prototypes.</p>
+                <ul class="mt-4 space-y-2 text-sm text-gray-400">
+                    <li>Dynamic capacity indicators</li>
+                    <li>Timezone-aware start labels</li>
+                    <li>Genre mood tagging</li>
+                </ul>
+            </article>
+        </div>
+    </section>
+    <% } %>
+
+    <section class="relative z-30 -mt-16 pb-8">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="grid gap-6 lg:grid-cols-3">
+                <div class="glass-card p-6 space-y-4">
+                    <p class="floating-chip text-xs">Curation Pulse</p>
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div>
+                            <p class="text-sm text-gray-400">Total films</p>
+                            <p id="stat-total-movies" class="text-4xl font-black">0</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-400">Unique genres</p>
+                            <p id="stat-genres" class="text-3xl font-semibold">0</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-400">Unique directors</p>
+                            <p id="stat-directors" class="text-3xl font-semibold">0</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-400">Avg. rating</p>
+                            <p id="stat-rating" class="text-3xl font-semibold">0</p>
+                        </div>
+                    </div>
+                    <div class="cin-divider"></div>
+                    <p class="text-sm text-gray-400 leading-relaxed">Meticulously curated world cinema feed with adaptive queues and ambient discovery.</p>
+                </div>
+                <div class="glass-card p-6 space-y-4">
+                    <p class="floating-chip">For you</p>
+                    <p class="text-gray-300">Cineverse learns from your favorites to surface festival gems and cult classics.</p>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-400">Watchlist</p>
+                            <p id="stat-list" class="text-3xl font-black">0</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-400">Sessions</p>
+                            <p id="stat-watch" class="text-3xl font-black">0</p>
+                        </div>
+                    </div>
+                    <div class="cine-progress">
+                        <span id="stat-curation-progress"></span>
+                    </div>
+                    <p class="text-xs text-gray-400">Every save sharpens recommendations.</p>
+                </div>
+                <div class="glass-card p-0 overflow-hidden flex flex-col">
+                    <div class="p-6 pb-3">
+                        <p class="floating-chip">Experience flow</p>
+                        <h3 class="text-2xl font-semibold mt-3">Dual-lane streaming for cinephiles & curators</h3>
+                    </div>
+                    <div class="cin-wave flex items-center justify-between p-6">
+                        <div>
+                            <p class="text-xs uppercase text-white/70">Curated rails</p>
+                            <p class="text-3xl font-black">24</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs uppercase text-white/70">Festivals covered</p>
+                            <p class="text-3xl font-black">18</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <% if (user && user.isAdmin) { %>
+    <section class="container mx-auto px-4 sm:px-6 pb-8">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6">
+            <div>
+                <p class="floating-chip text-xs">Multi-database fabric</p>
+                <h2 class="text-3xl md:text-4xl font-black tracking-tight">Workloads split across Atlas & Postgres</h2>
+            </div>
+            <p class="text-gray-400 max-w-2xl">MongoDB Atlas secures identities while PostgreSQL powers the entire film catalog and scheduling logic. Each datastore scales independently but stays in sync through Redis fan-out.</p>
+        </div>
+        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            <% const fabricCards = (dbStatus && dbStatus.length ? dbStatus : [{ key: 'pending', name: 'Connectivity pending', role: 'Awaiting metrics', status: 'offline', detail: 'No telemetry available yet.' }]); %>
+            <% fabricCards.forEach(card => { %>
+                <article class="fabric-card" data-status="<%= card.status %>">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs uppercase tracking-[0.2em] text-white/60"><%= card.role %></span>
+                        <span class="status-pill status-<%= card.status %>"><%= card.status %></span>
+                    </div>
+                    <h3 class="text-2xl font-bold leading-snug"><%= card.name %></h3>
+                    <p class="text-sm text-gray-400 mt-3"><%= card.detail %></p>
+                </article>
+            <% }) %>
+        </div>
+    </section>
+    <% } %>
+
+    <section id="curated-rows" class="container mx-auto px-4 sm:px-6 py-8 space-y-10"></section>
 
     <div id="genre-filter-bar-wrapper" class="sticky top-[68px] z-40 py-4 shadow-lg transition-all duration-300">
          <div id="genre-filter-bar" class="container mx-auto px-4 sm:px-6 flex items-center space-x-2 overflow-x-auto"></div>
     </div>
 
     <div id="carousel-container-main" class="container mx-auto px-4 sm:px-6 py-12 space-y-16 relative z-20"></div>
+
+    <% if (user && user.isAdmin) { %>
+    <section class="container mx-auto px-4 sm:px-6 pb-16">
+        <div class="creator-console" data-animate>
+            <div>
+                <p class="floating-chip text-xs">Creator cockpit</p>
+                <h2 class="text-3xl font-black mt-3">Design new drops faster</h2>
+                <p class="text-gray-300 mt-2 max-w-3xl">Toggle rails, pin spotlights, or schedule sessions without leaving the screen. Cineverse syncs every change through MongoDB logins, PostgreSQL metadata, and Redis sockets.</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <a href="/dashboard" class="px-6 py-3 rounded-full bg-white/10 border border-white/20 text-sm font-semibold text-white hover:bg-white/20 transition">Open mission control</a>
+                <a href="/movies/add" class="px-6 py-3 rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 text-sm font-semibold text-white shadow-lg shadow-sky-500/30">Add a new film</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="curator-spotlights" class="container mx-auto px-4 sm:px-6 pb-10 space-y-6">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+            <div>
+                <p class="floating-chip text-xs">PostgreSQL curator desk</p>
+                <h2 class="text-3xl md:text-4xl font-black tracking-tight">Live cinematic spotlights</h2>
+            </div>
+            <p class="text-gray-400 max-w-2xl text-sm md:text-base">Spotlights are generated directly from the PostgreSQL movie catalog—no extra datastore needed. Add or update a film and these rails refresh instantly.</p>
+        </div>
+        <% if (!catalogSpotlights || !catalogSpotlights.length) { %>
+            <div class="glass-card p-10 text-center text-gray-400">No spotlight programming yet. Seed the PostgreSQL catalog and real-time curation rails will appear here.</div>
+        <% } else { %>
+            <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                <% catalogSpotlights.forEach(item => { %>
+                    <article class="spotlight-card" style="--accent-color: <%= item.accentColor %>">
+                        <div class="spotlight-orbit"></div>
+                        <p class="text-xs uppercase tracking-[0.3em] text-white/60"><%= item.focusLabel %> • <%= item.moodLabel %></p>
+                        <h3 class="text-2xl font-bold mt-3"><%= item.title %></h3>
+                        <p class="text-sm text-gray-400 mt-2 leading-relaxed"><%= item.summary %></p>
+                        <div class="flex items-center justify-between mt-6">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase">Curated by</p>
+                                <p class="text-lg font-semibold"><%= item.presenter %></p>
+                            </div>
+                        </div>
+                        <span class="spotlight-date"><%= item.detail %></span>
+                    </article>
+                <% }) %>
+            </div>
+        <% } %>
+    </section>
+
+    <section id="watch-party-section" class="container mx-auto px-4 sm:px-6 pb-12 space-y-6">
+        <% 
+            const totalSeats = (virtualRooms || []).reduce((sum, session) => sum + (session.capacity || 0), 0);
+            const reservedSeats = (virtualRooms || []).reduce((sum, session) => sum + (session.registered || 0), 0);
+            const fillPercent = totalSeats ? Math.round((reservedSeats / totalSeats) * 100) : 0;
+        %>
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+            <div>
+                <p class="floating-chip text-xs">Communal watch grid</p>
+                <h2 class="text-3xl md:text-4xl font-black tracking-tight">Sessions generated straight from PostgreSQL</h2>
+            </div>
+            <p class="text-gray-400 max-w-2xl text-sm md:text-base">The moment a title lands in Postgres, Cineverse can carve out simulated watch rooms based on its metadata. Mongo keeps identities aligned for RSVPs.</p>
+        </div>
+        <div class="grid gap-6 lg:grid-cols-3">
+            <div class="watch-party-summary glass-card p-6 space-y-4">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Seats locked</p>
+                    <h3 class="text-4xl font-black"><%= reservedSeats %> / <%= totalSeats %></h3>
+                </div>
+                <div class="party-progress" style="--party-progress: <%= fillPercent %>%;">
+                    <span><%= fillPercent %>% utilization</span>
+                </div>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li>Rooms derived from PostgreSQL catalog</li>
+                    <li>Films & art pulled directly from the same dataset</li>
+                    <li>Audience access managed by Mongo</li>
+                </ul>
+            </div>
+            <div class="lg:col-span-2 space-y-4">
+                <% if (!virtualRooms || !virtualRooms.length) { %>
+                    <div class="glass-card p-6 text-gray-400 text-center">No upcoming rooms right now. Seed the PostgreSQL catalog to auto-generate a schedule.</div>
+                <% } else { %>
+                    <% virtualRooms.forEach(session => { const progress = session.capacity ? Math.round((session.registered / session.capacity) * 100) : 0; %>
+                        <article class="watch-party-card" style="--party-color: <%= session.signalColor %>;">
+                            <div class="watch-party-date">
+                                <span class="text-sm font-semibold text-white"><%= session.startLabel %></span>
+                                <span class="text-xs text-gray-400"><%= session.startTimeLabel %> (<%= session.timezone %>)</span>
+                            </div>
+                            <div class="watch-party-body">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-xl font-bold"><%= session.film %></h3>
+                                    <span class="text-xs uppercase tracking-[0.3em] text-white/60"><%= session.room %></span>
+                                </div>
+                                <p class="text-sm text-gray-400 mt-2"><%= session.theme %></p>
+                                <p class="text-sm text-gray-400">Host: <span class="text-white font-semibold"><%= session.host %></span></p>
+                                <p class="text-xs text-gray-500 mt-1"><%= session.vibe %></p>
+                                <div class="party-progress mt-3" style="--party-progress: <%= progress %>%;">
+                                    <span><%= session.registered %> / <%= session.capacity %> seats</span>
+                                </div>
+                            </div>
+                        </article>
+                    <% }) %>
+                <% } %>
+            </div>
+        </div>
+    </section>
+    <% } %>
 </main>
 
 <!-- Movie Details Modal -->
@@ -94,8 +391,17 @@
 <script>
     // ** Server-passed data **
     const allMovieData = <%- JSON.stringify(movies) %>;
+    window.__CINEVERSE_MOVIES__ = allMovieData;
     const userMyList = <%- JSON.stringify(user && user.myList ? user.myList : []) %>;
     const isAdmin = <%- JSON.stringify(!!(user && user.isAdmin)) %>;
+    window.__CINEVERSE_USER__ = {
+        id: <%- JSON.stringify(user ? (user._id ? user._id.toString() : null) : null) %>,
+        isAdmin
+    };
+    const catalogSpotlights = <%- JSON.stringify(catalogSpotlights || []) %>;
+    const virtualRooms = <%- JSON.stringify(virtualRooms || []) %>;
+    const dbStatusPayload = <%- JSON.stringify(dbStatus || []) %>;
+    window.__CINEVERSE_FABRIC__ = { catalogSpotlights, virtualRooms, dbStatus: dbStatusPayload };
 
     const initialCarouselData = [
         { title: 'Sci-Fi Epics', genres: ['Sci-Fi'] },
@@ -104,6 +410,14 @@
         { title: 'Action Packed', genres: ['Action'] },
         { title: 'Animated Wonders', genres: ['Animation'] }
     ];
+
+    const hideLoader = () => {
+        const loaderEl = document.getElementById('loader');
+        if (loaderEl) loaderEl.classList.add('hidden');
+    };
+
+    window.addEventListener('load', hideLoader);
+    setTimeout(hideLoader, 2500);
 
     document.addEventListener('DOMContentLoaded', () => {
         let myList = userMyList;
@@ -120,6 +434,67 @@
             mainCarouselContainer: document.getElementById('carousel-container-main'),
             genreFilterBar: document.getElementById('genre-filter-bar'),
         };
+        const statsRefs = {
+            totalMovies: document.getElementById('stat-total-movies'),
+            genres: document.getElementById('stat-genres'),
+            directors: document.getElementById('stat-directors'),
+            rating: document.getElementById('stat-rating'),
+            watch: document.getElementById('stat-watch'),
+            list: document.getElementById('stat-list'),
+            curationBar: document.getElementById('stat-curation-progress'),
+            heroTotals: document.getElementById('hero-total-titles'),
+            heroAvg: document.getElementById('hero-avg-rating'),
+            heroGenres: document.getElementById('hero-genre-count'),
+            heroWatch: document.getElementById('hero-watchlist-count'),
+            heroSessions: document.getElementById('hero-active-sessions'),
+            heroRails: document.getElementById('hero-rails'),
+            heroPills: document.getElementById('hero-genre-pills'),
+            heroFeaturedTitle: document.getElementById('hero-featured-title'),
+            heroFeaturedMeta: document.getElementById('hero-featured-meta')
+        };
+
+        function populateCurationStats() {
+            const movieArray = Object.values(allMovieData);
+            const uniqueDirectors = new Set(movieArray.map(m => (m.director || '').toLowerCase().trim()).filter(Boolean));
+            const averageGenres = movieArray.reduce((sum, m) => sum + (m.genres || []).length, 0) / Math.max(1, movieArray.length);
+            const uniqueGenres = new Set(movieArray.flatMap(m => m.genres || []));
+            const avgRating = movieArray.reduce((sum, m) => sum + Number(m.rating || 0), 0) / Math.max(movieArray.length, 1);
+            const culturalScore = Math.min(100, Math.round((uniqueGenres.size / 12) * 100));
+
+            statsRefs.totalMovies && (statsRefs.totalMovies.textContent = movieArray.length);
+            statsRefs.genres && (statsRefs.genres.textContent = uniqueGenres.size);
+            statsRefs.directors && (statsRefs.directors.textContent = uniqueDirectors.size);
+            statsRefs.rating && (statsRefs.rating.textContent = avgRating.toFixed(1));
+
+            const simulatedWatch = movieArray.length * 3 + Math.round(Math.random() * 40);
+            const simulatedList = myList.length * 5 + Math.round(Math.random() * 20);
+            statsRefs.watch && (statsRefs.watch.textContent = simulatedWatch);
+            statsRefs.list && (statsRefs.list.textContent = simulatedList);
+            statsRefs.curationBar && (statsRefs.curationBar.style.width = `${culturalScore}%`);
+
+            if (statsRefs.heroTotals) statsRefs.heroTotals.textContent = movieArray.length;
+            if (statsRefs.heroAvg) statsRefs.heroAvg.textContent = avgRating.toFixed(2);
+            if (statsRefs.heroGenres) statsRefs.heroGenres.textContent = uniqueGenres.size;
+            if (statsRefs.heroWatch) statsRefs.heroWatch.textContent = simulatedList;
+            if (statsRefs.heroSessions) statsRefs.heroSessions.textContent = Math.max(1, simulatedWatch - simulatedList);
+            if (statsRefs.heroRails) statsRefs.heroRails.textContent = Math.max(4, movieArray.length * 2);
+
+            if (statsRefs.heroPills) {
+                const pillGenres = Array.from(uniqueGenres).slice(0, 6);
+                statsRefs.heroPills.innerHTML = pillGenres.length
+                    ? pillGenres.map(g => `<span>${g}</span>`).join('')
+                    : '<span>Add a title to unlock live pills</span>';
+            }
+
+            if (statsRefs.heroFeaturedTitle) {
+                const featured = movieArray[0];
+                if (featured) {
+                    statsRefs.heroFeaturedTitle.textContent = featured.title;
+                    statsRefs.heroFeaturedMeta.textContent = `${featured.year || 'Year TBD'} • ${featured.runtime || 'Runtime TBD'} • ${featured.genres?.slice(0, 2).join(' / ') || 'Genre pending'}`;
+                }
+            }
+        }
+        populateCurationStats();
         
         function updateListButtonUI(button, movieTitle) {
             if (!button) return;
@@ -305,12 +680,98 @@
                 const movies = Object.keys(allMovieData).filter(title => (allMovieData[title].genres || []).includes(filterGenre));
                 html += createCarouselHTML(`${filterGenre} Films`, movies);
             }
+            if (!html) {
+                const allTitles = Object.keys(allMovieData);
+                if (allTitles.length) {
+                    const fallback = allTitles.sort((a, b) => {
+                        const movieA = allMovieData[a];
+                        const movieB = allMovieData[b];
+                        return (Number(movieB.rating) || 0) - (Number(movieA.rating) || 0);
+                    });
+                    html = createCarouselHTML('All titles', fallback);
+                }
+            }
             if(cache.mainCarouselContainer) cache.mainCarouselContainer.innerHTML = html || `<div class="text-center text-gray-400 py-16"><h3 class="text-2xl font-bold">No films found in "${filterGenre}"</h3></div>`;
             setupCarouselObservers();
         }
 
+        function getTopTitlesByRating(limit = 10) {
+            return Object.entries(allMovieData)
+                .sort(([, a], [, b]) => (Number(b.rating) || 0) - (Number(a.rating) || 0))
+                .slice(0, limit)
+                .map(([title]) => title);
+        }
+
+        function getRecentTitles(limit = 10) {
+            return Object.entries(allMovieData)
+                .filter(([, data]) => Number(data.year))
+                .sort(([, a], [, b]) => Number(b.year || 0) - Number(a.year || 0))
+                .slice(0, limit)
+                .map(([title]) => title);
+        }
+
+        function getGenreFavorites(limit = 10) {
+            const genreCounts = {};
+            Object.values(allMovieData).forEach(movie => {
+                (movie.genres || []).forEach(genre => {
+                    genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+                });
+            });
+            const favoriteGenre = Object.entries(genreCounts).sort((a, b) => b[1] - a[1])[0]?.[0];
+            if (!favoriteGenre) return [];
+            return Object.entries(allMovieData)
+                .filter(([, data]) => (data.genres || []).includes(favoriteGenre))
+                .sort(([, a], [, b]) => (Number(b.rating) || 0) - (Number(a.rating) || 0))
+                .slice(0, limit)
+                .map(([title]) => title);
+        }
+
+        function getDirectorSpotlight(limit = 8) {
+            const directorCounts = {};
+            Object.values(allMovieData).forEach(movie => {
+                if (!movie.director) return;
+                const key = movie.director.trim();
+                directorCounts[key] = (directorCounts[key] || 0) + 1;
+            });
+            const topDirector = Object.entries(directorCounts).sort((a, b) => b[1] - a[1])[0]?.[0];
+            if (!topDirector) return [];
+            return Object.entries(allMovieData)
+                .filter(([, data]) => (data.director || '').trim() === topDirector)
+                .slice(0, limit)
+                .map(([title]) => title);
+        }
+
+        function renderCuratedRows() {
+            if (!cache.curatedRows) return;
+            const blocks = [];
+            const loveThese = getGenreFavorites(10);
+            if (loveThese.length) blocks.push(createCarouselHTML("We think you'll love these", loveThese));
+            const topRated = getTopTitlesByRating(10);
+            if (topRated.length) blocks.push(createCarouselHTML('Top 10 World Cinema', topRated));
+            const recent = getRecentTitles(10);
+            if (recent.length) blocks.push(createCarouselHTML('Fresh arrivals', recent));
+            const directorRow = getDirectorSpotlight(8);
+            if (directorRow.length) blocks.push(createCarouselHTML('Director spotlight', directorRow));
+            if (!blocks.length) {
+                initialCarouselData.forEach(cat => {
+                    const movies = Object.keys(allMovieData).filter(title => {
+                        const movie = allMovieData[title];
+                        if (!movie) return false;
+                        if (cat.genres) return (movie.genres || []).some(g => cat.genres.includes(g));
+                        if (cat.director) return movie.director === cat.director;
+                        return false;
+                    });
+                    if (movies.length) blocks.push(createCarouselHTML(cat.title, movies));
+                });
+            }
+            cache.curatedRows.innerHTML = blocks.join('') || `<div class="text-center text-gray-400 py-8">Add more films to unlock personalized rows.</div>`;
+        }
+
         function renderGenreFilters() {
-            const genres = ['All', ...new Set(Object.values(allMovieData).flatMap(m => m.genres || []))].sort();
+            const prioritizedGenres = ['Action', 'Crime', 'Sci-fi', 'Sport/Action', 'Sports', 'Thriller'];
+            const uniqueGenres = new Set(Object.values(allMovieData).flatMap(m => m.genres || []));
+            const rest = [...uniqueGenres].filter(genre => !prioritizedGenres.includes(genre)).sort();
+            const genres = ['All', ...prioritizedGenres, ...rest];
             if(cache.genreFilterBar) {
                 cache.genreFilterBar.innerHTML = genres.map(genre => `
                     <button class="genre-filter-button whitespace-nowrap px-5 py-2 rounded-full text-sm font-semibold bg-gray-800/50 text-gray-300 hover:bg-gray-700/70 flex-shrink-0 transition-all duration-300 border border-transparent" data-genre="${genre}">
@@ -471,6 +932,18 @@
             document.querySelectorAll('.carousel-wrapper').forEach(cw => observer.observe(cw));
         }
 
+        function animateFabricSections() {
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fabric-card-visible');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.2 });
+            document.querySelectorAll('.fabric-card, .spotlight-card, .watch-party-card').forEach(card => observer.observe(card));
+        }
+
         function setupEventListeners() {
             const closeModalButton = document.getElementById('close-modal-button');
             if (closeModalButton) closeModalButton.addEventListener('click', closeModal);
@@ -539,6 +1012,13 @@
                 cache.heroSection.addEventListener('mouseleave', () => startHeroCarousel());
             }
 
+            const discoverFlow = document.getElementById('discover-flow');
+            if (discoverFlow) {
+                discoverFlow.addEventListener('click', () => {
+                    document.getElementById('genre-filter-bar-wrapper')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            }
+
              window.addEventListener('scroll', () => {
                 const header = document.getElementById('main-header');
                 const genreBar = document.getElementById('genre-filter-bar-wrapper');
@@ -551,12 +1031,15 @@
         function init() {
             setupHeroCarousel();
             renderGenreFilters();
+            renderCuratedRows();
             renderCarousels();
             setupSearch();
             setupEventListeners();
             setTimeout(() => {
                 if(cache.loader) cache.loader.classList.add('hidden')
             }, 500);
+            setupCarouselObservers();
+            animateFabricSections();
         }
 
         init();
