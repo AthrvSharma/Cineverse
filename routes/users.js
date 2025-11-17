@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const User = require('../models/User');
+const rateLimiterRedis = require('../middlewares/rateLimiterRedis');
 
 // Login Page
 router.get('/login', (req, res) => res.render('login', { layout: false }));
@@ -77,7 +78,7 @@ router.post('/register', (req, res) => {
 });
 
 // Login
-router.post('/login', (req, res, next) => {
+router.post('/login', rateLimiterRedis({ prefix: 'web-login', windowInSeconds: 60, allowedHits: 10 }), (req, res, next) => {
   passport.authenticate('local', {
     successRedirect: '/',
     failureRedirect: '/users/login',
@@ -107,4 +108,3 @@ router.get('/logout', (req, res, next) => {
 });
 
 module.exports = router;
-

@@ -1,16 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
-
-const Movie = require('../models/Movie');   // <-- adjust path if needed
-const User  = require('../models/User');    // <-- adjust path if needed
-
-// If you already have these, import from your auth middleware file:
- // <-- adjust path
+const movieStore = require('../models/Movie');
+const User  = require('../models/User');
+const movieController = require('../controllers/movieController');
 const { ensureAuthenticated, ensureAdmin } = require('../config/auth');
 
 // --- Helpers ---
 const isUrl = (s = '') => /^https?:\/\/.+/i.test(s);
+const isValidId = value => {
+  const numeric = Number(value);
+  return Number.isInteger(numeric) && numeric > 0;
+};
 
 // =========================
 // Add Movie (Admin Only)
@@ -48,7 +48,7 @@ router.post('/add', ensureAuthenticated, ensureAdmin, async (req, res) => {
       });
     }
 
-    const movie = new Movie({
+    const moviePayload = {
       title: title.trim(),
       poster: poster.trim(),
       backdrop: backdrop.trim(),
@@ -57,15 +57,15 @@ router.post('/add', ensureAuthenticated, ensureAdmin, async (req, res) => {
       year: Number(year),
       director: director.trim(),
       cast: cast.split(',').map(s => s.trim()).filter(Boolean),
-      rating: rating.trim(),
+      rating: Number(rating),
       runtime: runtime.trim()
-    });
+    };
 
-    await movie.save();
+    await movieController.createMovie(moviePayload);
     req.flash('success_msg', 'Movie added successfully!');
     res.redirect('/');
   } catch (err) {
-    if (err && err.code === 11000) {
+    if (err && (err.code === 11000 || err.code === '23505')) {
       req.flash('error_msg', 'A movie with that title already exists.');
       return res.redirect('/movies/add');
     }
@@ -83,12 +83,12 @@ router.post('/add', ensureAuthenticated, ensureAdmin, async (req, res) => {
 router.get('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    if (!mongoose.isValidObjectId(id)) {
+    if (!isValidId(id)) {
       req.flash('error_msg', 'Invalid movie id.');
       return res.redirect('/');
     }
 
-    const m = await Movie.findById(id);
+    const m = await movieStore.findMovieById(Number(id));
     if (!m) {
       req.flash('error_msg', 'Movie not found.');
       return res.redirect('/');
@@ -120,7 +120,7 @@ router.get('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
 router.post('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    if (!mongoose.isValidObjectId(id)) {
+    if (!isValidId(id)) {
       req.flash('error_msg', 'Invalid movie id.');
       return res.redirect('/');
     }
@@ -130,6 +130,7 @@ router.post('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
       description, year, director, cast, rating, runtime
     } = req.body;
 
+    const numericId = Number(id);
     const update = {
       title: (title || '').trim(),
       poster: (poster || '').trim(),
@@ -139,7 +140,7 @@ router.post('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
       year: Number(year),
       director: (director || '').trim(),
       cast: (cast || '').split(',').map(s => s.trim()).filter(Boolean),
-      rating: (rating || '').trim(),
+      rating: Number(rating),
       runtime: (runtime || '').trim()
     };
 
@@ -148,11 +149,11 @@ router.post('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
       return res.redirect(`/movies/edit/${id}`);
     }
 
-    await Movie.findByIdAndUpdate(id, update, { runValidators: true });
+    await movieController.updateMovie(numericId, update);
     req.flash('success_msg', 'Movie updated successfully!');
     res.redirect('/');
   } catch (err) {
-    if (err && err.code === 11000) {
+    if (err && (err.code === 11000 || err.code === '23505')) {
       req.flash('error_msg', 'A movie with that title already exists.');
       return res.redirect(`/movies/edit/${req.params.id}`);
     }
@@ -169,12 +170,12 @@ router.post('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
 router.post('/delete/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    if (!mongoose.isValidObjectId(id)) {
+    if (!isValidId(id)) {
       req.flash('error_msg', 'Invalid movie id.');
       return res.redirect('/');
     }
 
-    await Movie.findByIdAndDelete(id);
+    await movieController.deleteMovie(Number(id));
     req.flash('success_msg', 'Movie deleted successfully!');
     res.redirect('/');
   } catch (err) {

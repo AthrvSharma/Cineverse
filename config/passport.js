@@ -23,7 +23,6 @@ module.exports = function(passport) {
         if (!user.password) {
           return done(null, false, { message: 'That email is registered with Google. Please use Google to log in.' });
         }
-        // **FIX ENDS HERE**
 
         // Match password
         bcrypt.compare(password, user.password, (err, isMatch) => {

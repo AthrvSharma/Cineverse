@@ -1,0 +1,179 @@
+<div id="loader" class="loader"><div class="spinner"></div></div>
+
+<main class="pb-16">
+    <section class="user-hero container mx-auto px-4 sm:px-6 py-16">
+        <div class="hero-overlay">
+            <div>
+                <p class="floating-chip text-xs">Now streaming</p>
+                <h1 id="user-hero-title" class="text-4xl sm:text-5xl font-black">Loading...</h1>
+                <p id="user-hero-meta" class="text-lg text-gray-300 mt-2">Please wait while we fetch the latest title.</p>
+                <div class="flex flex-wrap gap-3 mt-6">
+                    <button id="user-hero-watch" class="px-6 py-3 rounded-full bg-white text-black font-semibold text-sm flex items-center gap-2">
+                        <i class="fas fa-play"></i> Play
+                    </button>
+                    <button id="user-hero-mylist" class="px-6 py-3 rounded-full border border-white/40 text-white font-semibold text-sm flex items-center gap-2">
+                        <i class="fas fa-plus"></i> My List
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="hero-backdrop">
+            <img id="user-hero-backdrop" src="https://placehold.co/1600x900/0a0a0a/f8fafc?text=Add+Movies" alt="Backdrop">
+        </div>
+    </section>
+
+    <section class="container mx-auto px-4 sm:px-6 py-10">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold">Browse catalog</h2>
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                <input id="user-search" type="text" placeholder="Search movies..." class="pl-10 pr-4 py-2 rounded-full bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+            </div>
+        </div>
+        <div id="movie-grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></div>
+        <p id="movie-empty-state" class="text-center text-gray-400 text-lg py-16 hidden">No titles available yet. An admin can add movies from the creator console.</p>
+    </section>
+</main>
+
+<script>
+    const allMovieData = {"Test":{"title":"Test","poster":"","backdrop":"","genres":["Drama"],"year":2024,"runtime":"2h","description":"","rating":8}};
+    const userMyList = [];
+    const userId = null;
+
+    let myList = userMyList || [];
+
+    const loaderEl = document.getElementById('loader');
+    function hideLoader() {
+        if (loaderEl) loaderEl.classList.add('hidden');
+    }
+    document.addEventListener('DOMContentLoaded', hideLoader);
+    window.addEventListener('load', hideLoader);
+    setTimeout(hideLoader, 2500);
+
+    function updateHero(movie) {
+        const titleEl = document.getElementById('user-hero-title');
+        const metaEl = document.getElementById('user-hero-meta');
+        const backdropEl = document.getElementById('user-hero-backdrop');
+        const myListBtn = document.getElementById('user-hero-mylist');
+
+        if (!movie) {
+            titleEl.textContent = 'Awaiting new release';
+            metaEl.textContent = 'Once an admin adds content, it will appear here.';
+            backdropEl.src = 'https://placehold.co/1600x900/0a0a0a/f8fafc?text=Add+Movies';
+            myListBtn.disabled = true;
+            return;
+        }
+
+        titleEl.textContent = movie.title;
+        metaEl.textContent = `${movie.year || 'Year TBD'} • ${movie.runtime || 'Runtime TBD'} • ${(movie.genres || []).slice(0, 3).join(' / ') || 'Genre pending'}`;
+        backdropEl.src = movie.backdrop || 'https://placehold.co/1600x900/0a0a0a/f8fafc?text=Backdrop+missing';
+        backdropEl.onerror = function() {
+            this.onerror = null;
+            this.src = 'https://placehold.co/1600x900/0a0a0a/f8fafc?text=Backdrop+missing';
+        };
+        myListBtn.dataset.title = movie.title;
+        myListBtn.disabled = false;
+        renderMyListState(myListBtn, movie.title);
+    }
+
+    function renderMyListState(button, title) {
+        if (!button) return;
+        const inList = myList.includes(title);
+        button.classList.toggle('in-list', inList);
+        button.innerHTML = inList
+            ? '<i class="fas fa-check"></i> Added'
+            : '<i class="fas fa-plus"></i> My List';
+    }
+
+    function renderMovies(filter = '') {
+        const grid = document.getElementById('movie-grid');
+        const emptyState = document.getElementById('movie-empty-state');
+        const movies = Object.values(allMovieData);
+        let filtered = movies;
+        if (filter) {
+            const term = filter.toLowerCase();
+            filtered = movies.filter(movie =>
+                movie.title.toLowerCase().includes(term) ||
+                (movie.director || '').toLowerCase().includes(term) ||
+                (movie.genres || []).some(g => g.toLowerCase().includes(term))
+            );
+        }
+
+        if (!filtered.length) {
+            grid.innerHTML = '';
+            emptyState.classList.remove('hidden');
+            return;
+        }
+        emptyState.classList.add('hidden');
+        grid.innerHTML = filtered.map(movie => `
+            <article class="movie-card">
+                <div class="poster-wrapper movie-modal-trigger" data-title="${movie.title}">
+                    <img src="${movie.poster}" alt="${movie.title}" onerror="this.onerror=null;this.src='https://placehold.co/500x750/0a0a0a/f8fafc?text=Poster+missing';">
+                </div>
+                <div class="movie-card-body">
+                    <h3 class="font-semibold text-white">${movie.title}</h3>
+                    <p class="text-sm text-gray-400">${movie.year || 'Year TBD'} • ${(movie.genres || []).slice(0, 2).join(', ')}</p>
+                    <div class="flex items-center justify-between mt-3">
+                        <button class="mini-play movie-modal-trigger" data-title="${movie.title}">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="mini-list" data-list-btn="${movie.title}"></button>
+                    </div>
+                </div>
+            </article>
+        `).join('');
+
+        document.querySelectorAll('.mini-list').forEach(btn => renderMyListState(btn, btn.dataset.listBtn));
+    }
+
+    function toggleMyList(movieTitle) {
+        if (!movieTitle || !userId) {
+            alert('Please log in to use My List.');
+            return;
+        }
+        const inList = myList.includes(movieTitle);
+        const endpoint = inList ? '/movies/list/remove' : '/movies/list/add';
+        fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ movieTitle })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                if (inList) {
+                    myList = myList.filter(title => title !== movieTitle);
+                } else {
+                    myList.push(movieTitle);
+                }
+                document.querySelectorAll(`[data-list-btn='${movieTitle}'], #user-hero-mylist`).forEach(btn => renderMyListState(btn, movieTitle));
+            } else {
+                alert('Could not update your list. Please try again.');
+            }
+        })
+        .catch(err => {
+            console.error('Error updating list:', err);
+            alert('An error occurred. Please try again.');
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const allMovies = Object.values(allMovieData);
+        updateHero(allMovies[0]);
+        renderMovies();
+
+        const searchInput = document.getElementById('user-search');
+        searchInput?.addEventListener('input', e => renderMovies(e.target.value));
+
+        document.body.addEventListener('click', e => {
+            const listBtn = e.target.closest('[data-list-btn]');
+            if (listBtn) {
+                toggleMyList(listBtn.dataset.listBtn);
+            }
+            const heroMyList = e.target.closest('#user-hero-mylist');
+            if (heroMyList && heroMyList.dataset.title) {
+                toggleMyList(heroMyList.dataset.title);
+            }
+        });
+    });
+</script>

@@ -1,111 +1,7 @@
 <div id="loader" class="loader"><div class="spinner"></div></div>
 
 <main>
-    <% if (user && user.isAdmin) { %>
-    <section id="immersive-intro" class="container mx-auto px-4 sm:px-6 py-16 grid gap-10 lg:grid-cols-2 items-center">
-        <div class="space-y-6" data-animate>
-            <p class="floating-chip text-xs">Cinematic OS 2.0</p>
-            <h1 class="text-4xl sm:text-5xl xl:text-6xl font-black leading-tight text-white">
-                Streamlined rails for curators, critics, and cinephiles.
-            </h1>
-            <p class="text-lg text-gray-300 max-w-2xl">
-                MongoDB Atlas anchors secure logins while PostgreSQL powers the programmable catalog. Redis and sockets keep every interaction live, with GSAP weaving it all together.
-            </p>
-            <div class="flex flex-wrap gap-3">
-                <a href="/movies/add" class="neon-button px-6 py-3 border border-white/30 text-white font-semibold text-sm tracking-wide">
-                    Launch Creator Console
-                </a>
-                <button id="discover-flow" class="px-6 py-3 rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-500/30">
-                    Explore experience flow
-                </button>
-            </div>
-            <div class="flex gap-6 text-sm text-gray-400">
-                <div>
-                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Latency</p>
-                    <p class="text-2xl font-black text-white">~60ms</p>
-                </div>
-                <div>
-                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Active sessions</p>
-                    <p class="text-2xl font-black text-white" id="hero-active-sessions">0</p>
-                </div>
-                <div>
-                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Curated rails</p>
-                    <p class="text-2xl font-black text-white" id="hero-rails">0</p>
-                </div>
-            </div>
-        </div>
-        <div class="neo-hero-panel" data-animate>
-            <div class="spark-badge">
-                <span class="spark-dot"></span>
-                Live sync enabled
-            </div>
-            <div class="neo-panel-card">
-                <p class="text-xs uppercase tracking-[0.3em] text-white/60 mb-2">Now streaming</p>
-                <h3 class="text-3xl font-black text-white leading-tight" id="hero-featured-title">Awaiting selection</h3>
-                <p class="text-sm text-gray-300" id="hero-featured-meta">Add a title to PostgreSQL to populate this rail.</p>
-            </div>
-            <div class="neo-panel-grid">
-                <article>
-                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Total titles</p>
-                    <p class="text-3xl font-black text-white" id="hero-total-titles">0</p>
-                </article>
-                <article>
-                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Avg. rating</p>
-                    <p class="text-3xl font-black text-white" id="hero-avg-rating">0</p>
-                </article>
-                <article>
-                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Watchlist saves</p>
-                    <p class="text-3xl font-black text-white" id="hero-watchlist-count">0</p>
-                </article>
-                <article>
-                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Genres tracked</p>
-                    <p class="text-3xl font-black text-white" id="hero-genre-count">0</p>
-                </article>
-            </div>
-            <div class="genre-pill-row" id="hero-genre-pills"></div>
-        </div>
-    </section>
-
-    <section id="hero-section" class="relative min-h-[90vh] md:min-h-screen flex items-center overflow-hidden">
-        <!-- Hero slides will be injected here by JavaScript -->
-        <div class="hero-spotlight"></div>
-    </section>
-
-    <section class="container mx-auto px-4 sm:px-6 pb-12">
-        <div class="grid gap-5 md:grid-cols-3" id="experience-grid">
-            <article class="experience-card" data-animate>
-                <p class="floating-chip text-xs">Audience journey</p>
-                <h3 class="text-2xl font-semibold mt-3">Adaptive rails</h3>
-                <p class="text-gray-300 text-sm mt-3">Carousels respond to clicks, favorites, and sockets. The layout bends to each user with zero refreshes.</p>
-                <ul class="mt-4 space-y-2 text-sm text-gray-400">
-                    <li>GSAP motion choreography</li>
-                    <li>Redis-backed realtime sync</li>
-                    <li>Per-user watchlists</li>
-                </ul>
-            </article>
-            <article class="experience-card" data-animate>
-                <p class="floating-chip text-xs">Creator console</p>
-                <h3 class="text-2xl font-semibold mt-3">Instant publishing</h3>
-                <p class="text-gray-300 text-sm mt-3">New entries hit PostgreSQL, invalidate Redis, and ripple out to socket listeners with a toast.</p>
-                <ul class="mt-4 space-y-2 text-sm text-gray-400">
-                    <li>Validation + previews</li>
-                    <li>Bulk metadata editing</li>
-                    <li>Role-gated admin flows</li>
-                </ul>
-            </article>
-            <article class="experience-card" data-animate>
-                <p class="floating-chip text-xs">Community channel</p>
-                <h3 class="text-2xl font-semibold mt-3">Programmable watch rooms</h3>
-                <p class="text-gray-300 text-sm mt-3">Virtual rooms bootstrap themselves from the catalog. Use them as programming notes or scheduling prototypes.</p>
-                <ul class="mt-4 space-y-2 text-sm text-gray-400">
-                    <li>Dynamic capacity indicators</li>
-                    <li>Timezone-aware start labels</li>
-                    <li>Genre mood tagging</li>
-                </ul>
-            </article>
-        </div>
-    </section>
-    <% } %>
+    
 
     <section class="relative z-30 -mt-16 pb-8">
         <div class="container mx-auto px-4 sm:px-6">
@@ -171,30 +67,7 @@
         </div>
     </section>
 
-    <% if (user && user.isAdmin) { %>
-    <section class="container mx-auto px-4 sm:px-6 pb-8">
-        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6">
-            <div>
-                <p class="floating-chip text-xs">Multi-database fabric</p>
-                <h2 class="text-3xl md:text-4xl font-black tracking-tight">Workloads split across Atlas & Postgres</h2>
-            </div>
-            <p class="text-gray-400 max-w-2xl">MongoDB Atlas secures identities while PostgreSQL powers the entire film catalog and scheduling logic. Each datastore scales independently but stays in sync through Redis fan-out.</p>
-        </div>
-        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            <% const fabricCards = (dbStatus && dbStatus.length ? dbStatus : [{ key: 'pending', name: 'Connectivity pending', role: 'Awaiting metrics', status: 'offline', detail: 'No telemetry available yet.' }]); %>
-            <% fabricCards.forEach(card => { %>
-                <article class="fabric-card" data-status="<%= card.status %>">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs uppercase tracking-[0.2em] text-white/60"><%= card.role %></span>
-                        <span class="status-pill status-<%= card.status %>"><%= card.status %></span>
-                    </div>
-                    <h3 class="text-2xl font-bold leading-snug"><%= card.name %></h3>
-                    <p class="text-sm text-gray-400 mt-3"><%= card.detail %></p>
-                </article>
-            <% }) %>
-        </div>
-    </section>
-    <% } %>
+    
 
     <section id="curated-rows" class="container mx-auto px-4 sm:px-6 py-8 space-y-10"></section>
 
@@ -204,109 +77,7 @@
 
     <div id="carousel-container-main" class="container mx-auto px-4 sm:px-6 py-12 space-y-16 relative z-20"></div>
 
-    <% if (user && user.isAdmin) { %>
-    <section class="container mx-auto px-4 sm:px-6 pb-16">
-        <div class="creator-console" data-animate>
-            <div>
-                <p class="floating-chip text-xs">Creator cockpit</p>
-                <h2 class="text-3xl font-black mt-3">Design new drops faster</h2>
-                <p class="text-gray-300 mt-2 max-w-3xl">Toggle rails, pin spotlights, or schedule sessions without leaving the screen. Cineverse syncs every change through MongoDB logins, PostgreSQL metadata, and Redis sockets.</p>
-            </div>
-            <div class="flex flex-wrap gap-3">
-                <a href="/dashboard" class="px-6 py-3 rounded-full bg-white/10 border border-white/20 text-sm font-semibold text-white hover:bg-white/20 transition">Open mission control</a>
-                <a href="/movies/add" class="px-6 py-3 rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 text-sm font-semibold text-white shadow-lg shadow-sky-500/30">Add a new film</a>
-            </div>
-        </div>
-    </section>
-
-    <section id="curator-spotlights" class="container mx-auto px-4 sm:px-6 pb-10 space-y-6">
-        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-            <div>
-                <p class="floating-chip text-xs">PostgreSQL curator desk</p>
-                <h2 class="text-3xl md:text-4xl font-black tracking-tight">Live cinematic spotlights</h2>
-            </div>
-            <p class="text-gray-400 max-w-2xl text-sm md:text-base">Spotlights are generated directly from the PostgreSQL movie catalog—no extra datastore needed. Add or update a film and these rails refresh instantly.</p>
-        </div>
-        <% if (!catalogSpotlights || !catalogSpotlights.length) { %>
-            <div class="glass-card p-10 text-center text-gray-400">No spotlight programming yet. Seed the PostgreSQL catalog and real-time curation rails will appear here.</div>
-        <% } else { %>
-            <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                <% catalogSpotlights.forEach(item => { %>
-                    <article class="spotlight-card" style="--accent-color: <%= item.accentColor %>">
-                        <div class="spotlight-orbit"></div>
-                        <p class="text-xs uppercase tracking-[0.3em] text-white/60"><%= item.focusLabel %> • <%= item.moodLabel %></p>
-                        <h3 class="text-2xl font-bold mt-3"><%= item.title %></h3>
-                        <p class="text-sm text-gray-400 mt-2 leading-relaxed"><%= item.summary %></p>
-                        <div class="flex items-center justify-between mt-6">
-                            <div>
-                                <p class="text-xs text-gray-500 uppercase">Curated by</p>
-                                <p class="text-lg font-semibold"><%= item.presenter %></p>
-                            </div>
-                        </div>
-                        <span class="spotlight-date"><%= item.detail %></span>
-                    </article>
-                <% }) %>
-            </div>
-        <% } %>
-    </section>
-
-    <section id="watch-party-section" class="container mx-auto px-4 sm:px-6 pb-12 space-y-6">
-        <% 
-            const totalSeats = (virtualRooms || []).reduce((sum, session) => sum + (session.capacity || 0), 0);
-            const reservedSeats = (virtualRooms || []).reduce((sum, session) => sum + (session.registered || 0), 0);
-            const fillPercent = totalSeats ? Math.round((reservedSeats / totalSeats) * 100) : 0;
-        %>
-        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-            <div>
-                <p class="floating-chip text-xs">Communal watch grid</p>
-                <h2 class="text-3xl md:text-4xl font-black tracking-tight">Sessions generated straight from PostgreSQL</h2>
-            </div>
-            <p class="text-gray-400 max-w-2xl text-sm md:text-base">The moment a title lands in Postgres, Cineverse can carve out simulated watch rooms based on its metadata. Mongo keeps identities aligned for RSVPs.</p>
-        </div>
-        <div class="grid gap-6 lg:grid-cols-3">
-            <div class="watch-party-summary glass-card p-6 space-y-4">
-                <div>
-                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Seats locked</p>
-                    <h3 class="text-4xl font-black"><%= reservedSeats %> / <%= totalSeats %></h3>
-                </div>
-                <div class="party-progress" style="--party-progress: <%= fillPercent %>%;">
-                    <span><%= fillPercent %>% utilization</span>
-                </div>
-                <ul class="space-y-2 text-sm text-gray-400">
-                    <li>Rooms derived from PostgreSQL catalog</li>
-                    <li>Films & art pulled directly from the same dataset</li>
-                    <li>Audience access managed by Mongo</li>
-                </ul>
-            </div>
-            <div class="lg:col-span-2 space-y-4">
-                <% if (!virtualRooms || !virtualRooms.length) { %>
-                    <div class="glass-card p-6 text-gray-400 text-center">No upcoming rooms right now. Seed the PostgreSQL catalog to auto-generate a schedule.</div>
-                <% } else { %>
-                    <% virtualRooms.forEach(session => { const progress = session.capacity ? Math.round((session.registered / session.capacity) * 100) : 0; %>
-                        <article class="watch-party-card" style="--party-color: <%= session.signalColor %>;">
-                            <div class="watch-party-date">
-                                <span class="text-sm font-semibold text-white"><%= session.startLabel %></span>
-                                <span class="text-xs text-gray-400"><%= session.startTimeLabel %> (<%= session.timezone %>)</span>
-                            </div>
-                            <div class="watch-party-body">
-                                <div class="flex items-center justify-between">
-                                    <h3 class="text-xl font-bold"><%= session.film %></h3>
-                                    <span class="text-xs uppercase tracking-[0.3em] text-white/60"><%= session.room %></span>
-                                </div>
-                                <p class="text-sm text-gray-400 mt-2"><%= session.theme %></p>
-                                <p class="text-sm text-gray-400">Host: <span class="text-white font-semibold"><%= session.host %></span></p>
-                                <p class="text-xs text-gray-500 mt-1"><%= session.vibe %></p>
-                                <div class="party-progress mt-3" style="--party-progress: <%= progress %>%;">
-                                    <span><%= session.registered %> / <%= session.capacity %> seats</span>
-                                </div>
-                            </div>
-                        </article>
-                    <% }) %>
-                <% } %>
-            </div>
-        </div>
-    </section>
-    <% } %>
+    
 </main>
 
 <!-- Movie Details Modal -->
@@ -347,19 +118,7 @@
                             <button class="w-full bg-white text-black font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-200 transition text-lg transform hover:scale-105"><i class="fas fa-play"></i><span>Play</span></button>
                             <button id="modal-my-list-button" class="list-btn w-full border-2 border-gray-600 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 hover:border-white transition text-lg"></button>
 
-                            <% if (typeof user !== 'undefined' && user && user.isAdmin) { %>
-                            <!-- Admin-only actions -->
-                            <div class="mt-2 space-y-3">
-                                <a id="modal-edit-link" href="#" class="w-full border-2 border-sky-600 text-sky-400 font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 hover:bg-sky-600/10 transition text-lg">
-                                    <i class="fas fa-pen-to-square"></i><span>Edit</span>
-                                </a>
-                                <form id="modal-delete-form" action="#" method="POST">
-                                    <button id="modal-delete-button" class="w-full border-2 border-red-600 text-red-400 font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 hover:bg-red-600/10 transition text-lg">
-                                        <i class="fas fa-trash"></i><span>Delete</span>
-                                    </button>
-                                </form>
-                            </div>
-                            <% } %>
+                            
                         </div>
                     </div>
                 </div>
@@ -390,17 +149,17 @@
 
 <script>
     // ** Server-passed data **
-    const allMovieData = <%- JSON.stringify(movies) %>;
+    const allMovieData = {};
     window.__CINEVERSE_MOVIES__ = allMovieData;
-    const userMyList = <%- JSON.stringify(user && user.myList ? user.myList : []) %>;
-    const isAdmin = <%- JSON.stringify(!!(user && user.isAdmin)) %>;
+    const userMyList = [];
+    const isAdmin = false;
     window.__CINEVERSE_USER__ = {
-        id: <%- JSON.stringify(user ? (user._id ? user._id.toString() : null) : null) %>,
+        id: null,
         isAdmin
     };
-    const catalogSpotlights = <%- JSON.stringify(catalogSpotlights || []) %>;
-    const virtualRooms = <%- JSON.stringify(virtualRooms || []) %>;
-    const dbStatusPayload = <%- JSON.stringify(dbStatus || []) %>;
+    const catalogSpotlights = [];
+    const virtualRooms = [];
+    const dbStatusPayload = [];
     window.__CINEVERSE_FABRIC__ = { catalogSpotlights, virtualRooms, dbStatus: dbStatusPayload };
 
     const initialCarouselData = [
@@ -679,17 +438,6 @@
             } else {
                 const movies = Object.keys(allMovieData).filter(title => (allMovieData[title].genres || []).includes(filterGenre));
                 html += createCarouselHTML(`${filterGenre} Films`, movies);
-            }
-            if (!html) {
-                const allTitles = Object.keys(allMovieData);
-                if (allTitles.length) {
-                    const fallback = allTitles.sort((a, b) => {
-                        const movieA = allMovieData[a];
-                        const movieB = allMovieData[b];
-                        return (Number(movieB.rating) || 0) - (Number(movieA.rating) || 0);
-                    });
-                    html = createCarouselHTML('All titles', fallback);
-                }
             }
             if(cache.mainCarouselContainer) cache.mainCarouselContainer.innerHTML = html || `<div class="text-center text-gray-400 py-16"><h3 class="text-2xl font-bold">No films found in "${filterGenre}"</h3></div>`;
             setupCarouselObservers();

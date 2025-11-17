@@ -9,6 +9,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/app.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+    <script>
+        (function() {
+            function hideBootLoader() {
+                var loader = document.getElementById('loader');
+                if (loader) {
+                    loader.classList.add('hidden');
+                }
+            }
+            document.addEventListener('DOMContentLoaded', hideBootLoader);
+            window.addEventListener('load', hideBootLoader);
+            setTimeout(hideBootLoader, 2500);
+        })();
+    </script>
     <style>
         :root {
             --background-color: #0a0a0a;
@@ -121,26 +137,50 @@
     </style>
 </head>
 <body class="antialiased">
-    
-    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
-        <nav class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
-            <a href="/" class="text-3xl font-black text-white tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-indigo-500">CINEVERSE</a>
-            <div class="flex items-center space-x-4">
-                <button id="search-button" class="text-gray-300 hover:text-white transition"><i class="fas fa-search text-lg"></i></button>
+    <div class="cin-bg-grid"></div>
+    <div class="cin-glow one"></div>
+    <div class="cin-glow two"></div>
+    <div class="orbital">
+        <span style="top:15%;left:10%;animation-duration:18s"></span>
+        <span style="top:60%;left:30%;animation-duration:22s"></span>
+        <span style="top:30%;right:15%;animation-duration:26s"></span>
+        <span style="bottom:20%;left:45%;animation-duration:24s"></span>
+    </div>
+    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4">
+        <nav class="container mx-auto px-4 sm:px-6 flex items-center justify-between cin-nav">
+            <a href="/" class="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2">
+                <span class="pulse-dot"></span>
+                CINEVERSE
+            </a>
+            <div class="hidden md:flex items-center gap-6 text-sm uppercase tracking-wide text-white/70">
+                <a href="/" class="hover:text-white transition">Home</a>
+                <a href="/movies" class="hover:text-white transition">Browse</a>
+                <% if (typeof user != 'undefined' && user) { %>
+                    <a href="/movies/add" class="hover:text-white transition">Create</a>
+                <% } %>
+                <% if (typeof user != 'undefined' && user && user.isAdmin) { %>
+                    <a href="/dashboard" class="hover:text-white transition">Dashboard</a>
+                <% } %>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="search-button" class="w-11 h-11 flex items-center justify-center rounded-full border border-white/20 text-gray-200 hover:text-white hover:border-white/40 transition">
+                    <i class="fas fa-search text-lg"></i>
+                </button>
                 <div class="relative">
                     <% if (typeof user != 'undefined' && user) { %>
-                        <button id="profile-button" class="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold ring-2 ring-transparent hover:ring-sky-400 transition-all"><%= user.name.charAt(0).toUpperCase() %></button>
-                        <div id="profile-dropdown" class="profile-dropdown absolute top-12 right-0 w-48 bg-gray-800 rounded-lg shadow-2xl border border-gray-700 py-2">
+                        <button id="profile-button" class="w-10 h-10 bg-gradient-to-br from-sky-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold ring-2 ring-transparent hover:ring-sky-400 transition-all"><%= user.name.charAt(0).toUpperCase() %></button>
+                        <div id="profile-dropdown" class="profile-dropdown absolute top-12 right-0 w-52 floating-panel py-3">
+                            <p class="px-4 text-xs uppercase tracking-wide text-gray-400 mb-2">Control center</p>
                             <% if (user.isAdmin) { %>
-                                <a href="/movies/add" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"><i class="fas fa-plus-circle w-6"></i>Add Movie</a>
+                                <a href="/movies/add" class="flex items-center px-4 py-2 text-sm text-gray-200 hover:bg-white/5 transition"><i class="fas fa-plus-circle w-6"></i>Add Movie</a>
                             <% } %>
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"><i class="fas fa-user-circle w-6"></i>Account</a>
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"><i class="fas fa-cog w-6"></i>Settings</a>
-                            <hr class="border-gray-600 my-1">
-                            <a href="/users/logout" class="flex items-center px-4 py-2 text-sm text-red-400 hover:bg-red-500 hover:text-white"><i class="fas fa-sign-out-alt w-6"></i>Sign Out</a>
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-200 hover:bg-white/5 transition"><i class="fas fa-user-circle w-6"></i>Account</a>
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-200 hover:bg-white/5 transition"><i class="fas fa-cog w-6"></i>Settings</a>
+                            <div class="cin-divider"></div>
+                            <a href="/users/logout" class="flex items-center px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-white transition"><i class="fas fa-sign-out-alt w-6"></i>Sign Out</a>
                         </div>
                     <% } else { %>
-                         <a href="/users/login" class="text-gray-300 hover:text-white transition font-semibold">Sign In</a>
+                        <a href="/users/login" class="neon-button px-4 py-2 border border-white/20 text-sm font-semibold text-white hover:text-white">Sign in</a>
                     <% } %>
                 </div>
             </div>
@@ -148,7 +188,33 @@
     </header>
 
     <%- body %>
-
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/realtime-movies.js"></script>
+    <script src="/js/realtime-dashboard.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        if (window.gsap && window.ScrollTrigger) {
+          window.gsap.registerPlugin(window.ScrollTrigger);
+          window.gsap.utils.toArray('[data-animate]').forEach((el, index) => {
+            window.gsap.fromTo(
+              el,
+              { opacity: 0, y: 30 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.9,
+                delay: index * 0.04,
+                ease: 'power3.out',
+                scrollTrigger: {
+                  trigger: el,
+                  start: 'top 85%'
+                }
+              }
+            );
+          });
+        }
+      });
+    </script>
 </body>
 </html>
-
