@@ -68,6 +68,12 @@
             <input value="<%= typeof runtime !== 'undefined' ? runtime : '' %>" type="text" name="runtime" id="runtime" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="e.g., 2h 28m" required>
         </div>
 
+        <div>
+            <label for="trailerUrl" class="block text-sm font-medium text-gray-300 mb-2">Trailer URL (YouTube/embed/mp4)</label>
+            <input value="<%= typeof trailerUrl !== 'undefined' ? trailerUrl : '' %>" type="url" name="trailerUrl" id="trailerUrl" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="https://www.youtube.com/embed/...">
+            <p class="text-xs text-gray-500 mt-1">Paste a playable link (YouTube embed, Vimeo embed, or direct MP4). This powers the “Play trailer” button.</p>
+        </div>
+
         <div class="flex items-center gap-3">
             <button type="submit" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-6 rounded-lg transition text-lg transform hover:scale-105">
                 <%= editing ? 'Update Movie' : 'Add Movie' %>

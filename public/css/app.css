@@ -209,12 +209,33 @@ body {
 
 .movie-card {
   background: rgba(8, 13, 32, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.75rem;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   backdrop-filter: blur(12px);
+  position: relative;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+}
+
+.movie-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.movie-card:hover {
+  transform: translateY(-10px) scale(1.01);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.45);
+}
+
+.movie-card:hover::after {
+  opacity: 1;
 }
 
 .movie-card .poster-wrapper {
@@ -228,6 +249,73 @@ body {
   height: 340px;
   object-fit: cover;
   display: block;
+  transition: transform 0.6s ease;
+}
+
+.movie-card:hover .poster-wrapper img {
+  transform: scale(1.08);
+}
+
+.poster-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(5, 7, 18, 0) 0%, rgba(5, 7, 18, 0.85) 75%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.25rem;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.movie-card:hover .poster-overlay {
+  opacity: 1;
+}
+
+.poster-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.rating-pill,
+.runtime-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.rating-pill {
+  color: #fbbf24;
+}
+
+.runtime-pill {
+  color: #bae6fd;
+}
+
+.overlay-cta {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  padding: 0.6rem 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  align-items: center;
+  transition: background 0.3s ease;
+}
+
+.overlay-cta:hover {
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .movie-card-body {

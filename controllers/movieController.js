@@ -22,7 +22,8 @@ function mapMovies(movieRows = []) {
     director: m.director,
     cast: m.cast || [],
     rating: Number(m.rating || 0),
-    runtime: m.runtime
+    runtime: m.runtime,
+    trailerUrl: m.trailerUrl || ''
   }));
 }
 

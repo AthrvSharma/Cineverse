@@ -337,6 +337,17 @@
                 <div class="flex flex-col lg:flex-row gap-8 mt-8">
                     <div class="lg:w-2/3">
                         <p id="modal-description" class="text-text-secondary text-base md:text-lg leading-relaxed mb-6"></p>
+                        <div class="space-y-3 mb-6">
+                            <button id="modal-play-button" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition" type="button">
+                                <i class="fas fa-play"></i> <span>Play trailer</span>
+                            </button>
+                            <div id="modal-trailer-wrapper" class="hidden">
+                                <div class="rounded-xl overflow-hidden border border-white/20 aspect-video bg-black">
+                                    <iframe id="modal-trailer-frame" class="w-full h-full" src="" title="Trailer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                </div>
+                                <button id="modal-close-trailer" class="mt-3 text-sm text-gray-400 hover:text-white" type="button">Close trailer</button>
+                            </div>
+                        </div>
                         <div class="space-y-3 border-t border-gray-800 pt-6">
                             <p class="text-text-secondary"><span class="font-semibold text-text-primary">Director:</span> <span id="modal-director"></span></p>
                             <p class="text-text-secondary"><span class="font-semibold text-text-primary">Starring:</span> <span id="modal-cast"></span></p>
@@ -433,6 +444,10 @@
             searchOverlay: document.getElementById('search-overlay'),
             mainCarouselContainer: document.getElementById('carousel-container-main'),
             genreFilterBar: document.getElementById('genre-filter-bar'),
+            trailerWrapper: document.getElementById('modal-trailer-wrapper'),
+            trailerFrame: document.getElementById('modal-trailer-frame'),
+            trailerPlayButton: document.getElementById('modal-play-button'),
+            trailerCloseButton: document.getElementById('modal-close-trailer')
         };
         const statsRefs = {
             totalMovies: document.getElementById('stat-total-movies'),
@@ -452,6 +467,31 @@
             heroFeaturedTitle: document.getElementById('hero-featured-title'),
             heroFeaturedMeta: document.getElementById('hero-featured-meta')
         };
+
+        function normalizeTrailerUrl(url = '') {
+            if (!url) return '';
+            const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([A-Za-z0-9_-]{6,})/i);
+            if (ytMatch) {
+                return `https://www.youtube.com/embed/${ytMatch[1]}`;
+            }
+            return url;
+        }
+
+        function hideModalTrailer() {
+            if (cache.trailerWrapper) cache.trailerWrapper.classList.add('hidden');
+            if (cache.trailerFrame) cache.trailerFrame.src = '';
+        }
+
+        function enableModalTrailer(rawUrl) {
+            if (!cache.trailerPlayButton) return;
+            if (!rawUrl) {
+                cache.trailerPlayButton.classList.add('hidden');
+                hideModalTrailer();
+                return;
+            }
+            cache.trailerPlayButton.dataset.trailer = rawUrl;
+            cache.trailerPlayButton.classList.remove('hidden');
+        }
 
         function populateCurationStats() {
             const movieArray = Object.values(allMovieData);
@@ -674,8 +714,14 @@
                         if (cat.director) return movie.director === cat.director;
                         return false;
                     });
-                    html += createCarouselHTML(cat.title, movies);
+                    if (movies.length) {
+                      html += createCarouselHTML(cat.title, movies);
+                    }
                 });
+                const allTitles = Object.keys(allMovieData);
+                if (allTitles.length) {
+                    html += createCarouselHTML('All titles', allTitles);
+                }
             } else {
                 const movies = Object.keys(allMovieData).filter(title => (allMovieData[title].genres || []).includes(filterGenre));
                 html += createCarouselHTML(`${filterGenre} Films`, movies);
@@ -827,6 +873,7 @@
             document.getElementById('modal-director').textContent = movie.director || 'Unknown';
             document.getElementById('modal-cast').textContent = (movie.cast || []).join(', ');
             document.getElementById('modal-genres').innerHTML = (movie.genres || []).map(g => `<span class="bg-gray-700/50 text-text-secondary text-xs font-semibold px-2.5 py-1 rounded backdrop-blur-sm">${g}</span>`).join('');
+            enableModalTrailer(movie.trailerUrl || movie.trailer || '');
             
             const listButton = document.getElementById('modal-my-list-button');
             if(listButton) {
@@ -871,6 +918,7 @@
                 cache.modal.classList.remove('active');
                 document.body.style.overflow = '';
             }
+            hideModalTrailer();
         };
         
         function handleSearch() {
@@ -1018,6 +1066,16 @@
                     document.getElementById('genre-filter-bar-wrapper')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 });
             }
+
+            cache.trailerPlayButton?.addEventListener('click', () => {
+                const src = cache.trailerPlayButton.dataset.trailer;
+                const embed = normalizeTrailerUrl(src);
+                if (!embed || !cache.trailerFrame || !cache.trailerWrapper) return;
+                const autoplayUrl = embed.includes('?') ? `${embed}&autoplay=1` : `${embed}?autoplay=1`;
+                cache.trailerFrame.src = autoplayUrl;
+                cache.trailerWrapper.classList.remove('hidden');
+            });
+            cache.trailerCloseButton?.addEventListener('click', hideModalTrailer);
 
              window.addEventListener('scroll', () => {
                 const header = document.getElementById('main-header');

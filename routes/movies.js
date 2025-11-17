@@ -29,7 +29,7 @@ router.post('/add', ensureAuthenticated, ensureAdmin, async (req, res) => {
   try {
     const {
       title, poster, backdrop, genres,
-      description, year, director, cast, rating, runtime
+      description, year, director, cast, rating, runtime, trailerUrl
     } = req.body;
 
     const errors = [];
@@ -39,12 +39,13 @@ router.post('/add', ensureAuthenticated, ensureAdmin, async (req, res) => {
     }
     if (!isUrl(poster))   errors.push({ msg: 'Poster must be a valid URL (http/https).' });
     if (!isUrl(backdrop)) errors.push({ msg: 'Backdrop must be a valid URL (http/https).' });
+    if (trailerUrl && !isUrl(trailerUrl)) errors.push({ msg: 'Trailer must be a valid URL (YouTube embed, Vimeo embed, or MP4).' });
 
     if (errors.length) {
       return res.render('add-movie', {
         editing: false,
         errors,
-        title, poster, backdrop, genres, description, year, director, cast, rating, runtime
+        title, poster, backdrop, genres, description, year, director, cast, rating, runtime, trailerUrl
       });
     }
 
@@ -58,7 +59,8 @@ router.post('/add', ensureAuthenticated, ensureAdmin, async (req, res) => {
       director: director.trim(),
       cast: cast.split(',').map(s => s.trim()).filter(Boolean),
       rating: Number(rating),
-      runtime: runtime.trim()
+      runtime: runtime.trim(),
+      trailerUrl: (trailerUrl || '').trim()
     };
 
     await movieController.createMovie(moviePayload);
@@ -94,10 +96,11 @@ router.get('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
       return res.redirect('/');
     }
 
+    const normalizedId = m._id || m.id;
     res.render('add-movie', {
       editing: true,
       errors: [],
-      _id: m._id.toString(),
+      _id: normalizedId ? normalizedId.toString() : '',
       title: m.title,
       poster: m.poster,
       backdrop: m.backdrop,
@@ -107,7 +110,8 @@ router.get('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
       director: m.director,
       cast: (m.cast || []).join(', '),
       rating: m.rating,
-      runtime: m.runtime
+      runtime: m.runtime,
+      trailerUrl: m.trailerUrl || ''
     });
   } catch (err) {
     console.error('Load edit form error:', err);
@@ -127,7 +131,7 @@ router.post('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
 
     const {
       title, poster, backdrop, genres,
-      description, year, director, cast, rating, runtime
+      description, year, director, cast, rating, runtime, trailerUrl
     } = req.body;
 
     const numericId = Number(id);
@@ -141,11 +145,16 @@ router.post('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
       director: (director || '').trim(),
       cast: (cast || '').split(',').map(s => s.trim()).filter(Boolean),
       rating: Number(rating),
-      runtime: (runtime || '').trim()
+      runtime: (runtime || '').trim(),
+      trailerUrl: (trailerUrl || '').trim()
     };
 
     if (!isUrl(update.poster) || !isUrl(update.backdrop)) {
       req.flash('error_msg', 'Poster/Backdrop must be valid URLs.');
+      return res.redirect(`/movies/edit/${id}`);
+    }
+    if (update.trailerUrl && !isUrl(update.trailerUrl)) {
+      req.flash('error_msg', 'Trailer must be a valid URL (YouTube embed, Vimeo embed, or MP4).');
       return res.redirect(`/movies/edit/${id}`);
     }
 

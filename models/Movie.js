@@ -13,6 +13,7 @@ const MOVIE_COLUMNS = [
   'cast_members AS cast',
   'rating',
   'runtime',
+  'trailer_url AS "trailerUrl"',
   'created_at'
 ].join(', ');
 
@@ -26,8 +27,10 @@ function assertPool() {
 
 function mapRow(row) {
   if (!row) return null;
+  const mappedId = row.id !== undefined && row.id !== null ? String(row.id) : null;
   return {
-    id: row.id,
+    _id: mappedId,
+    id: mappedId,
     title: row.title,
     poster: row.poster,
     backdrop: row.backdrop,
@@ -38,6 +41,7 @@ function mapRow(row) {
     cast: row.cast || [],
     rating: row.rating !== null && row.rating !== undefined ? Number(row.rating) : null,
     runtime: row.runtime,
+    trailerUrl: row.trailerUrl || '',
     createdAt: row.created_at
   };
 }
@@ -75,6 +79,7 @@ async function ensureMovieStore() {
       year INT NOT NULL,
       director TEXT NOT NULL,
       cast_members JSONB NOT NULL,
+      trailer_url TEXT DEFAULT '',
       rating NUMERIC(3,1) NOT NULL,
       runtime TEXT NOT NULL,
       created_at TIMESTAMPTZ DEFAULT NOW()
@@ -88,6 +93,9 @@ async function ensureMovieStore() {
   );
   await pool.query(
     `CREATE INDEX IF NOT EXISTS idx_${MOVIE_TABLE}_director ON ${MOVIE_TABLE} (director);`
+  );
+  await pool.query(
+    `ALTER TABLE ${MOVIE_TABLE} ADD COLUMN IF NOT EXISTS trailer_url TEXT DEFAULT '';`
   );
   return { status: 'ready', table: MOVIE_TABLE };
 }
@@ -125,8 +133,8 @@ async function createMovie(movie) {
   const { rows } = await pool.query(
     `
       INSERT INTO ${MOVIE_TABLE}
-      (title, poster, backdrop, genres, description, year, director, cast_members, rating, runtime)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+      (title, poster, backdrop, genres, description, year, director, cast_members, rating, runtime, trailer_url)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
       RETURNING ${MOVIE_COLUMNS}
     `,
     [
@@ -139,7 +147,8 @@ async function createMovie(movie) {
       movie.director,
       toJsonParam(movie.cast),
       movie.rating,
-      movie.runtime
+      movie.runtime,
+      movie.trailerUrl || ''
     ]
   );
   return mapRow(rows[0]);
@@ -160,8 +169,9 @@ async function updateMovie(id, payload) {
           director = $7,
           cast_members = $8,
           rating = $9,
-          runtime = $10
-      WHERE id = $11
+          runtime = $10,
+          trailer_url = $11
+      WHERE id = $12
       RETURNING ${MOVIE_COLUMNS}
     `,
     [
@@ -175,6 +185,7 @@ async function updateMovie(id, payload) {
       toJsonParam(payload.cast),
       payload.rating,
       payload.runtime,
+      payload.trailerUrl || '',
       id
     ]
   );

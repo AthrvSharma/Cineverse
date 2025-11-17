@@ -35,12 +35,62 @@
     </section>
 </main>
 
+<div id="user-detail-modal" class="animated-overlay fixed inset-0 z-[60] bg-black/80 hidden">
+    <div class="user-detail-card bg-gray-900/90 border border-white/10 rounded-3xl max-w-5xl w-full mx-auto my-8 p-6 md:p-10 backdrop-blur-xl relative">
+        <button id="user-detail-close" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="grid gap-6 md:grid-cols-2">
+            <div>
+                <div class="rounded-2xl overflow-hidden border border-white/10 mb-4">
+                    <img id="user-detail-poster" src="" alt="Poster" class="w-full h-auto" onerror="this.onerror=null;this.src='https://placehold.co/500x750/0a0a0a/f8fafc?text=Poster+missing';">
+                </div>
+                <button id="user-detail-list" class="w-full border border-white/30 text-white py-3 rounded-full font-semibold flex items-center justify-center gap-2">
+                    <i class="fas fa-plus"></i> <span>My List</span>
+                </button>
+            </div>
+            <div>
+                <p class="text-xs uppercase tracking-[0.3em] text-gray-400 mb-2">Movie detail</p>
+                <h3 id="user-detail-title" class="text-3xl font-black text-white"></h3>
+                <p id="user-detail-meta" class="text-gray-400 mt-2"></p>
+                <p id="user-detail-description" class="text-gray-300 mt-4"></p>
+                <div id="user-detail-genres" class="flex flex-wrap gap-2 mt-4"></div>
+                <div class="space-y-3 mt-6">
+                    <button id="user-detail-play" class="w-full bg-sky-500 hover:bg-sky-400 text-white font-semibold py-3 rounded-full flex items-center justify-center gap-2">
+                        <i class="fas fa-play"></i> Play trailer
+                    </button>
+                    <div id="user-detail-trailer-wrapper" class="hidden">
+                        <div class="rounded-xl overflow-hidden border border-white/20 aspect-video bg-black">
+                            <iframe id="user-detail-trailer-frame" class="w-full h-full" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen title="Trailer"></iframe>
+                        </div>
+                        <button id="user-detail-trailer-close" class="mt-2 text-sm text-gray-400 hover:text-white">Close trailer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     const allMovieData = <%- JSON.stringify(movies || {}) %>;
     const userMyList = <%- JSON.stringify(user && user.myList ? user.myList : []) %>;
     const userId = <%- JSON.stringify(user ? user._id : null) %>;
 
     let myList = userMyList || [];
+    const userModalRefs = {
+        modal: document.getElementById('user-detail-modal'),
+        closeButton: document.getElementById('user-detail-close'),
+        poster: document.getElementById('user-detail-poster'),
+        title: document.getElementById('user-detail-title'),
+        meta: document.getElementById('user-detail-meta'),
+        description: document.getElementById('user-detail-description'),
+        genres: document.getElementById('user-detail-genres'),
+        listButton: document.getElementById('user-detail-list'),
+        playButton: document.getElementById('user-detail-play'),
+        trailerWrapper: document.getElementById('user-detail-trailer-wrapper'),
+        trailerFrame: document.getElementById('user-detail-trailer-frame'),
+        trailerClose: document.getElementById('user-detail-trailer-close')
+    };
 
     const loaderEl = document.getElementById('loader');
     function hideLoader() {
@@ -50,17 +100,28 @@
     window.addEventListener('load', hideLoader);
     setTimeout(hideLoader, 2500);
 
+    function normalizeTrailerUrl(url = '') {
+        if (!url) return '';
+        const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([A-Za-z0-9_-]{6,})/i);
+        if (ytMatch) {
+            return `https://www.youtube.com/embed/${ytMatch[1]}`;
+        }
+        return url;
+    }
+
     function updateHero(movie) {
         const titleEl = document.getElementById('user-hero-title');
         const metaEl = document.getElementById('user-hero-meta');
         const backdropEl = document.getElementById('user-hero-backdrop');
         const myListBtn = document.getElementById('user-hero-mylist');
+        const watchBtn = document.getElementById('user-hero-watch');
 
         if (!movie) {
             titleEl.textContent = 'Awaiting new release';
             metaEl.textContent = 'Once an admin adds content, it will appear here.';
             backdropEl.src = 'https://placehold.co/1600x900/0a0a0a/f8fafc?text=Add+Movies';
             myListBtn.disabled = true;
+            if (watchBtn) watchBtn.disabled = true;
             return;
         }
 
@@ -73,6 +134,10 @@
         };
         myListBtn.dataset.title = movie.title;
         myListBtn.disabled = false;
+        if (watchBtn) {
+            watchBtn.dataset.title = movie.title;
+            watchBtn.disabled = false;
+        }
         renderMyListState(myListBtn, movie.title);
     }
 
@@ -83,6 +148,48 @@
         button.innerHTML = inList
             ? '<i class="fas fa-check"></i> Added'
             : '<i class="fas fa-plus"></i> My List';
+    }
+
+    function hideUserTrailer() {
+        if (userModalRefs.trailerWrapper) userModalRefs.trailerWrapper.classList.add('hidden');
+        if (userModalRefs.trailerFrame) userModalRefs.trailerFrame.src = '';
+    }
+
+    function closeUserModal() {
+        if (userModalRefs.modal) {
+            userModalRefs.modal.classList.remove('active');
+            userModalRefs.modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        hideUserTrailer();
+    }
+
+    function openUserModal(title) {
+        const movie = allMovieData[title];
+        if (!movie || !userModalRefs.modal) return;
+        userModalRefs.poster.src = movie.poster || 'https://placehold.co/500x750/0a0a0a/f8fafc?text=Poster+missing';
+        userModalRefs.poster.onerror = function() {
+            this.onerror = null;
+            this.src = 'https://placehold.co/500x750/0a0a0a/f8fafc?text=Poster+missing';
+        };
+        userModalRefs.title.textContent = movie.title;
+        userModalRefs.meta.textContent = `${movie.year || 'Year TBD'} • ${movie.runtime || 'Runtime TBD'} • ${(movie.genres || []).slice(0, 3).join(', ') || 'Genre pending'}`;
+        userModalRefs.description.textContent = movie.description || 'No description provided.';
+        userModalRefs.genres.innerHTML = (movie.genres || []).map(g => `<span class="px-3 py-1 rounded-full bg-white/10 text-sm">${g}</span>`).join('');
+        if (userModalRefs.listButton) {
+            userModalRefs.listButton.dataset.listBtn = movie.title;
+            renderMyListState(userModalRefs.listButton, movie.title);
+        }
+        if (userModalRefs.playButton) {
+            const hasTrailer = Boolean(movie.trailerUrl || movie.trailer);
+            userModalRefs.playButton.dataset.trailer = hasTrailer ? (movie.trailerUrl || movie.trailer) : '';
+            userModalRefs.playButton.disabled = !hasTrailer;
+            userModalRefs.playButton.classList.toggle('opacity-50', !hasTrailer);
+        }
+        hideUserTrailer();
+        userModalRefs.modal.classList.remove('hidden');
+        userModalRefs.modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
 
     function renderMovies(filter = '') {
@@ -106,15 +213,24 @@
         }
         emptyState.classList.add('hidden');
         grid.innerHTML = filtered.map(movie => `
-            <article class="movie-card">
-                <div class="poster-wrapper movie-modal-trigger" data-title="${movie.title}">
+            <article class="movie-card" data-movie-card="${movie.title}">
+                <div class="poster-wrapper movie-modal-trigger" data-movie-card="${movie.title}">
                     <img src="${movie.poster}" alt="${movie.title}" onerror="this.onerror=null;this.src='https://placehold.co/500x750/0a0a0a/f8fafc?text=Poster+missing';">
+                    <div class="poster-overlay">
+                        <div class="poster-meta">
+                            <span class="rating-pill"><i class="fas fa-star"></i> ${movie.rating || 'N/A'}</span>
+                            <span class="runtime-pill">${movie.runtime || 'N/A'}</span>
+                        </div>
+                        <button class="overlay-cta" data-movie-card="${movie.title}">
+                            <i class="fas fa-info-circle"></i> Details
+                        </button>
+                    </div>
                 </div>
-                <div class="movie-card-body">
-                    <h3 class="font-semibold text-white">${movie.title}</h3>
-                    <p class="text-sm text-gray-400">${movie.year || 'Year TBD'} • ${(movie.genres || []).slice(0, 2).join(', ')}</p>
+                <div class="movie-card-body" data-movie-card="${movie.title}">
+                    <h3 class="font-semibold text-white line-clamp-1">${movie.title}</h3>
+                    <p class="text-sm text-gray-400 line-clamp-2">${movie.year || 'Year TBD'} • ${(movie.genres || []).slice(0, 2).join(', ') || 'Genre pending'}</p>
                     <div class="flex items-center justify-between mt-3">
-                        <button class="mini-play movie-modal-trigger" data-title="${movie.title}">
+                        <button class="mini-play movie-modal-trigger" data-movie-card="${movie.title}">
                             <i class="fas fa-play"></i>
                         </button>
                         <button class="mini-list" data-list-btn="${movie.title}"></button>
@@ -169,10 +285,40 @@
             const listBtn = e.target.closest('[data-list-btn]');
             if (listBtn) {
                 toggleMyList(listBtn.dataset.listBtn);
+                return;
             }
             const heroMyList = e.target.closest('#user-hero-mylist');
             if (heroMyList && heroMyList.dataset.title) {
                 toggleMyList(heroMyList.dataset.title);
+                return;
+            }
+            const modalTrigger = e.target.closest('[data-movie-card]');
+            if (modalTrigger) {
+                e.preventDefault();
+                openUserModal(modalTrigger.dataset.movieCard || modalTrigger.dataset.title);
+            }
+            const heroWatch = e.target.closest('#user-hero-watch');
+            if (heroWatch && heroWatch.dataset.title) {
+                openUserModal(heroWatch.dataset.title);
+            }
+        });
+
+        userModalRefs.closeButton?.addEventListener('click', closeUserModal);
+        userModalRefs.modal?.addEventListener('click', e => {
+            if (!e.target.closest('.user-detail-card')) closeUserModal();
+        });
+        userModalRefs.playButton?.addEventListener('click', () => {
+            const src = userModalRefs.playButton.dataset.trailer;
+            const embed = normalizeTrailerUrl(src);
+            if (!embed || !userModalRefs.trailerFrame || !userModalRefs.trailerWrapper) return;
+            const autoplayUrl = embed.includes('?') ? `${embed}&autoplay=1` : `${embed}?autoplay=1`;
+            userModalRefs.trailerFrame.src = autoplayUrl;
+            userModalRefs.trailerWrapper.classList.remove('hidden');
+        });
+        userModalRefs.trailerClose?.addEventListener('click', hideUserTrailer);
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                closeUserModal();
             }
         });
     });
