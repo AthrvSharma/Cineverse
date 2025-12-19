@@ -20,6 +20,18 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    subscriptionPlan: {
+        type: String,
+        enum: ['free', 'plus', 'pro'],
+        default: undefined
+    },
+    subscriptionPlatforms: {
+        type: [String],
+        default: []
+    },
+    subscribedAt: {
+        type: Date
+    },
     // **NEW FEATURE: User-specific movie list**
     myList: {
         type: [String],
@@ -34,4 +46,3 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.model('User', UserSchema);
 
 module.exports = User;
-

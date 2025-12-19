@@ -1,0 +1,244 @@
+<div class="subscription-wrapper">
+  <header class="subscription-hero" data-animate>
+    <p class="label">Choose your plan</p>
+    <h1>Unlock premium universes</h1>
+    <p class="helper-text">
+      Pick a streaming bundle to continue. Plans can be switched anytime and sync instantly across the dashboard.
+    </p>
+    <% const currentPlanInfo = plans.find(plan => plan.id === currentPlan); %>
+    <% if (canManagePlan && currentPlanInfo) { %>
+      <div class="plan-chip">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        <span>You're enjoying <strong><%= currentPlanInfo.name %></strong>. Swap or upgrade whenever you like.</span>
+      </div>
+    <% } %>
+  </header>
+
+  <div class="checkout-flow">
+    <div class="stepper">
+      <span class="stepper__dot is-active" data-step-dot="1">1</span>
+      <span class="stepper__line"></span>
+      <span class="stepper__dot" data-step-dot="2">2</span>
+      <span class="stepper__line"></span>
+      <span class="stepper__dot" data-step-dot="3">3</span>
+      <span class="stepper__line"></span>
+      <span class="stepper__dot" data-step-dot="4">4</span>
+    </div>
+
+    <form method="POST" action="/subscribe" class="plan-grid" data-subscribe-form>
+      <section class="checkout-step is-active" data-step="1">
+        <p class="label">Step 1</p>
+        <h3>Select your plan</h3>
+        <% plans.forEach((plan, index) => { %>
+          <label class="plan-card <%= currentPlan === plan.id ? 'plan-card--current' : '' %>" data-animate style="--stagger: <%= index %>">
+            <input type="radio" name="plan" value="<%= plan.id %>" data-plan-amount="<%= plan.priceAmount || 0 %>" data-plan-label="<%= plan.priceLabel %>" <%= currentPlan === plan.id ? 'checked' : '' %> <%= !currentPlan && plan.id === plans[0].id ? 'required' : '' %> hidden>
+            <div class="plan-card__header">
+              <h2><%= plan.name %></h2>
+              <span class="plan-price"><%= plan.priceLabel %></span>
+            </div>
+            <p class="plan-tagline"><%= plan.tagline %></p>
+            <p class="plan-description"><%= plan.description %></p>
+            <ul class="plan-features">
+              <% plan.features.forEach(feature => { %>
+                <li><i class="fa-solid fa-check"></i> <%= feature %></li>
+              <% }) %>
+            </ul>
+            <div class="plan-platforms">
+              <% plan.platforms.forEach(platform => { %>
+                <span><%= platform %></span>
+              <% }) %>
+            </div>
+            <div class="plan-select-btn"><%= currentPlan === plan.id ? 'Current plan' : 'Select plan' %></div>
+          </label>
+        <% }) %>
+      </section>
+
+      <section class="checkout-step" data-step="2">
+        <p class="label">Step 2</p>
+        <h3>Billing details</h3>
+        <div class="payment-shell">
+          <div class="payment-summary">
+            <p class="helper-text">These details appear on your invoice.</p>
+            <div class="form-field">
+              <label for="billName">Full name</label>
+              <input class="input-text" id="billName" name="billingName" placeholder="Jamie Rivera" required>
+            </div>
+            <div class="form-field">
+              <label for="billAddress">Address</label>
+              <input class="input-text" id="billAddress" name="billingAddress" placeholder="221B Baker Street" required>
+            </div>
+            <div class="payment-inline">
+              <div class="form-field">
+                <label for="billCity">City</label>
+                <input class="input-text" id="billCity" name="billingCity" placeholder="Mumbai" required>
+              </div>
+              <div class="form-field">
+                <label for="billPin">PIN</label>
+                <input class="input-text" id="billPin" name="billingPin" placeholder="400001" inputmode="numeric" pattern="[0-9]*" required>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="checkout-step" data-step="3">
+        <p class="label">Step 3</p>
+        <h3>Scan & pay via UPI</h3>
+        <div class="payment-shell" data-payment-shell>
+          <div class="payment-summary">
+            <p class="label">Checkout summary</p>
+            <h3 data-summary-plan>Plus</h3>
+            <p class="helper-text">Plan unlocks update instantly after UPI confirmation.</p>
+            <div class="payment-amount">
+              <span>Total due</span>
+              <strong data-summary-amount>₹0</strong>
+            </div>
+            <div class="payment-breakdown">
+              <span>Includes all taxes and fees in INR.</span>
+            </div>
+            <div class="payment-status">
+              <span class="status-dot"></span>
+              <span>UPI real-time collection</span>
+            </div>
+          </div>
+          <div class="payment-qr">
+            <div class="payment-qr__header">
+              <p class="label">Pay via UPI</p>
+              <span><i class="fa-solid fa-mobile-screen"></i> Scan with any UPI app</span>
+            </div>
+            <img src="" alt="UPI QR code" data-upi-qr>
+            <p class="helper-text">
+              UPI ID: <strong data-upi-id data-upi-handle><%= upiHandle %></strong>
+            </p>
+            <button class="btn btn-secondary" type="button" data-copy-upi><i class="fa-solid fa-copy"></i> Copy UPI ID</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="checkout-step" data-step="4">
+        <p class="label">Step 4</p>
+        <h3>Payment confirmation</h3>
+        <div class="payment-shell">
+          <div class="payment-summary">
+            <p class="helper-text">After you scan and pay, click activate to finalize.</p>
+            <div class="payment-amount">
+              <span>Selected plan</span>
+              <strong data-summary-plan-2>Plus</strong>
+            </div>
+            <div class="payment-amount">
+              <span>Amount</span>
+              <strong data-summary-amount-2>₹0</strong>
+            </div>
+            <p class="helper-text">We’ll redirect you home and confirm your new status.</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="plan-actions">
+        <button class="btn btn-secondary" type="button" data-step-prev>Back</button>
+        <button class="btn btn-primary plan-submit" type="button" data-step-next>Next</button>
+        <button class="btn btn-primary plan-submit" type="submit" data-step-submit style="display:none;">Complete & activate</button>
+        <a class="btn btn-secondary" href="/users/logout">Sign out</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const form = document.querySelector('[data-subscribe-form]');
+    if (!form) return;
+    const planInputs = form.querySelectorAll('input[name="plan"]');
+    const summaryPlan = form.querySelector('[data-summary-plan]');
+    const summaryPlan2 = form.querySelector('[data-summary-plan-2]');
+    const summaryAmount = form.querySelector('[data-summary-amount]');
+    const summaryAmount2 = form.querySelector('[data-summary-amount-2]');
+    const upiQr = form.querySelector('[data-upi-qr]');
+    const upiIdEl = form.querySelector('[data-upi-id]');
+    const copyBtn = form.querySelector('[data-copy-upi]');
+    const upiId = upiIdEl ? upiIdEl.textContent.trim() : 'sharmaathrv389@oksbi';
+    const steps = Array.from(form.querySelectorAll('[data-step]'));
+    const dots = document.querySelectorAll('[data-step-dot]');
+    const nextBtn = form.querySelector('[data-step-next]');
+    const prevBtn = form.querySelector('[data-step-prev]');
+    const submitBtn = form.querySelector('[data-step-submit]');
+
+    function buildQr(amount, planName) {
+      const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent('Cineverse')}&am=${amount}&cu=INR&tn=${encodeURIComponent(planName)}`;
+      const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiUrl)}`;
+      if (upiQr) upiQr.src = qrSrc;
+    }
+
+    function updateSummary(input) {
+      const planName = input.closest('.plan-card')?.querySelector('h2')?.textContent || 'Plan';
+      const amount = Number(input.dataset.planAmount || 0);
+      if (summaryPlan) summaryPlan.textContent = planName;
+      if (summaryPlan2) summaryPlan2.textContent = planName;
+      if (summaryAmount) summaryAmount.textContent = `₹${amount.toLocaleString('en-IN')}`;
+      if (summaryAmount2) summaryAmount2.textContent = `₹${amount.toLocaleString('en-IN')}`;
+      buildQr(amount, planName);
+    }
+
+    planInputs.forEach(input => {
+      if (input.checked) updateSummary(input);
+      input.addEventListener('change', () => {
+        if (input.checked) updateSummary(input);
+      });
+    });
+
+    copyBtn?.addEventListener('click', () => {
+      if (!upiId) return;
+      navigator.clipboard?.writeText(upiId);
+      copyBtn.textContent = 'Copied';
+      setTimeout(() => (copyBtn.textContent = 'Copy UPI ID'), 1200);
+    });
+
+    function setStep(step) {
+      steps.forEach(section => {
+        section.classList.toggle('is-active', section.dataset.step === String(step));
+      });
+      dots.forEach(dot => {
+        const dotNum = Number(dot.dataset.stepDot);
+        dot.classList.toggle('is-active', dotNum === step);
+        dot.classList.toggle('is-complete', dotNum < step);
+      });
+      prevBtn.style.display = step === 1 ? 'none' : 'inline-flex';
+      nextBtn.style.display = step < 4 ? 'inline-flex' : 'none';
+      submitBtn.style.display = step === 4 ? 'inline-flex' : 'none';
+    }
+
+    function validateStep(step) {
+      if (step === 1) {
+        const checked = form.querySelector('input[name="plan"]:checked');
+        return Boolean(checked);
+      }
+      if (step === 2) {
+        const requiredFields = ['billingName', 'billingAddress', 'billingCity', 'billingPin'];
+        return requiredFields.every(name => {
+          const field = form.querySelector(`[name="${name}"]`);
+          return field && field.value.trim().length >= 3;
+        });
+      }
+      return true;
+    }
+
+    let currentStep = 1;
+    setStep(currentStep);
+
+    nextBtn?.addEventListener('click', () => {
+      if (!validateStep(currentStep)) return;
+      currentStep = Math.min(4, currentStep + 1);
+      setStep(currentStep);
+    });
+
+    prevBtn?.addEventListener('click', () => {
+      currentStep = Math.max(1, currentStep - 1);
+      setStep(currentStep);
+    });
+
+    form.addEventListener('submit', () => {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Activating...';
+    });
+  })();
+</script>

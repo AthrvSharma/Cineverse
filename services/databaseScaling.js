@@ -2,8 +2,8 @@ const { ensureMovieStore } = require('../models/Movie');
 
 async function ensureMovieIndexes() {
   try {
-    const postgres = await ensureMovieStore();
-    return { status: 'applied', postgres };
+    const mongo = await ensureMovieStore();
+    return { status: 'applied', mongo };
   } catch (error) {
     return { status: 'error', error: error.message };
   }
@@ -13,9 +13,9 @@ function getShardingGuidance() {
   return {
     status: 'documented',
     steps: [
-      'Partition the PostgreSQL movie catalog by release decade for fast range scans.',
-      'Keep MongoDB Atlas login data on its own cluster with per-tenant shard keys.',
-      'Leverage Redis pub/sub for low-latency fan-out while Postgres handles canonical film data.'
+      'Keep the MongoDB Atlas movie catalog in a single cluster with predictable shard keys (e.g., platform or release decade) once scale requires it.',
+      'Co-locate users and movies in the same Atlas project to reduce cross-region latency.',
+      'Use Redis pub/sub strictly for fan-out while MongoDB holds the canonical catalog.'
     ]
   };
 }
@@ -24,9 +24,9 @@ function getReplicationGuidance() {
   return {
     status: 'documented',
     steps: [
-      'Promote MongoDB Atlas multi-region replicas for login resilience.',
-      'Enable PostgreSQL streaming replication with hot standbys for the movie catalog.',
-      'Create Redis replica for read scaling and Sentinel for failover.'
+      'Enable MongoDB Atlas multi-region replicas for both users and movies to keep logins and catalog reads resilient.',
+      'Promote Redis replicas for read scaling and configure Sentinel-style failover.',
+      'Regularly run `atlas deployments watch` or monitoring dashboards to validate replication health.'
     ]
   };
 }

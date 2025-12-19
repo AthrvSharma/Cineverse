@@ -1,84 +1,235 @@
-<div class="container mx-auto max-w-2xl py-24 px-4">
-    <h1 class="text-4xl font-bold text-white mb-8">
-        <%= editing ? 'Edit Movie' : 'Add a New Movie' %>
-    </h1>
+<div class="content content--form">
+  <aside class="sidebar side-rail">
+    <a class="side-icon" href="/" title="Back to home">
+      <i class="fa-solid fa-house"></i>
+    </a>
+    <a class="side-icon active" href="/movies/add" title="Add movie">
+      <i class="fa-solid fa-plus"></i>
+    </a>
+    <a class="side-icon" href="/admin/films" title="Analytics">
+      <i class="fa-solid fa-chart-line"></i>
+    </a>
+    <a class="side-icon" href="/platform/netflix" title="Netflix">
+      <i class="fa-solid fa-ticket"></i>
+    </a>
+    <a class="side-icon" href="/platform/disney%2B" title="Disney+">
+      <i class="fa-regular fa-heart"></i>
+    </a>
+  </aside>
 
-    <% if (typeof errors != 'undefined' && errors.length > 0) { %>
-        <div class="bg-red-500/20 border border-red-500 text-red-300 px-4 py-3 rounded-lg relative mb-6" role="alert">
-            <strong class="font-bold">Error!</strong>
-            <ul class="mt-2 list-disc pl-5">
-                <% errors.forEach(function(error) { %>
+  <section class="form-shell">
+    <div class="form-layout-grid">
+      <div class="card form-editor" data-animate>
+        <p class="hero__badge"><%= editing ? 'Edit film' : 'New film' %></p>
+        <h1 class="section-title" style="font-size: 2rem; margin-top: 0.5rem;">
+          <%= editing ? 'Update movie' : 'Add a new movie' %>
+        </h1>
+        <p class="section-description">
+          Keep the metadata clean and fully populate the form so the catalog can render beautifully.
+        </p>
+
+        <% if (typeof errors != 'undefined' && errors.length > 0) { %>
+          <div class="flash-message">
+            <strong>There were a few issues:</strong>
+            <ul>
+              <% errors.forEach(function(error) { %>
                 <li><%= error.msg %></li>
-                <% }); %>
+              <% }); %>
             </ul>
-        </div>
-    <% } %>
+          </div>
+        <% } %>
 
-    <form action="<%= editing ? ('/movies/edit/' + _id) : '/movies/add' %>" method="POST" class="space-y-6">
-        <div>
-            <label for="title" class="block text-sm font-medium text-gray-300 mb-2">Title</label>
-            <input value="<%= typeof title !== 'undefined' ? title : '' %>" type="text" name="title" id="title" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" required>
-        </div>
+        <form
+          action="<%= editing ? ('/movies/edit/' + _id) : '/movies/add' %>"
+          method="POST"
+          class="stacked-form"
+        >
+          <div class="form-field">
+            <label for="title">Title</label>
+            <input
+              class="input-text"
+              type="text"
+              id="title"
+              name="title"
+              required
+              value="<%= typeof title !== 'undefined' ? title : '' %>"
+            >
+          </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <label for="poster" class="block text-sm font-medium text-gray-300 mb-2">Poster URL</label>
-                <input value="<%= typeof poster !== 'undefined' ? poster : '' %>" type="url" name="poster" id="poster" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="e.g., https://image.tmdb.org/....jpg" required>
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="poster">Poster URL</label>
+              <input
+                class="input-text"
+                type="url"
+                id="poster"
+                name="poster"
+                required
+                value="<%= typeof poster !== 'undefined' ? poster : '' %>"
+              >
             </div>
-            <div>
-                <label for="backdrop" class="block text-sm font-medium text-gray-300 mb-2">Backdrop URL</label>
-                <input value="<%= typeof backdrop !== 'undefined' ? backdrop : '' %>" type="url" name="backdrop" id="backdrop" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="e.g., https://image.tmdb.org/....jpg" required>
+            <div class="form-field">
+              <label for="backdrop">Backdrop URL</label>
+              <input
+                class="input-text"
+                type="url"
+                id="backdrop"
+                name="backdrop"
+                required
+                value="<%= typeof backdrop !== 'undefined' ? backdrop : '' %>"
+              >
             </div>
-        </div>
+          </div>
 
-        <div>
-            <label for="genres" class="block text-sm font-medium text-gray-300 mb-2">Genres (comma separated)</label>
-            <input value="<%= typeof genres !== 'undefined' ? genres : '' %>" type="text" name="genres" id="genres" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="e.g., Action, Sci-Fi, Adventure" required>
-        </div>
+          <div class="form-field">
+            <label for="genres">Genres (comma separated)</label>
+            <input
+              class="input-text"
+              type="text"
+              id="genres"
+              name="genres"
+              required
+              value="<%= typeof genres !== 'undefined' ? genres : '' %>"
+            >
+          </div>
 
-        <div>
-            <label for="description" class="block text-sm font-medium text-gray-300 mb-2">Description</label>
-            <textarea name="description" id="description" rows="4" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" required><%= typeof description !== 'undefined' ? description : '' %></textarea>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <label for="year" class="block text-sm font-medium text-gray-300 mb-2">Year</label>
-                <input value="<%= typeof year !== 'undefined' ? year : '' %>" type="number" name="year" id="year" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="e.g., 2010" required>
-            </div>
-            <div>
-                <label for="director" class="block text-sm font-medium text-gray-300 mb-2">Director</label>
-                <input value="<%= typeof director !== 'undefined' ? director : '' %>" type="text" name="director" id="director" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" required>
-            </div>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <label for="cast" class="block text-sm font-medium text-gray-300 mb-2">Cast (comma separated)</label>
-                <input value="<%= typeof cast !== 'undefined' ? cast : '' %>" type="text" name="cast" id="cast" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="e.g., Actor One, Actor Two" required>
-            </div>
-            <div>
-                <label for="rating" class="block text-sm font-medium text-gray-300 mb-2">Rating (out of 10)</label>
-                <input value="<%= typeof rating !== 'undefined' ? rating : '' %>" type="text" name="rating" id="rating" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="e.g., 8.8" required>
-            </div>
-        </div>
-        
-        <div>
-            <label for="runtime" class="block text-sm font-medium text-gray-300 mb-2">Runtime</label>
-            <input value="<%= typeof runtime !== 'undefined' ? runtime : '' %>" type="text" name="runtime" id="runtime" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="e.g., 2h 28m" required>
-        </div>
+          <div class="form-field">
+            <label for="description">Description</label>
+            <textarea
+              class="input-text"
+              id="description"
+              name="description"
+              rows="4"
+              required
+            ><%= typeof description !== 'undefined' ? description : '' %></textarea>
+          </div>
 
-        <div>
-            <label for="trailerUrl" class="block text-sm font-medium text-gray-300 mb-2">Trailer URL (YouTube/embed/mp4)</label>
-            <input value="<%= typeof trailerUrl !== 'undefined' ? trailerUrl : '' %>" type="url" name="trailerUrl" id="trailerUrl" class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition" placeholder="https://www.youtube.com/embed/...">
-            <p class="text-xs text-gray-500 mt-1">Paste a playable link (YouTube embed, Vimeo embed, or direct MP4). This powers the “Play trailer” button.</p>
-        </div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="year">Year</label>
+              <input
+                class="input-text"
+                type="number"
+                id="year"
+                name="year"
+                required
+                value="<%= typeof year !== 'undefined' ? year : '' %>"
+              >
+            </div>
+            <div class="form-field">
+              <label for="director">Director</label>
+              <input
+                class="input-text"
+                type="text"
+                id="director"
+                name="director"
+                required
+                value="<%= typeof director !== 'undefined' ? director : '' %>"
+              >
+            </div>
+            <div class="form-field">
+              <label for="runtime">Runtime</label>
+              <input
+                class="input-text"
+                type="text"
+                id="runtime"
+                name="runtime"
+                required
+                value="<%= typeof runtime !== 'undefined' ? runtime : '' %>"
+              >
+            </div>
+          </div>
 
-        <div class="flex items-center gap-3">
-            <button type="submit" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-6 rounded-lg transition text-lg transform hover:scale-105">
-                <%= editing ? 'Update Movie' : 'Add Movie' %>
+          <div class="form-field">
+            <label for="cast">Cast (comma separated)</label>
+            <input
+              class="input-text"
+              type="text"
+              id="cast"
+              name="cast"
+              required
+              value="<%= typeof cast !== 'undefined' ? cast : '' %>"
+            >
+          </div>
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="rating">Rating (out of 10)</label>
+              <input
+                class="input-text"
+                type="number"
+                step="0.1"
+                id="rating"
+                name="rating"
+                required
+                value="<%= typeof rating !== 'undefined' ? rating : '' %>"
+              >
+            </div>
+            <div class="form-field">
+              <label for="trailerUrl">Trailer URL</label>
+              <input
+                class="input-text"
+                type="url"
+                id="trailerUrl"
+                name="trailerUrl"
+                value="<%= typeof trailerUrl !== 'undefined' ? trailerUrl : '' %>"
+              >
+              <span class="helper-text">You can drop a YouTube embed or mp4 link.</span>
+            </div>
+            <div class="form-field">
+              <label for="platform">Platform</label>
+              <select class="input-text" id="platform" name="platform">
+                <% const platforms = ['Netflix','Disney+','Prime Video','Vidio','Apple TV+','Viu','Featured']; %>
+                <% const selectedPlatform = typeof platform !== 'undefined' ? platform : 'Featured'; %>
+                <% platforms.forEach(name => { %>
+                  <option value="<%= name %>" <%= selectedPlatform === name ? 'selected' : '' %>><%= name %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-accent" type="submit">
+              <%= editing ? 'Update movie' : 'Add movie' %>
             </button>
-            <a href="/" class="px-6 py-3 rounded-lg bg-gray-700/60 text-white hover:bg-gray-700 transition text-lg">Cancel</a>
+            <a class="btn btn-ghost" href="/">Cancel</a>
+          </div>
+        </form>
+      </div>
+
+      <aside class="card form-guide" data-animate>
+        <h3>Studio-ready tips</h3>
+        <p class="helper-text">A polished entry boosts platform rails and recommendation quality.</p>
+        <ul class="form-guide__list">
+          <li><i class="fa-solid fa-image"></i> Use at least 1080px artwork for crisp hero posters.</li>
+          <li><i class="fa-solid fa-pen-nib"></i> Keep descriptions under 600 characters with strong hooks.</li>
+          <li><i class="fa-solid fa-film"></i> Add 3+ cast members to unlock people-driven search.</li>
+        </ul>
+        <div class="form-guide__panel">
+          <p>Need inspiration for copy or tonality?</p>
+          <a class="btn btn-ghost" href="/platform/netflix">Scan current catalog</a>
         </div>
-    </form>
+      </aside>
+    </div>
+
+<!-- Bulk upload moved from admin home into Add movie page -->
+<section class="bulk-card" style="margin: 1.5rem 0 3rem;" data-animate>
+  <div>
+    <h3>Bulk upload titles</h3>
+    <p class="helper-text">
+      Upload a CSV (title, poster, backdrop, genres, description, year, director, cast,
+      rating, runtime, trailerUrl, platform) to seed your catalog in one go.
+    </p>
+  </div>
+  <form
+    action="/movies/bulk-upload"
+    method="POST"
+    enctype="multipart/form-data"
+    class="bulk-card__form"
+  >
+    <input type="file" name="csvFile" accept=".csv" required>
+    <button type="submit" class="btn btn-primary">Upload CSV</button>
+  </form>
+</section>
+  </section>
 </div>

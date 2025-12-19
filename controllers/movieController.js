@@ -1,3 +1,4 @@
+const { Types } = require('mongoose');
 const movieStore = require('../models/Movie');
 const User = require('../models/User');
 const {
@@ -6,110 +7,27 @@ const {
   invalidateMovieCache
 } = require('../services/redisCache');
 const eventBus = require('../sockets/eventBus');
-const { gatherNoSqlInsights } = require('../services/nosqlService');
-const { getPostgresStatus } = require('../services/relationalService');
+const { PLAN_CONFIG } = require('../config/plans');
+const { getPersonalizedRecommendations } = require('../services/aiRecommender');
 
 function mapMovies(movieRows = []) {
-  return movieRows.map(m => ({
-    _id: String(m.id),
-    id: m.id,
-    title: m.title,
-    poster: m.poster,
-    backdrop: m.backdrop,
-    genres: m.genres || [],
-    description: m.description,
-    year: m.year,
-    director: m.director,
-    cast: m.cast || [],
-    rating: Number(m.rating || 0),
-    runtime: m.runtime,
-    trailerUrl: m.trailerUrl || ''
-  }));
-}
-
-function summarize(text = '', length = 180) {
-  if (!text) return '';
-  return text.length > length ? `${text.slice(0, length).trim()}…` : text;
-}
-
-function buildSpotlightsFromMovies(movies = []) {
-  if (!movies.length) {
-    return [
-      {
-        id: 'placeholder-spotlight',
-        title: 'Populate your catalog to unlock live spotlights',
-        presenter: 'PostgreSQL pipeline',
-        focusLabel: 'Curation flow',
-        moodLabel: 'Awaiting data',
-        summary: 'Add a few films and Cineverse will automatically craft spotlight rails directly from the PostgreSQL dataset.',
-        accentColor: '#38bdf8',
-        detail: 'Real-time once movies exist'
-      }
-    ];
-  }
-
-  const accentPalette = ['#38bdf8', '#c084fc', '#34d399', '#f87171'];
-  const moodLabels = ['Midnight queue', 'Golden hour', 'Dreamscape', 'High velocity'];
-
-  return [...movies]
-    .sort((a, b) => Number(b.rating || 0) - Number(a.rating || 0))
-    .slice(0, 4)
-    .map((movie, index) => ({
-      id: movie.id,
-      title: movie.title,
-      presenter: movie.director || 'Unknown director',
-      focusLabel: (movie.genres || [])[0] || 'Cinema',
-      moodLabel: moodLabels[index % moodLabels.length],
-      summary: summarize(movie.description || ''),
-      accentColor: accentPalette[index % accentPalette.length],
-      detail: `${movie.year || 'Year TBD'} • ${movie.runtime || 'Runtime TBD'}`
-    }));
-}
-
-function buildVirtualRoomsFromMovies(movies = []) {
-  if (!movies.length) {
-    return [
-      {
-        id: 'placeholder-room',
-        room: 'Curation Lab',
-        film: 'Awaiting catalog seed',
-        host: 'Cineverse Studio',
-        theme: 'Populate PostgreSQL to auto-build programming',
-        capacity: 50,
-        registered: 12,
-        timezone: 'Local time',
-        vibe: 'Simulated session will appear here',
-        signalColor: '#38bdf8',
-        startLabel: 'Soon',
-        startTimeLabel: ''
-      }
-    ];
-  }
-
-  const rooms = ['Spectrum Loft', 'Aurora Bay', 'Echo Observatory', 'Parallel Studio'];
-  const palette = ['#38bdf8', '#f472b6', '#facc15', '#34d399'];
-  const now = Date.now();
-
-  return movies.slice(0, 4).map((movie, index) => {
-    const startTime = new Date(now + (index + 1) * 1000 * 60 * 60 * 6);
-    const capacity = 40 + index * 12;
-    const registered = Math.min(
-      capacity - 4,
-      Math.max(8, Math.round(capacity * (0.45 + Number(movie.rating || 6) / 30)))
-    );
+  return movieRows.map(m => {
+    const id = m._id ? String(m._id) : m.id !== undefined ? String(m.id) : '';
     return {
-      id: movie.id,
-      room: rooms[index % rooms.length],
-      film: movie.title,
-      host: movie.director || 'Guest host',
-      theme: (movie.genres || []).slice(0, 2).join(' • ') || 'Genre lab',
-      capacity,
-      registered,
-      timezone: 'Local',
-      vibe: `${movie.year || 'Year TBD'} • ${movie.runtime || 'Runtime TBD'}`,
-      signalColor: palette[index % palette.length],
-      startLabel: startTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
-      startTimeLabel: startTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+      _id: id,
+      id,
+      title: m.title,
+      poster: m.poster,
+      backdrop: m.backdrop,
+      genres: m.genres || [],
+      platform: m.platform || 'Featured',
+      description: m.description,
+      year: m.year,
+      director: m.director,
+      cast: m.cast || [],
+      rating: Number(m.rating || 0),
+      runtime: m.runtime,
+      trailerUrl: m.trailerUrl || ''
     };
   });
 }
@@ -126,72 +44,208 @@ async function fetchMovies() {
   return movies;
 }
 
+function normalizePlatformName(name = '') {
+  return (name || '').toString().trim().toLowerCase();
+}
+
+function scopeMoviesForUser(user, movies = []) {
+  const planInfo = user && user.subscriptionPlan ? PLAN_CONFIG[user.subscriptionPlan] : null;
+  const planPlatforms = user && !user.isAdmin ? (planInfo ? planInfo.platforms : []) : [];
+  const allowedSlugs = planPlatforms.map(normalizePlatformName);
+  const allowedSet = allowedSlugs.length && user && !user.isAdmin ? new Set(allowedSlugs) : null;
+  const scopedMovies =
+    allowedSet instanceof Set
+      ? movies.filter(movie => allowedSet.has(normalizePlatformName(movie.platform || 'Featured')))
+      : movies;
+  return { planInfo, planPlatforms, allowedSlugs, allowedSet, scopedMovies };
+}
+
 async function renderLandingPage(req, res) {
   try {
     const movies = await fetchMovies();
-    const movieObject = movies.reduce((acc, m) => {
+    const user = req.user;
+    const { planInfo, planPlatforms, allowedSlugs, allowedSet, scopedMovies } = scopeMoviesForUser(user, movies);
+    const movieObject = scopedMovies.reduce((acc, m) => {
       acc[m.title] = m;
       return acc;
     }, {});
-
-    if (!req.user || !req.user.isAdmin) {
-      return res.render('index-user', {
-        movies: movieObject,
-        user: req.user
-      });
+    let platforms = Array.from(new Set(scopedMovies.map(m => (m.platform || 'Featured')))).sort((a, b) =>
+      a.localeCompare(b)
+    );
+    if (!platforms.length && planPlatforms.length) {
+      platforms = planPlatforms;
     }
-
-    const [nosql, postgresStatus] = await Promise.all([
-      gatherNoSqlInsights(),
-      getPostgresStatus()
-    ]);
-
-    const dbStatus = [
-      {
-        key: 'mongo',
-        name: 'MongoDB Atlas',
-        role: 'Identity + login state',
-        status: nosql.mongo?.status || 'unknown',
-        detail: nosql.mongo?.stats ? `${nosql.mongo.stats.collections} collections live` : 'Awaiting stats'
-      },
-      {
-        key: 'postgres',
-        name: 'PostgreSQL Catalog',
-        role: 'Film metadata + rails',
-        status: postgresStatus.status || 'unknown',
-        detail: postgresStatus.timestamp ? `Heartbeat ${new Date(postgresStatus.timestamp).toLocaleTimeString()}` : postgresStatus.error || 'Pending'
-      },
-      {
-        key: 'redis',
-        name: 'Redis Stream',
-        role: 'Realtime cache + fanout',
-        status: nosql.redis?.status || 'offline',
-        detail: nosql.redis?.status === 'online' ? 'Cache hot' : (nosql.redis?.error || 'Disabled')
+    const requestedSlug = normalizePlatformName(req.params.platform);
+    if (
+      req.params.platform &&
+      user &&
+      !user.isAdmin &&
+      allowedSet instanceof Set &&
+      requestedSlug &&
+      !allowedSet.has(requestedSlug)
+    ) {
+      req.flash('error_msg', 'That platform is not part of your bundle. Upgrade your plan to unlock it.');
+      return res.redirect('/');
+    }
+    const matchedPlatform = platforms.find(name => normalizePlatformName(name) === requestedSlug);
+    const filteredByPlatform = matchedPlatform
+      ? scopedMovies.filter(movie => normalizePlatformName(movie.platform || 'Featured') === requestedSlug)
+      : [];
+    const curatedAll = [...scopedMovies].sort((a, b) => Number(b.rating || 0) - Number(a.rating || 0));
+    const initialPlatformSet = (matchedPlatform ? filteredByPlatform : curatedAll).slice(0, 12);
+    const platformMovies = initialPlatformSet.length ? initialPlatformSet : [];
+    const heroVisibleMovies = platformMovies.length ? platformMovies : curatedAll.slice(0, 8);
+    const currentYear = new Date().getFullYear();
+    const sliceByGenre = keyword =>
+      curatedAll.filter(movie =>
+        (movie.genres || []).some(genre => genre.toLowerCase().includes(keyword))
+      );
+    const freshDrops = curatedAll
+      .filter(movie => Number(movie.year) >= currentYear - 1)
+      .sort((a, b) => Number(b.year || 0) - Number(a.year || 0));
+    const sections = {
+      actionPacked: sliceByGenre('action').slice(0, 12),
+      sciFiFrontier: sliceByGenre('sci').slice(0, 12),
+      freshDrops: freshDrops.slice(0, 12),
+      dramaClassics: sliceByGenre('drama')
+        .filter(movie => Number(movie.rating || 0) >= 8)
+        .slice(0, 12),
+      awardBuzz: curatedAll.filter(movie => Number(movie.rating || 0) >= 8.5).slice(0, 12)
+    };
+    const activePlatform = matchedPlatform ? requestedSlug : '';
+    const platformLabel = matchedPlatform || 'All Platforms';
+    const averageRating =
+      (matchedPlatform ? filteredByPlatform : scopedMovies).reduce(
+        (sum, movie) => sum + Number(movie.rating || 0),
+        0
+      ) / Math.max((matchedPlatform ? filteredByPlatform : scopedMovies).length, 1);
+    const stats = {
+      totalMovies: scopedMovies.length,
+      platformCount: platforms.length,
+      visibleTitles: heroVisibleMovies.length,
+      averageRating: Number.isFinite(averageRating) ? averageRating.toFixed(1) : '0.0'
+    };
+    const template = user && user.isAdmin ? 'index' : 'index-user';
+    let aiRecommendations = [];
+    try {
+      if (!user?.isAdmin) {
+        aiRecommendations = await getPersonalizedRecommendations({
+          user,
+          movies: scopedMovies,
+          limit: 8
+        });
       }
-    ];
-
-    const catalogSpotlights = buildSpotlightsFromMovies(movies);
-    const virtualRooms = buildVirtualRoomsFromMovies(movies);
-
-    res.render('index', {
+    } catch (error) {
+      console.error('AI recommendation error:', error);
+      aiRecommendations = [];
+    }
+    res.render(template, {
       movies: movieObject,
-      user: req.user,
-      catalogSpotlights,
-      virtualRooms,
-      dbStatus
+      platformMovies,
+      platformLabel,
+      visibleMovies: heroVisibleMovies,
+      user,
+      planInfo,
+      platforms,
+      activePlatform,
+      stats,
+      allowedPlatforms: user && !user.isAdmin ? (planPlatforms.length ? planPlatforms : platforms) : platforms,
+      allowedPlatformSlugs: user && !user.isAdmin
+        ? (allowedSlugs.length ? allowedSlugs : platforms.map(normalizePlatformName))
+        : platforms.map(normalizePlatformName),
+      sections,
+      aiRecommendations
     });
   } catch (error) {
     console.error('Error building landing page:', error);
     req.flash('error_msg', 'Unable to load movies');
     const template = req.user && req.user.isAdmin ? 'index' : 'index-user';
-    const payload = {
+    res.render(template, {
       movies: {},
-      user: req.user
-    };
-    if (template === 'index') {
-      Object.assign(payload, { catalogSpotlights: [], virtualRooms: [], dbStatus: [] });
+      user: req.user,
+      planInfo: req.user && req.user.subscriptionPlan ? PLAN_CONFIG[req.user.subscriptionPlan] : null,
+      platforms: [],
+      platformMovies: [],
+      platformLabel: 'All Platforms',
+      visibleMovies: [],
+      activePlatform: '',
+      stats: {
+        totalMovies: 0,
+        platformCount: 0,
+        visibleTitles: 0,
+        averageRating: '0.0'
+      },
+      allowedPlatforms: [],
+      allowedPlatformSlugs: [],
+      sections: {
+        actionPacked: [],
+        sciFiFrontier: [],
+        freshDrops: [],
+        dramaClassics: [],
+        awardBuzz: []
+      },
+      aiRecommendations: []
+    });
+  }
+}
+
+async function renderPlatformGrid(req, res) {
+  try {
+    const movies = await fetchMovies();
+    const user = req.user;
+    const { planPlatforms, allowedSet } = scopeMoviesForUser(user, movies);
+    const slug = (req.params.platform || '').toLowerCase();
+    if (allowedSet && !allowedSet.has(slug)) {
+      req.flash('error_msg', 'Upgrade your plan to access this platform.');
+      return res.redirect('/subscribe');
     }
-    res.render(template, payload);
+    const scopedMovies =
+      allowedSet instanceof Set
+        ? movies.filter(movie => allowedSet.has((movie.platform || 'featured').toLowerCase()))
+        : movies;
+    const platforms = Array.from(new Set(scopedMovies.map(m => (m.platform || 'Featured'))));
+    const filtered = scopedMovies.filter(movie => (movie.platform || 'featured').toLowerCase() === slug);
+    if (!filtered.length) {
+      req.flash('error_msg', 'No titles found for that platform');
+      return res.redirect('/');
+    }
+    res.render('platform-grid', {
+      user: req.user,
+      movies: filtered,
+      platformLabel: filtered[0].platform || 'Featured',
+      platforms,
+      activePlatform: slug
+    });
+  } catch (error) {
+    console.error('Platform grid error:', error);
+    req.flash('error_msg', 'Unable to load platform catalog');
+    res.redirect('/');
+  }
+}
+
+async function renderAdminFilms(req, res) {
+  try {
+    const [movies, users] = await Promise.all([fetchMovies(), User.find({}, 'myList name').lean()]);
+    const watchMap = {};
+    users.forEach(user => {
+      (user.myList || []).forEach(title => {
+        const key = String(title);
+        watchMap[key] = (watchMap[key] || 0) + 1;
+      });
+    });
+    const decorated = movies.map(movie => ({
+      ...movie,
+      watchCount: watchMap[movie.title] || 0,
+      snippet: movie.description ? (movie.description.length > 140 ? `${movie.description.slice(0, 140)}…` : movie.description) : 'No synopsis yet.'
+    }));
+    res.render('admin-films', {
+      user: req.user,
+      movies: decorated
+    });
+  } catch (error) {
+    console.error('Error rendering admin films:', error);
+    req.flash('error_msg', 'Unable to load film stats');
+    res.redirect('/');
   }
 }
 
@@ -203,12 +257,22 @@ async function createMovie(payload) {
   return mapped;
 }
 
-async function updateMovie(id, payload) {
-  const numericId = Number(id);
-  if (!Number.isInteger(numericId) || numericId <= 0) {
-    throw new Error('Invalid movie id');
+async function createMoviesBulk(payloads = []) {
+  if (!Array.isArray(payloads) || !payloads.length) return [];
+  const inserted = await movieStore.createMoviesBulk(payloads);
+  if (inserted.length) {
+    await invalidateMovieCache();
+    inserted.forEach(movie => {
+      eventBus.emit('movie:created', movie);
+    });
   }
-  const updatedRow = await movieStore.updateMovie(numericId, payload);
+  return inserted;
+}
+
+async function updateMovie(id, payload) {
+  const movieId = Types.ObjectId.isValid(String(id)) ? String(id) : null;
+  if (!movieId) throw new Error('Invalid movie id');
+  const updatedRow = await movieStore.updateMovie(movieId, payload);
   await invalidateMovieCache();
   const mapped = updatedRow ? mapMovies([updatedRow])[0] : null;
   if (mapped) {
@@ -218,14 +282,12 @@ async function updateMovie(id, payload) {
 }
 
 async function deleteMovie(id) {
-  const numericId = Number(id);
-  if (!Number.isInteger(numericId) || numericId <= 0) {
-    throw new Error('Invalid movie id');
-  }
-  const deletedRow = await movieStore.deleteMovie(numericId);
+  const movieId = Types.ObjectId.isValid(String(id)) ? String(id) : null;
+  if (!movieId) throw new Error('Invalid movie id');
+  const deletedRow = await movieStore.deleteMovie(movieId);
   await invalidateMovieCache();
   if (deletedRow) {
-    eventBus.emit('movie:deleted', { _id: String(deletedRow.id), title: deletedRow.title });
+    eventBus.emit('movie:deleted', { _id: String(deletedRow.id || deletedRow._id), title: deletedRow.title });
   }
   return deletedRow;
 }
@@ -298,9 +360,13 @@ async function getMovieAnalytics() {
 
 module.exports = {
   renderLandingPage,
+  renderPlatformGrid,
   createMovie,
+  createMoviesBulk,
   updateMovie,
   deleteMovie,
   fetchMovies,
-  getMovieAnalytics
+  getMovieAnalytics,
+  renderAdminFilms,
+  scopeMoviesForUser
 };

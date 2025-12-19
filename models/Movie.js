@@ -1,205 +1,152 @@
-const { getPostgresPool } = require('../services/relationalService');
+const mongoose = require('mongoose');
 
-const MOVIE_TABLE = 'cineverse_movies';
-const MOVIE_COLUMNS = [
-  'id',
-  'title',
-  'poster',
-  'backdrop',
-  'genres',
-  'description',
-  'year',
-  'director',
-  'cast_members AS cast',
-  'rating',
-  'runtime',
-  'trailer_url AS "trailerUrl"',
-  'created_at'
-].join(', ');
+const { Schema, Types } = mongoose;
 
-function assertPool() {
-  const pool = getPostgresPool();
-  if (!pool) {
-    throw new Error('PostgreSQL is not configured. Please set POSTGRES_URL to persist movies.');
+const MovieSchema = new Schema(
+  {
+    title: { type: String, required: true, unique: true, index: true },
+    poster: { type: String, required: true },
+    backdrop: { type: String, required: true },
+    genres: { type: [String], default: [] },
+    platform: { type: String, default: 'Featured' },
+    description: { type: String, required: true },
+    year: { type: Number, required: true },
+    director: { type: String, required: true },
+    cast: { type: [String], default: [] },
+    rating: { type: Number, default: 0 },
+    runtime: { type: String, required: true },
+    trailerUrl: { type: String, default: '' }
+  },
+  {
+    collection: 'movies',
+    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
   }
-  return pool;
+);
+
+MovieSchema.index({ year: -1 });
+MovieSchema.index({ genres: 1 });
+MovieSchema.index({ platform: 1 });
+MovieSchema.index({ director: 1 });
+
+const Movie = mongoose.model('Movie', MovieSchema);
+
+function coerceStringArray(value, fallback = []) {
+  if (!value) return fallback;
+  if (Array.isArray(value)) return value.map(String).filter(Boolean);
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map(item => item.trim())
+      .filter(Boolean);
+  }
+  return fallback;
 }
 
-function mapRow(row) {
-  if (!row) return null;
-  const mappedId = row.id !== undefined && row.id !== null ? String(row.id) : null;
+function normalizeMoviePayload(movie = {}) {
   return {
-    _id: mappedId,
-    id: mappedId,
-    title: row.title,
-    poster: row.poster,
-    backdrop: row.backdrop,
-    genres: row.genres || [],
-    description: row.description,
-    year: row.year,
-    director: row.director,
-    cast: row.cast || [],
-    rating: row.rating !== null && row.rating !== undefined ? Number(row.rating) : null,
-    runtime: row.runtime,
-    trailerUrl: row.trailerUrl || '',
-    createdAt: row.created_at
+    title: (movie.title || '').trim(),
+    poster: (movie.poster || '').trim(),
+    backdrop: (movie.backdrop || '').trim(),
+    genres: coerceStringArray(movie.genres),
+    platform: (movie.platform || 'Featured').trim(),
+    description: (movie.description || '').trim(),
+    year: Number(movie.year),
+    director: (movie.director || '').trim(),
+    cast: coerceStringArray(movie.cast),
+    rating: Number(movie.rating || 0),
+    runtime: (movie.runtime || '').trim(),
+    trailerUrl: (movie.trailerUrl || '').trim()
   };
 }
 
-function toJsonParam(value, fallback = []) {
-  if (value === undefined || value === null) {
-    return JSON.stringify(fallback);
-  }
-  if (Array.isArray(value)) {
-    return JSON.stringify(value);
-  }
-  if (typeof value === 'string') {
-    try {
-      JSON.parse(value);
-      return value;
-    } catch (error) {
-      return JSON.stringify(fallback);
-    }
-  }
-  return JSON.stringify(value);
+function mapMovie(doc) {
+  if (!doc) return null;
+  const movie = doc.toObject ? doc.toObject() : doc;
+  const id = movie._id ? movie._id.toString() : '';
+  const cast = movie.cast || movie.cast_members || [];
+  const trailerUrl = movie.trailerUrl || movie.trailer_url || '';
+  return {
+    _id: id,
+    id,
+    title: movie.title,
+    poster: movie.poster,
+    backdrop: movie.backdrop,
+    genres: movie.genres || [],
+    platform: movie.platform || 'Featured',
+    description: movie.description,
+    year: movie.year,
+    director: movie.director,
+    cast,
+    rating: typeof movie.rating === 'number' ? movie.rating : Number(movie.rating || 0),
+    runtime: movie.runtime,
+    trailerUrl,
+    createdAt: movie.createdAt || movie.updatedAt
+  };
 }
-
-let ensurePromise;
 
 async function ensureMovieStore() {
-  const pool = assertPool();
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS ${MOVIE_TABLE} (
-      id SERIAL PRIMARY KEY,
-      title TEXT UNIQUE NOT NULL,
-      poster TEXT NOT NULL,
-      backdrop TEXT NOT NULL,
-      genres JSONB NOT NULL,
-      description TEXT NOT NULL,
-      year INT NOT NULL,
-      director TEXT NOT NULL,
-      cast_members JSONB NOT NULL,
-      trailer_url TEXT DEFAULT '',
-      rating NUMERIC(3,1) NOT NULL,
-      runtime TEXT NOT NULL,
-      created_at TIMESTAMPTZ DEFAULT NOW()
-    );
-  `);
-  await pool.query(
-    `CREATE INDEX IF NOT EXISTS idx_${MOVIE_TABLE}_year ON ${MOVIE_TABLE} (year DESC);`
-  );
-  await pool.query(
-    `CREATE INDEX IF NOT EXISTS idx_${MOVIE_TABLE}_genres ON ${MOVIE_TABLE} USING GIN (genres);`
-  );
-  await pool.query(
-    `CREATE INDEX IF NOT EXISTS idx_${MOVIE_TABLE}_director ON ${MOVIE_TABLE} (director);`
-  );
-  await pool.query(
-    `ALTER TABLE ${MOVIE_TABLE} ADD COLUMN IF NOT EXISTS trailer_url TEXT DEFAULT '';`
-  );
-  return { status: 'ready', table: MOVIE_TABLE };
-}
-
-async function ensureInitialized() {
-  if (!ensurePromise) {
-    ensurePromise = ensureMovieStore().catch(error => {
-      ensurePromise = null;
-      throw error;
-    });
-  }
-  return ensurePromise;
+  await Movie.init();
+  return { status: 'ready', collection: Movie.collection.name };
 }
 
 async function findAllMovies() {
-  await ensureInitialized();
-  const pool = assertPool();
-  const { rows } = await pool.query(`SELECT ${MOVIE_COLUMNS} FROM ${MOVIE_TABLE} ORDER BY created_at DESC`);
-  return rows.map(mapRow);
+  await ensureMovieStore();
+  const docs = await Movie.find({}).sort({ createdAt: -1 }).lean();
+  return docs.map(mapMovie);
 }
 
 async function findMovieById(id) {
-  await ensureInitialized();
-  const pool = assertPool();
-  const { rows } = await pool.query(
-    `SELECT ${MOVIE_COLUMNS} FROM ${MOVIE_TABLE} WHERE id = $1 LIMIT 1`,
-    [id]
-  );
-  return mapRow(rows[0]);
+  if (!Types.ObjectId.isValid(String(id))) return null;
+  await ensureMovieStore();
+  const doc = await Movie.findById(id).lean();
+  return mapMovie(doc);
 }
 
 async function createMovie(movie) {
-  await ensureInitialized();
-  const pool = assertPool();
-  const { rows } = await pool.query(
-    `
-      INSERT INTO ${MOVIE_TABLE}
-      (title, poster, backdrop, genres, description, year, director, cast_members, rating, runtime, trailer_url)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
-      RETURNING ${MOVIE_COLUMNS}
-    `,
-    [
-      movie.title,
-      movie.poster,
-      movie.backdrop,
-      toJsonParam(movie.genres),
-      movie.description,
-      movie.year,
-      movie.director,
-      toJsonParam(movie.cast),
-      movie.rating,
-      movie.runtime,
-      movie.trailerUrl || ''
-    ]
-  );
-  return mapRow(rows[0]);
+  await ensureMovieStore();
+  const doc = await Movie.create(normalizeMoviePayload(movie));
+  return mapMovie(doc);
 }
 
 async function updateMovie(id, payload) {
-  await ensureInitialized();
-  const pool = assertPool();
-  const { rows } = await pool.query(
-    `
-      UPDATE ${MOVIE_TABLE}
-      SET title = $1,
-          poster = $2,
-          backdrop = $3,
-          genres = $4,
-          description = $5,
-          year = $6,
-          director = $7,
-          cast_members = $8,
-          rating = $9,
-          runtime = $10,
-          trailer_url = $11
-      WHERE id = $12
-      RETURNING ${MOVIE_COLUMNS}
-    `,
-    [
-      payload.title,
-      payload.poster,
-      payload.backdrop,
-      toJsonParam(payload.genres),
-      payload.description,
-      payload.year,
-      payload.director,
-      toJsonParam(payload.cast),
-      payload.rating,
-      payload.runtime,
-      payload.trailerUrl || '',
-      id
-    ]
+  if (!Types.ObjectId.isValid(String(id))) {
+    throw new Error('Invalid movie id');
+  }
+  await ensureMovieStore();
+  const doc = await Movie.findByIdAndUpdate(
+    id,
+    normalizeMoviePayload(payload),
+    { new: true, runValidators: true }
   );
-  return mapRow(rows[0]);
+  return mapMovie(doc);
 }
 
 async function deleteMovie(id) {
-  await ensureInitialized();
-  const pool = assertPool();
-  const { rows } = await pool.query(
-    `DELETE FROM ${MOVIE_TABLE} WHERE id = $1 RETURNING ${MOVIE_COLUMNS}`,
-    [id]
-  );
-  return mapRow(rows[0]);
+  if (!Types.ObjectId.isValid(String(id))) {
+    throw new Error('Invalid movie id');
+  }
+  await ensureMovieStore();
+  const doc = await Movie.findByIdAndDelete(id);
+  return mapMovie(doc);
+}
+
+async function createMoviesBulk(movies = []) {
+  if (!Array.isArray(movies) || !movies.length) {
+    return [];
+  }
+  await ensureMovieStore();
+  const operations = movies.map(movie => ({
+    updateOne: {
+      filter: { title: movie.title },
+      update: { $setOnInsert: normalizeMoviePayload(movie) },
+      upsert: true
+    }
+  }));
+  const result = await Movie.bulkWrite(operations, { ordered: false });
+  const insertedIds = Object.values(result.upsertedIds || {});
+  if (!insertedIds.length) return [];
+  const docs = await Movie.find({ _id: { $in: insertedIds } }).lean();
+  return docs.map(mapMovie);
 }
 
 module.exports = {
@@ -208,5 +155,6 @@ module.exports = {
   findMovieById,
   createMovie,
   updateMovie,
-  deleteMovie
+  deleteMovie,
+  createMoviesBulk
 };

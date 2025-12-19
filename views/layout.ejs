@@ -1,220 +1,169 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cineverse - Curated World Cinema</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/app.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-    <script>
-        (function() {
-            function hideBootLoader() {
-                var loader = document.getElementById('loader');
-                if (loader) {
-                    loader.classList.add('hidden');
-                }
-            }
-            document.addEventListener('DOMContentLoaded', hideBootLoader);
-            window.addEventListener('load', hideBootLoader);
-            setTimeout(hideBootLoader, 2500);
-        })();
-    </script>
-    <style>
-        :root {
-            --background-color: #0a0a0a;
-            --card-bg: #1a1a1a;
-            --primary-accent: #0ea5e9; /* sky-500 */
-            --secondary-accent: #6366f1; /* indigo-500 */
-            --text-primary: #f8fafc; /* slate-50 */
-            --text-secondary: #a1a1aa; /* zinc-400 */
-            --border-color: rgba(255, 255, 255, 0.1);
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes kenBurns { 0% { transform: scale(1.1); } 100% { transform: scale(1.15); } }
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-primary);
-            overflow-x: hidden;
-        }
-        .text-balance { text-wrap: balance; }
-        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 20px; border: 3px solid transparent; }
-        .loader {
-            position: fixed; inset: 0; background-color: var(--background-color); z-index: 100;
-            display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease;
-        }
-        .loader.hidden { opacity: 0; pointer-events: none; }
-        .loader .spinner {
-            width: 50px; height: 50px; border: 5px solid var(--border-color);
-            border-top-color: var(--primary-accent); border-radius: 50%; animation: spin 1s linear infinite;
-        }
-        .glass-nav {
-            background-color: rgba(10, 10, 10, 0.7);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border-bottom: 1px solid var(--border-color);
-        }
-        .hero-slide {
-            position: absolute; inset: 0;
-            opacity: 0; transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1;
-        }
-        .hero-slide.active { opacity: 1; z-index: 2; }
-        .hero-gradient-overlay { background: linear-gradient(to top, var(--background-color) 5%, rgba(10, 10, 10, 0.6) 30%, transparent 60%); }
-        .hero-text-shadow { text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8); }
-        .hero-meta-item { display: flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.3); backdrop-filter: blur(5px); padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); }
-        .hero-component { animation: fadeIn 0.8s ease-out backwards; }
-        .hero-nav-arrow {
-            position: absolute; top: 50%; transform: translateY(-50%); z-index: 20;
-            width: 3.5rem; height: 3.5rem; background: rgba(0,0,0,0.4);
-            border-radius: 9999px; display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-        .hero-nav-arrow:hover { background: rgba(0,0,0,0.7); transform: translateY(-50%) scale(1.1); }
-        .hero-dots-container {
-            position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
-            z-index: 20; display: flex; gap: 0.75rem;
-        }
-        .hero-dot {
-            width: 0.75rem; height: 0.75rem; background: rgba(255,255,255,0.4);
-            border-radius: 9999px; transition: background-color 0.3s ease, transform 0.3s ease; cursor: pointer;
-        }
-        .hero-dot.active { background: white; transform: scale(1.2); }
-        .carousel-container { scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth; }
-        .carousel-container::-webkit-scrollbar { display: none; }
-        .carousel-item { transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.4s ease; }
-        .carousel-wrapper:hover .carousel-item { transform: translateX(-25%); }
-        .carousel-item:hover ~ .carousel-item { transform: translateX(25%); }
-        .carousel-item:hover {
-            transform: scale(1.1) !important;
-            opacity: 1 !important;
-        }
-        .carousel-wrapper:hover .carousel-item:not(:hover) { opacity: 0.4; }
-        .carousel-arrow {
-            opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(-50%) scale(0.8);
-        }
-        .carousel-wrapper:hover .carousel-arrow { opacity: 1; transform: translateY(-50%) scale(1); }
-        .carousel-wrapper {
-            opacity: 0; transform: translateY(40px); transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-        .carousel-wrapper.is-visible { opacity: 1; transform: translateY(0); }
-        .list-btn .icon-plus, .list-btn.in-list .icon-check { animation: fadeIn 0.3s ease; }
-        .list-btn.in-list .icon-plus, .list-btn .icon-check { display: none; }
-        .list-btn.in-list { background-color: #22c55e; border-color: #22c55e; } /* green-500 */
-        .animated-overlay { opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
-        .animated-overlay.active { opacity: 1; pointer-events: auto; }
-        .animated-overlay .content-wrapper { transform: scale(0.95); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
-        .animated-overlay.active .content-wrapper { transform: scale(1); }
-        .modal-backdrop-gradient { background: linear-gradient(to top, var(--card-bg) 20%, rgba(26, 26, 26, 0.7) 60%, transparent 100%); }
-        .modal-backdrop-image { animation: kenBurns 20s ease-in-out infinite alternate; }
-        .modal-poster-glow {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, var(--primary-accent) 0%, transparent 60%);
-            opacity: 0.15;
-            filter: blur(40px);
-            z-index: -1;
-        }
-        .genre-filter-button.active {
-            background-color: var(--primary-accent); color: white;
-            box-shadow: 0 0 20px rgba(14, 165, 233, 0.5);
-        }
-        .profile-dropdown {
-            display: none; opacity: 0; transform: translateY(10px);
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
-        .profile-dropdown.active { display: block; opacity: 1; transform: translateY(0); }
-    </style>
-</head>
-<body class="antialiased">
-    <div class="cin-bg-grid"></div>
-    <div class="cin-glow one"></div>
-    <div class="cin-glow two"></div>
-    <div class="orbital">
-        <span style="top:15%;left:10%;animation-duration:18s"></span>
-        <span style="top:60%;left:30%;animation-duration:22s"></span>
-        <span style="top:30%;right:15%;animation-duration:26s"></span>
-        <span style="bottom:20%;left:45%;animation-duration:24s"></span>
-    </div>
-    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4">
-        <nav class="container mx-auto px-4 sm:px-6 flex items-center justify-between cin-nav">
-            <a href="/" class="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2">
-                <span class="pulse-dot"></span>
-                CINEVERSE
-            </a>
-            <div class="hidden md:flex items-center gap-6 text-sm uppercase tracking-wide text-white/70">
-                <a href="/" class="hover:text-white transition">Home</a>
-                <a href="/movies" class="hover:text-white transition">Browse</a>
-                <% if (typeof user != 'undefined' && user) { %>
-                    <a href="/movies/add" class="hover:text-white transition">Create</a>
-                <% } %>
-                <% if (typeof user != 'undefined' && user && user.isAdmin) { %>
-                    <a href="/dashboard" class="hover:text-white transition">Dashboard</a>
-                <% } %>
-            </div>
-            <div class="flex items-center gap-3">
-                <button id="search-button" class="w-11 h-11 flex items-center justify-center rounded-full border border-white/20 text-gray-200 hover:text-white hover:border-white/40 transition">
-                    <i class="fas fa-search text-lg"></i>
-                </button>
-                <div class="relative">
-                    <% if (typeof user != 'undefined' && user) { %>
-                        <button id="profile-button" class="w-10 h-10 bg-gradient-to-br from-sky-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold ring-2 ring-transparent hover:ring-sky-400 transition-all"><%= user.name.charAt(0).toUpperCase() %></button>
-                        <div id="profile-dropdown" class="profile-dropdown absolute top-12 right-0 w-52 floating-panel py-3">
-                            <p class="px-4 text-xs uppercase tracking-wide text-gray-400 mb-2">Control center</p>
-                            <% if (user.isAdmin) { %>
-                                <a href="/movies/add" class="flex items-center px-4 py-2 text-sm text-gray-200 hover:bg-white/5 transition"><i class="fas fa-plus-circle w-6"></i>Add Movie</a>
-                            <% } %>
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-200 hover:bg-white/5 transition"><i class="fas fa-user-circle w-6"></i>Account</a>
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-200 hover:bg-white/5 transition"><i class="fas fa-cog w-6"></i>Settings</a>
-                            <div class="cin-divider"></div>
-                            <a href="/users/logout" class="flex items-center px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-white transition"><i class="fas fa-sign-out-alt w-6"></i>Sign Out</a>
-                        </div>
-                    <% } else { %>
-                        <a href="/users/login" class="neon-button px-4 py-2 border border-white/20 text-sm font-semibold text-white hover:text-white">Sign in</a>
-                    <% } %>
-                </div>
-            </div>
-        </nav>
-    </header>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cineverse</title>
 
-    <%- body %>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/js/realtime-movies.js"></script>
-    <script src="/js/realtime-dashboard.js"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        if (window.gsap && window.ScrollTrigger) {
-          window.gsap.registerPlugin(window.ScrollTrigger);
-          window.gsap.utils.toArray('[data-animate]').forEach((el, index) => {
-            window.gsap.fromTo(
-              el,
-              { opacity: 0, y: 30 },
-              {
-                opacity: 1,
-                y: 0,
-                duration: 0.9,
-                delay: index * 0.04,
-                ease: 'power3.out',
-                scrollTrigger: {
-                  trigger: el,
-                  start: 'top 85%'
-                }
-              }
-            );
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <div class="app">
+    <nav class="top-nav">
+      <div class="logo">MOV <span>X</span></div>
+
+      <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search movie or tv series" data-catalog-search>
+      </div>
+
+      <div class="nav-right">
+        <button class="nav-icon" type="button" title="Voice search">
+          <i class="fa-solid fa-microphone"></i>
+        </button>
+        <button class="nav-icon" type="button" title="Notifications">
+          <i class="fa-regular fa-bell"></i>
+        </button>
+
+        <% if (typeof user !== 'undefined' && user) { %>
+          <div class="profile">
+            <img
+              src="<%= user.avatar || 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=200&q=60' %>"
+              alt="<%= user.name || user.email %> avatar">
+            <div class="profile-info">
+              <span><%= user.name || user.email %></span>
+              <span><a href="/users/logout">Sign out</a></span>
+            </div>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+        <% } else { %>
+          <a href="/users/login" class="profile guest-profile">
+            <img
+              src="https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=200&q=60"
+              alt="Guest avatar">
+            <div class="profile-info">
+              <span>Guest</span>
+              <span>Sign in</span>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+          </a>
+        <% } %>
+      </div>
+    </nav>
+
+    <main class="page-body">
+      <%- body %>
+    </main>
+
+    <div class="search-overlay" data-search-overlay>
+      <div class="search-overlay__backdrop" data-search-close></div>
+      <div class="search-overlay__panel">
+        <div class="search-overlay__header">
+          <div>
+            <p class="label">Quick find</p>
+            <h3>Search across every platform</h3>
+            <p class="helper-text">Type a title, actor or genre. Tap a chip for instant filters.</p>
+          </div>
+          <button class="btn btn-secondary search-overlay__close" type="button" data-search-close>
+            <i class="fa-solid fa-xmark"></i> Close
+          </button>
+        </div>
+        <div class="search-overlay__chips" data-search-tags></div>
+        <div class="search-overlay__grid" data-search-grid></div>
+        <div class="search-overlay__empty" data-search-empty>
+          Start typing to surface results from your unlocked platforms.
+        </div>
+      </div>
+    </div>
+
+    <% if (user) { %>
+      <div class="ai-launcher" data-ai-launcher>
+        <button class="ai-launcher__button" type="button" data-ai-toggle aria-expanded="false">
+          <i class="fa-solid fa-robot"></i>
+          <span>Ask Lumi</span>
+        </button>
+        <div class="ai-panel" data-ai-panel>
+          <div class="ai-panel__header">
+            <div>
+              <p class="label">Cineverse AI</p>
+              <strong>Lumi concierge</strong>
+            </div>
+            <button class="ai-close" type="button" data-ai-close aria-label="Close chat">&times;</button>
+          </div>
+          <div class="ai-feed" data-ai-feed>
+            <div class="ai-empty" data-ai-empty>
+              Tell Lumi the vibe you're chasing — try "a cozy sci-fi adventure" or "a tense courtroom drama".
+            </div>
+          </div>
+          <div class="ai-status" data-ai-status></div>
+          <form class="ai-form" data-ai-form>
+            <input type="text" placeholder="Find me an uplifting space opera" autocomplete="off" data-ai-input>
+            <button class="ai-send" type="submit">
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    <% } %>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/realtime-movies.js"></script>
+  <script src="/js/realtime-dashboard.js"></script>
+  <script src="/js/catalog-page.js"></script>
+  <script src="/js/platform-grid-search.js"></script>
+  <script src="/js/ai-assistant.js"></script>
+  <script>
+    (function () {
+      const nodes = document.querySelectorAll('[data-animate]');
+      if (!nodes.length) return;
+      if (typeof IntersectionObserver === 'undefined') {
+        nodes.forEach(node => node.classList.add('is-visible'));
+        return;
+      }
+      const observer = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
           });
-        }
-      });
-    </script>
+        },
+        { threshold: 0.2 }
+      );
+      nodes.forEach(node => observer.observe(node));
+    })();
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const planSuccess = params.get('planSuccess');
+      if (!planSuccess) return;
+      const toast = document.createElement('div');
+      toast.textContent = `Congratulations — you're now on the ${planSuccess} plan!`;
+      toast.style.position = 'fixed';
+      toast.style.bottom = '18px';
+      toast.style.right = '18px';
+      toast.style.padding = '12px 14px';
+      toast.style.background = 'rgba(10,12,20,0.9)';
+      toast.style.border = '1px solid rgba(110,244,255,0.35)';
+      toast.style.borderRadius = '12px';
+      toast.style.color = '#fff';
+      toast.style.zIndex = '120';
+      toast.style.boxShadow = '0 18px 30px rgba(0,0,0,0.6)';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 4200);
+      params.delete('planSuccess');
+      const cleanUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+      window.history.replaceState({}, document.title, cleanUrl);
+    })();
+  </script>
 </body>
 </html>

@@ -1,1105 +1,421 @@
-<div id="loader" class="loader"><div class="spinner"></div></div>
-
-<main>
+<div class="content" data-catalog-page="admin">
+  <aside class="sidebar side-rail">
+    <a class="side-icon" href="#hero-banner" title="Featured spotlight">
+      <i class="fa-solid fa-bolt"></i>
+    </a>
     <% if (user && user.isAdmin) { %>
-    <section id="immersive-intro" class="container mx-auto px-4 sm:px-6 py-16 grid gap-10 lg:grid-cols-2 items-center">
-        <div class="space-y-6" data-animate>
-            <p class="floating-chip text-xs">Cinematic OS 2.0</p>
-            <h1 class="text-4xl sm:text-5xl xl:text-6xl font-black leading-tight text-white">
-                Streamlined rails for curators, critics, and cinephiles.
-            </h1>
-            <p class="text-lg text-gray-300 max-w-2xl">
-                MongoDB Atlas anchors secure logins while PostgreSQL powers the programmable catalog. Redis and sockets keep every interaction live, with GSAP weaving it all together.
-            </p>
-            <div class="flex flex-wrap gap-3">
-                <a href="/movies/add" class="neon-button px-6 py-3 border border-white/30 text-white font-semibold text-sm tracking-wide">
-                    Launch Creator Console
-                </a>
-                <button id="discover-flow" class="px-6 py-3 rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-500/30">
-                    Explore experience flow
-                </button>
-            </div>
-            <div class="flex gap-6 text-sm text-gray-400">
-                <div>
-                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Latency</p>
-                    <p class="text-2xl font-black text-white">~60ms</p>
-                </div>
-                <div>
-                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Active sessions</p>
-                    <p class="text-2xl font-black text-white" id="hero-active-sessions">0</p>
-                </div>
-                <div>
-                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Curated rails</p>
-                    <p class="text-2xl font-black text-white" id="hero-rails">0</p>
-                </div>
-            </div>
-        </div>
-        <div class="neo-hero-panel" data-animate>
-            <div class="spark-badge">
-                <span class="spark-dot"></span>
-                Live sync enabled
-            </div>
-            <div class="neo-panel-card">
-                <p class="text-xs uppercase tracking-[0.3em] text-white/60 mb-2">Now streaming</p>
-                <h3 class="text-3xl font-black text-white leading-tight" id="hero-featured-title">Awaiting selection</h3>
-                <p class="text-sm text-gray-300" id="hero-featured-meta">Add a title to PostgreSQL to populate this rail.</p>
-            </div>
-            <div class="neo-panel-grid">
-                <article>
-                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Total titles</p>
-                    <p class="text-3xl font-black text-white" id="hero-total-titles">0</p>
-                </article>
-                <article>
-                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Avg. rating</p>
-                    <p class="text-3xl font-black text-white" id="hero-avg-rating">0</p>
-                </article>
-                <article>
-                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Watchlist saves</p>
-                    <p class="text-3xl font-black text-white" id="hero-watchlist-count">0</p>
-                </article>
-                <article>
-                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Genres tracked</p>
-                    <p class="text-3xl font-black text-white" id="hero-genre-count">0</p>
-                </article>
-            </div>
-            <div class="genre-pill-row" id="hero-genre-pills"></div>
-        </div>
-    </section>
-
-    <section id="hero-section" class="relative min-h-[90vh] md:min-h-screen flex items-center overflow-hidden">
-        <!-- Hero slides will be injected here by JavaScript -->
-        <div class="hero-spotlight"></div>
-    </section>
-
-    <section class="container mx-auto px-4 sm:px-6 pb-12">
-        <div class="grid gap-5 md:grid-cols-3" id="experience-grid">
-            <article class="experience-card" data-animate>
-                <p class="floating-chip text-xs">Audience journey</p>
-                <h3 class="text-2xl font-semibold mt-3">Adaptive rails</h3>
-                <p class="text-gray-300 text-sm mt-3">Carousels respond to clicks, favorites, and sockets. The layout bends to each user with zero refreshes.</p>
-                <ul class="mt-4 space-y-2 text-sm text-gray-400">
-                    <li>GSAP motion choreography</li>
-                    <li>Redis-backed realtime sync</li>
-                    <li>Per-user watchlists</li>
-                </ul>
-            </article>
-            <article class="experience-card" data-animate>
-                <p class="floating-chip text-xs">Creator console</p>
-                <h3 class="text-2xl font-semibold mt-3">Instant publishing</h3>
-                <p class="text-gray-300 text-sm mt-3">New entries hit PostgreSQL, invalidate Redis, and ripple out to socket listeners with a toast.</p>
-                <ul class="mt-4 space-y-2 text-sm text-gray-400">
-                    <li>Validation + previews</li>
-                    <li>Bulk metadata editing</li>
-                    <li>Role-gated admin flows</li>
-                </ul>
-            </article>
-            <article class="experience-card" data-animate>
-                <p class="floating-chip text-xs">Community channel</p>
-                <h3 class="text-2xl font-semibold mt-3">Programmable watch rooms</h3>
-                <p class="text-gray-300 text-sm mt-3">Virtual rooms bootstrap themselves from the catalog. Use them as programming notes or scheduling prototypes.</p>
-                <ul class="mt-4 space-y-2 text-sm text-gray-400">
-                    <li>Dynamic capacity indicators</li>
-                    <li>Timezone-aware start labels</li>
-                    <li>Genre mood tagging</li>
-                </ul>
-            </article>
-        </div>
-    </section>
+      <a class="side-icon" href="/movies/add" title="Add movie">
+        <i class="fa-solid fa-plus"></i>
+      </a>
     <% } %>
-
-    <section class="relative z-30 -mt-16 pb-8">
-        <div class="container mx-auto px-4 sm:px-6">
-            <div class="grid gap-6 lg:grid-cols-3">
-                <div class="glass-card p-6 space-y-4">
-                    <p class="floating-chip text-xs">Curation Pulse</p>
-                    <div class="grid grid-cols-2 gap-4 text-center">
-                        <div>
-                            <p class="text-sm text-gray-400">Total films</p>
-                            <p id="stat-total-movies" class="text-4xl font-black">0</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-400">Unique genres</p>
-                            <p id="stat-genres" class="text-3xl font-semibold">0</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-400">Unique directors</p>
-                            <p id="stat-directors" class="text-3xl font-semibold">0</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-400">Avg. rating</p>
-                            <p id="stat-rating" class="text-3xl font-semibold">0</p>
-                        </div>
-                    </div>
-                    <div class="cin-divider"></div>
-                    <p class="text-sm text-gray-400 leading-relaxed">Meticulously curated world cinema feed with adaptive queues and ambient discovery.</p>
-                </div>
-                <div class="glass-card p-6 space-y-4">
-                    <p class="floating-chip">For you</p>
-                    <p class="text-gray-300">Cineverse learns from your favorites to surface festival gems and cult classics.</p>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-400">Watchlist</p>
-                            <p id="stat-list" class="text-3xl font-black">0</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm text-gray-400">Sessions</p>
-                            <p id="stat-watch" class="text-3xl font-black">0</p>
-                        </div>
-                    </div>
-                    <div class="cine-progress">
-                        <span id="stat-curation-progress"></span>
-                    </div>
-                    <p class="text-xs text-gray-400">Every save sharpens recommendations.</p>
-                </div>
-                <div class="glass-card p-0 overflow-hidden flex flex-col">
-                    <div class="p-6 pb-3">
-                        <p class="floating-chip">Experience flow</p>
-                        <h3 class="text-2xl font-semibold mt-3">Dual-lane streaming for cinephiles & curators</h3>
-                    </div>
-                    <div class="cin-wave flex items-center justify-between p-6">
-                        <div>
-                            <p class="text-xs uppercase text-white/70">Curated rails</p>
-                            <p class="text-3xl font-black">24</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xs uppercase text-white/70">Festivals covered</p>
-                            <p class="text-3xl font-black">18</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
+    <a class="side-icon <%= activePlatform ? '' : 'active' %>" href="/" title="Home">
+      <i class="fa-solid fa-house"></i>
+    </a>
     <% if (user && user.isAdmin) { %>
-    <section class="container mx-auto px-4 sm:px-6 pb-8">
-        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6">
-            <div>
-                <p class="floating-chip text-xs">Multi-database fabric</p>
-                <h2 class="text-3xl md:text-4xl font-black tracking-tight">Workloads split across Atlas & Postgres</h2>
-            </div>
-            <p class="text-gray-400 max-w-2xl">MongoDB Atlas secures identities while PostgreSQL powers the entire film catalog and scheduling logic. Each datastore scales independently but stays in sync through Redis fan-out.</p>
-        </div>
-        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            <% const fabricCards = (dbStatus && dbStatus.length ? dbStatus : [{ key: 'pending', name: 'Connectivity pending', role: 'Awaiting metrics', status: 'offline', detail: 'No telemetry available yet.' }]); %>
-            <% fabricCards.forEach(card => { %>
-                <article class="fabric-card" data-status="<%= card.status %>">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs uppercase tracking-[0.2em] text-white/60"><%= card.role %></span>
-                        <span class="status-pill status-<%= card.status %>"><%= card.status %></span>
-                    </div>
-                    <h3 class="text-2xl font-bold leading-snug"><%= card.name %></h3>
-                    <p class="text-sm text-gray-400 mt-3"><%= card.detail %></p>
-                </article>
-            <% }) %>
-        </div>
-    </section>
+      <a class="side-icon" href="/admin/films" title="Analytics board">
+        <i class="fa-solid fa-chart-line"></i>
+      </a>
     <% } %>
+    <a class="side-icon" href="#platform-row" title="Browse platforms">
+      <i class="fa-solid fa-layer-group"></i>
+    </a>
+    <a class="side-icon" href="#platform-gallery" title="Stream catalog">
+      <i class="fa-solid fa-clapperboard"></i>
+    </a>
+    <a class="side-icon" href="/platform/netflix" title="Netflix">
+      <i class="fa-solid fa-ticket"></i>
+    </a>
+    <a class="side-icon" href="/platform/disney%2B" title="Disney+">
+      <i class="fa-regular fa-heart"></i>
+    </a>
+    <a class="side-icon" href="/platform/prime%20video" title="Prime Video">
+      <i class="fa-regular fa-user"></i>
+    </a>
+  </aside>
 
-    <section id="curated-rows" class="container mx-auto px-4 sm:px-6 py-8 space-y-10"></section>
-
-    <div id="genre-filter-bar-wrapper" class="sticky top-[68px] z-40 py-4 shadow-lg transition-all duration-300">
-         <div id="genre-filter-bar" class="container mx-auto px-4 sm:px-6 flex items-center space-x-2 overflow-x-auto"></div>
+  <section class="hero-section">
+    <div class="hero-panel hero-shell" id="hero-banner" data-hero-shell>
+      <div class="hero-panel__image" data-hero-image></div>
+      <div class="hero-panel__glow"></div>
+      <div class="hero-content">
+        <div class="hero-left">
+          <p class="platform-label" data-hero-source>NETFLIX</p>
+          <h1 class="hero-title" data-hero-title>Bodies</h1>
+          <div class="meta-row">
+            <span class="badge imdb">
+              <i class="fa-solid fa-star"></i>
+              <span data-hero-imdb>IMDb 0.0</span>
+            </span>
+            <span class="badge" data-hero-runtime>—</span>
+            <span class="badge" data-hero-year>—</span>
+            <span class="badge" data-hero-rating>18+</span>
+          </div>
+          <p class="hero-description" data-hero-description>
+            Start adding movies to populate this hero panel.
+          </p>
+          <div class="genres hero-tags" data-hero-tags>
+            <span class="genre-pill tag-pill">Crime</span>
+            <span class="genre-pill tag-pill">Drama</span>
+            <span class="genre-pill tag-pill">History</span>
+          </div>
+          <div class="hero-actions">
+            <button class="btn btn-primary" type="button" data-hero-modal>
+              <i class="fa-solid fa-play"></i> Watch Now
+            </button>
+            <button class="btn btn-secondary" type="button" data-hero-save>
+              <i class="fa-solid fa-bookmark"></i> Watchlist
+            </button>
+          </div>
+        </div>
+        <div class="hero-right hero-poster">
+          <div class="poster-card">
+            <img data-hero-poster src="https://placehold.co/200x320/111/eee?text=Poster" alt="Featured poster">
+            <div class="poster-dots" data-hero-dots></div>
+            <button class="poster-speaker poster-sound" type="button">
+              <i class="fa-solid fa-volume-high"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div id="carousel-container-main" class="container mx-auto px-4 sm:px-6 py-12 space-y-16 relative z-20"></div>
+    <% const fallbackPlatforms = ['Netflix','Prime Video','Disney+','HBO Max','Apple TV+','Vidio','Viu','Hulu','Paramount+','Peacock']; %>
+    <% const providerSource = (platforms && platforms.length ? platforms : fallbackPlatforms); %>
+    <% const providerLogoMap = {
+         'netflix': { src: '/img/platforms/netflix.svg' },
+         'disney+': { src: '/img/platforms/disney-plus.svg' },
+         'prime video': { src: '/img/platforms/prime-video.svg' },
+         'primevideo': { src: '/img/platforms/prime-video.svg' },
+         'vidio': { src: '/img/platforms/vidio.svg' },
+         'apple tv+': { src: '/img/platforms/apple-tv-plus.png', tint: true },
+         'apple tv plus': { src: '/img/platforms/apple-tv-plus.png', tint: true },
+         'viu': { src: '/img/platforms/viu.svg' },
+         'hbo max': { src: 'https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_2020.svg', tint: true },
+         'hulu': { src: 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Hulu_Logo.svg', tint: true },
+         'paramount+': { src: 'https://upload.wikimedia.org/wikipedia/commons/8/88/Paramount%2B_logo.svg', tint: true },
+         'paramount plus': { src: 'https://upload.wikimedia.org/wikipedia/commons/8/88/Paramount%2B_logo.svg', tint: true },
+         'peacock': { src: 'https://upload.wikimedia.org/wikipedia/commons/8/88/Peacock_logo_2020.svg', tint: true }
+       }; %>
+    <% const providerList = ['All', ...providerSource]; %>
+    <% const tabList = providerList.slice(0, 3); %>
+    <% const curatedSections = sections || {}; %>
 
-    <% if (user && user.isAdmin) { %>
-    <section class="container mx-auto px-4 sm:px-6 pb-16">
-        <div class="creator-console" data-animate>
-            <div>
-                <p class="floating-chip text-xs">Creator cockpit</p>
-                <h2 class="text-3xl font-black mt-3">Design new drops faster</h2>
-                <p class="text-gray-300 mt-2 max-w-3xl">Toggle rails, pin spotlights, or schedule sessions without leaving the screen. Cineverse syncs every change through MongoDB logins, PostgreSQL metadata, and Redis sockets.</p>
-            </div>
-            <div class="flex flex-wrap gap-3">
-                <a href="/dashboard" class="px-6 py-3 rounded-full bg-white/10 border border-white/20 text-sm font-semibold text-white hover:bg-white/20 transition">Open mission control</a>
-                <a href="/movies/add" class="px-6 py-3 rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 text-sm font-semibold text-white shadow-lg shadow-sky-500/30">Add a new film</a>
-            </div>
-        </div>
+    <div class="tabs" id="platform-tabs">
+      <% tabList.forEach(name => {
+           const slug = encodeURIComponent(name.toLowerCase());
+           const isAll = name.toLowerCase() === 'all';
+           const isActive = isAll ? !activePlatform : activePlatform === name.toLowerCase();
+           const href = isAll ? '/' : ('/platform/' + slug);
+      %>
+        <a class="tab-btn <%= isActive ? 'active' : '' %>" href="<%= href %>"><%= name %></a>
+      <% }) %>
+    </div>
+
+    <% const defaultSlugList = ['netflix','disney+','prime video','vidio','apple tv+','viu','hbo','hulu','paramount+','peacock']; %>
+    <% const allowedSlugSet = new Set((allowedPlatformSlugs && allowedPlatformSlugs.length ? allowedPlatformSlugs : defaultSlugList)); %>
+
+    <section class="streaming-platform-row" id="platform-row">
+      <% if (allowedSlugSet.has('netflix')) { %>
+        <a class="stream-card <%= activePlatform === 'netflix' ? 'is-active' : '' %>" href="/platform/netflix">
+          <span class="logo netflix">NETFLIX</span>
+        </a>
+      <% } %>
+      <% if (allowedSlugSet.has('disney+')) { %>
+        <a class="stream-card <%= activePlatform === 'disney+' ? 'is-active' : '' %>" href="/platform/disney%2B">
+          <span class="logo disney">Disney<span>+</span></span>
+        </a>
+      <% } %>
+      <% if (allowedSlugSet.has('prime video')) { %>
+        <a class="stream-card <%= activePlatform === 'prime video' ? 'is-active' : '' %>" href="/platform/prime%20video">
+          <span class="logo prime">prime<span> video</span><i></i></span>
+        </a>
+      <% } %>
+      <% if (allowedSlugSet.has('vidio')) { %>
+        <a class="stream-card <%= activePlatform === 'vidio' ? 'is-active' : '' %>" href="/platform/vidio">
+          <span class="logo vidio">Vidio</span>
+        </a>
+      <% } %>
+      <% if (allowedSlugSet.has('apple tv+')) { %>
+        <a class="stream-card <%= activePlatform === 'apple tv+' ? 'is-active' : '' %>" href="/platform/apple%20tv%2B">
+          <span class="logo apple"><i></i><span>tv+</span></span>
+        </a>
+      <% } %>
+      <% if (allowedSlugSet.has('viu')) { %>
+        <a class="stream-card <%= activePlatform === 'viu' ? 'is-active' : '' %>" href="/platform/viu">
+          <span class="logo viu"><i></i><span>viu</span></span>
+        </a>
+      <% } %>
+      <% if (allowedSlugSet.has('hbo')) { %>
+        <a class="stream-card <%= activePlatform === 'hbo' ? 'is-active' : '' %>" href="/platform/hbo">
+          <span class="logo">HBO</span>
+        </a>
+      <% } %>
+      <% if (allowedSlugSet.has('hulu')) { %>
+        <a class="stream-card <%= activePlatform === 'hulu' ? 'is-active' : '' %>" href="/platform/hulu">
+          <span class="logo">hulu</span>
+        </a>
+      <% } %>
+      <% if (allowedSlugSet.has('paramount+')) { %>
+        <a class="stream-card <%= activePlatform === 'paramount+' ? 'is-active' : '' %>" href="/platform/paramount%2B">
+          <span class="logo">Paramount+</span>
+        </a>
+      <% } %>
+      <% if (allowedSlugSet.has('peacock')) { %>
+        <a class="stream-card <%= activePlatform === 'peacock' ? 'is-active' : '' %>" href="/platform/peacock">
+          <span class="logo">Peacock</span>
+        </a>
+      <% } %>
     </section>
 
-    <section id="curator-spotlights" class="container mx-auto px-4 sm:px-6 pb-10 space-y-6">
-        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-            <div>
-                <p class="floating-chip text-xs">PostgreSQL curator desk</p>
-                <h2 class="text-3xl md:text-4xl font-black tracking-tight">Live cinematic spotlights</h2>
-            </div>
-            <p class="text-gray-400 max-w-2xl text-sm md:text-base">Spotlights are generated directly from the PostgreSQL movie catalog—no extra datastore needed. Add or update a film and these rails refresh instantly.</p>
+    <div class="insight-row">
+      <div class="insight-card">
+        <p class="label">Total catalog</p>
+        <strong><%= stats.totalMovies || 0 %> titles</strong>
+      </div>
+      <div class="insight-card">
+        <p class="label">Active platforms</p>
+        <strong><%= stats.platformCount || 0 %></strong>
+      </div>
+      <div class="insight-card">
+        <p class="label">Spotlight</p>
+        <strong><%= platformLabel %></strong>
+        <p class="helper-text"><%= stats.visibleTitles %> titles curated</p>
+      </div>
+      <div class="insight-card">
+        <p class="label">Avg. rating</p>
+        <strong><%= stats.averageRating || '0.0' %></strong>
+      </div>
+      <% if (!user || !user.isAdmin) { %>
+        <div class="insight-card">
+          <p class="label">Plan</p>
+          <strong><%= planInfo ? planInfo.name : 'Free' %></strong>
+          <p class="helper-text"><%= (allowedPlatforms || []).length %> platforms unlocked</p>
         </div>
-        <% if (!catalogSpotlights || !catalogSpotlights.length) { %>
-            <div class="glass-card p-10 text-center text-gray-400">No spotlight programming yet. Seed the PostgreSQL catalog and real-time curation rails will appear here.</div>
-        <% } else { %>
-            <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                <% catalogSpotlights.forEach(item => { %>
-                    <article class="spotlight-card" style="--accent-color: <%= item.accentColor %>">
-                        <div class="spotlight-orbit"></div>
-                        <p class="text-xs uppercase tracking-[0.3em] text-white/60"><%= item.focusLabel %> • <%= item.moodLabel %></p>
-                        <h3 class="text-2xl font-bold mt-3"><%= item.title %></h3>
-                        <p class="text-sm text-gray-400 mt-2 leading-relaxed"><%= item.summary %></p>
-                        <div class="flex items-center justify-between mt-6">
-                            <div>
-                                <p class="text-xs text-gray-500 uppercase">Curated by</p>
-                                <p class="text-lg font-semibold"><%= item.presenter %></p>
-                            </div>
-                        </div>
-                        <span class="spotlight-date"><%= item.detail %></span>
-                    </article>
-                <% }) %>
-            </div>
-        <% } %>
-    </section>
+      <% } %>
+    </div>
 
-    <section id="watch-party-section" class="container mx-auto px-4 sm:px-6 pb-12 space-y-6">
-        <% 
-            const totalSeats = (virtualRooms || []).reduce((sum, session) => sum + (session.capacity || 0), 0);
-            const reservedSeats = (virtualRooms || []).reduce((sum, session) => sum + (session.registered || 0), 0);
-            const fillPercent = totalSeats ? Math.round((reservedSeats / totalSeats) * 100) : 0;
-        %>
-        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-            <div>
-                <p class="floating-chip text-xs">Communal watch grid</p>
-                <h2 class="text-3xl md:text-4xl font-black tracking-tight">Sessions generated straight from PostgreSQL</h2>
-            </div>
-            <p class="text-gray-400 max-w-2xl text-sm md:text-base">The moment a title lands in Postgres, Cineverse can carve out simulated watch rooms based on its metadata. Mongo keeps identities aligned for RSVPs.</p>
+    <% const nextPlatform = activePlatform || (providerSource[0] ? providerSource[0].toLowerCase() : ''); %>
+    <% const catalogLink = nextPlatform ? ('/platform/' + encodeURIComponent(nextPlatform) + '/catalog') : '/movies/add'; %>
+
+    <section class="spotlight-rail" id="platform-gallery">
+      <div class="rail-header">
+        <div>
+          <p class="label">Now streaming</p>
+          <h3><%= platformLabel %> highlights</h3>
+          <p class="helper-text">
+            Hover a card to surface its synopsis above, click to open the full detail modal, or jump to edits.
+          </p>
         </div>
-        <div class="grid gap-6 lg:grid-cols-3">
-            <div class="watch-party-summary glass-card p-6 space-y-4">
-                <div>
-                    <p class="text-xs uppercase tracking-[0.3em] text-white/60">Seats locked</p>
-                    <h3 class="text-4xl font-black"><%= reservedSeats %> / <%= totalSeats %></h3>
-                </div>
-                <div class="party-progress" style="--party-progress: <%= fillPercent %>%;">
-                    <span><%= fillPercent %>% utilization</span>
-                </div>
-                <ul class="space-y-2 text-sm text-gray-400">
-                    <li>Rooms derived from PostgreSQL catalog</li>
-                    <li>Films & art pulled directly from the same dataset</li>
-                    <li>Audience access managed by Mongo</li>
-                </ul>
-            </div>
-            <div class="lg:col-span-2 space-y-4">
-                <% if (!virtualRooms || !virtualRooms.length) { %>
-                    <div class="glass-card p-6 text-gray-400 text-center">No upcoming rooms right now. Seed the PostgreSQL catalog to auto-generate a schedule.</div>
-                <% } else { %>
-                    <% virtualRooms.forEach(session => { const progress = session.capacity ? Math.round((session.registered / session.capacity) * 100) : 0; %>
-                        <article class="watch-party-card" style="--party-color: <%= session.signalColor %>;">
-                            <div class="watch-party-date">
-                                <span class="text-sm font-semibold text-white"><%= session.startLabel %></span>
-                                <span class="text-xs text-gray-400"><%= session.startTimeLabel %> (<%= session.timezone %>)</span>
-                            </div>
-                            <div class="watch-party-body">
-                                <div class="flex items-center justify-between">
-                                    <h3 class="text-xl font-bold"><%= session.film %></h3>
-                                    <span class="text-xs uppercase tracking-[0.3em] text-white/60"><%= session.room %></span>
-                                </div>
-                                <p class="text-sm text-gray-400 mt-2"><%= session.theme %></p>
-                                <p class="text-sm text-gray-400">Host: <span class="text-white font-semibold"><%= session.host %></span></p>
-                                <p class="text-xs text-gray-500 mt-1"><%= session.vibe %></p>
-                                <div class="party-progress mt-3" style="--party-progress: <%= progress %>%;">
-                                    <span><%= session.registered %> / <%= session.capacity %> seats</span>
-                                </div>
-                            </div>
-                        </article>
+        <div class="rail-header__cta">
+          <a class="btn btn-secondary" href="<%= catalogLink %>">
+            <i class="fa-solid fa-table-cells-large"></i> Open catalog
+          </a>
+          <a class="btn btn-primary" href="/movies/add">
+            <i class="fa-solid fa-plus"></i> Add title
+          </a>
+        </div>
+      </div>
+
+      <% if (platformMovies && platformMovies.length) { %>
+        <div class="rail-track" data-movie-rail>
+          <% platformMovies.forEach(movie => { %>
+            <article class="rail-card" tabindex="0" data-movie-card="<%= movie.title %>" data-movie-card-hover="<%= movie.title %>">
+              <div class="rail-card__poster">
+                <img src="<%= movie.poster || 'https://placehold.co/240x360/111/eee?text=Poster' %>" alt="<%= movie.title %> poster">
+                <span class="rail-card__platform"><%= movie.platform || 'Featured' %></span>
+                <div class="rail-card__body">
+                  <div class="rail-card__meta">
+                    <span>IMDb <strong><%= Number(movie.rating || 0).toFixed(1) %></strong></span>
+                    <span><%= movie.runtime || '—' %></span>
+                    <span><%= movie.year || '—' %></span>
+                  </div>
+                  <h4><%= movie.title %></h4>
+                  <p>
+                    <%= movie.description
+                         ? (movie.description.length > 110 ? movie.description.slice(0, 110) + '…' : movie.description)
+                         : 'No synopsis yet.' %>
+                  </p>
+                  <div class="rail-card__tags">
+                    <% (movie.genres || []).slice(0, 3).forEach(genre => { %>
+                      <span><%= genre %></span>
                     <% }) %>
-                <% } %>
-            </div>
+                  </div>
+                  <div class="rail-card__actions">
+                    <a class="rail-card__edit" data-rail-edit href="/movies/edit/<%= movie.id %>">
+                      <i class="fa-solid fa-pen"></i> Edit metadata
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </article>
+          <% }) %>
         </div>
+      <% } else { %>
+        <p class="helper-text empty-state">
+          No titles in this selection yet. Use the add button above to seed the feed.
+        </p>
+      <% } %>
     </section>
+
+    <% if (curatedSections.actionPacked && curatedSections.actionPacked.length) { %>
+      <section class="category-section">
+        <div class="category-header">
+          <div>
+            <p class="label">Adrenaline rush</p>
+            <h3>Action packed sagas</h3>
+          </div>
+          <a class="category-link" href="/platform/netflix">See all</a>
+        </div>
+        <div class="category-row">
+          <% curatedSections.actionPacked.forEach(movie => { %>
+            <article class="category-card" data-movie-card="<%= movie.title %>" data-movie-card-hover="<%= movie.title %>">
+              <div class="category-card__art">
+                <img src="<%= movie.backdrop || movie.poster || 'https://placehold.co/640x360/111/eee?text=Poster' %>" alt="<%= movie.title %> art">
+              </div>
+              <div class="category-card__info">
+                <p class="category-card__meta"><%= movie.platform || 'Featured' %> • IMDb <strong><%= Number(movie.rating || 0).toFixed(1) %></strong></p>
+                <h4><%= movie.title %></h4>
+                <p><%= movie.description ? (movie.description.length > 90 ? movie.description.slice(0, 90) + '…' : movie.description) : 'No synopsis yet.' %></p>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      </section>
     <% } %>
-</main>
 
-<!-- Movie Details Modal -->
-<div id="movie-modal" class="animated-overlay fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4">
-    <div class="content-wrapper bg-card-bg rounded-xl shadow-2xl w-full max-w-5xl max-h-full overflow-hidden flex flex-col">
-        <div class="relative w-full h-64 md:h-96 flex-shrink-0 overflow-hidden">
-            <img id="modal-backdrop" src="" class="absolute inset-0 w-full h-full object-cover modal-backdrop-image" alt="Movie Backdrop" onerror="this.onerror=null;this.src='https://placehold.co/1280x720/0a0a0a/f8fafc?text=Backdrop+Not+Found';">
-            <div class="absolute inset-0 modal-backdrop-gradient"></div>
-            <button id="close-modal-button" class="absolute top-4 right-4 text-gray-300 hover:text-white transition z-20 bg-black/40 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-sm"><i class="fas fa-times text-xl"></i></button>
+    <% if (curatedSections.sciFiFrontier && curatedSections.sciFiFrontier.length) { %>
+      <section class="category-section">
+        <div class="category-header">
+          <div>
+            <p class="label">Across the cosmos</p>
+            <h3>Sci-Fi frontiers</h3>
+          </div>
+          <a class="category-link" href="/platform/hbo">Explore</a>
         </div>
-        <div class="flex-grow overflow-y-auto custom-scrollbar">
-            <div class="p-6 md:p-10 -mt-24 md:-mt-32 relative z-10">
-                <div class="flex flex-col md:flex-row gap-8">
-                    <div class="w-40 md:w-56 flex-shrink-0 relative">
-                        <div class="modal-poster-glow"></div>
-                        <img id="modal-poster" src="" class="w-full rounded-lg shadow-2xl relative z-10" alt="Movie Poster" onerror="this.onerror=null;this.src='https://placehold.co/500x750/1a1a1a/f8fafc?text=Poster+Not+Found';">
-                    </div>
-                    <div class="flex-grow pt-24 md:pt-32">
-                        <h2 id="modal-title" class="text-4xl md:text-5xl font-black hero-text-shadow text-balance"></h2>
-                        <div class="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-lg">
-                            <div class="flex items-center gap-2 font-bold text-yellow-400"><i class="fas fa-star"></i> <span id="modal-rating"></span></div>
-                            <div class="flex items-center gap-2"><i class="fas fa-calendar-alt text-gray-400"></i> <span id="modal-year"></span></div>
-                            <div class="flex items-center gap-2"><i class="fas fa-clock text-gray-400"></i> <span id="modal-runtime"></span></div>
-                        </div>
-                        <div id="modal-genres" class="flex flex-wrap gap-2 mt-4"></div>
-                    </div>
-                </div>
-                <div class="flex flex-col lg:flex-row gap-8 mt-8">
-                    <div class="lg:w-2/3">
-                        <p id="modal-description" class="text-text-secondary text-base md:text-lg leading-relaxed mb-6"></p>
-                        <div class="space-y-3 mb-6">
-                            <button id="modal-play-button" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition" type="button">
-                                <i class="fas fa-play"></i> <span>Play trailer</span>
-                            </button>
-                            <div id="modal-trailer-wrapper" class="hidden">
-                                <div class="rounded-xl overflow-hidden border border-white/20 aspect-video bg-black">
-                                    <iframe id="modal-trailer-frame" class="w-full h-full" src="" title="Trailer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                                </div>
-                                <button id="modal-close-trailer" class="mt-3 text-sm text-gray-400 hover:text-white" type="button">Close trailer</button>
-                            </div>
-                        </div>
-                        <div class="space-y-3 border-t border-gray-800 pt-6">
-                            <p class="text-text-secondary"><span class="font-semibold text-text-primary">Director:</span> <span id="modal-director"></span></p>
-                            <p class="text-text-secondary"><span class="font-semibold text-text-primary">Starring:</span> <span id="modal-cast"></span></p>
-                        </div>
-                    </div>
-                    <div class="lg:w-1/3">
-                        <div class="flex flex-col gap-4 bg-gray-900/50 p-6 rounded-lg">
-                            <button class="w-full bg-white text-black font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-200 transition text-lg transform hover:scale-105"><i class="fas fa-play"></i><span>Play</span></button>
-                            <button id="modal-my-list-button" class="list-btn w-full border-2 border-gray-600 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 hover:border-white transition text-lg"></button>
+        <div class="category-row">
+          <% curatedSections.sciFiFrontier.forEach(movie => { %>
+            <article class="category-card category-card--tall" data-movie-card="<%= movie.title %>" data-movie-card-hover="<%= movie.title %>">
+              <div class="category-card__art">
+                <img src="<%= movie.backdrop || movie.poster || 'https://placehold.co/640x360/111/eee?text=Poster' %>" alt="<%= movie.title %> art">
+              </div>
+              <div class="category-card__info">
+                <p class="category-card__meta"><%= movie.platform || 'Featured' %> • <%= movie.year || '—' %></p>
+                <h4><%= movie.title %></h4>
+                <p><%= movie.description ? (movie.description.length > 90 ? movie.description.slice(0, 90) + '…' : movie.description) : 'No synopsis yet.' %></p>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      </section>
+    <% } %>
 
-                            <% if (typeof user !== 'undefined' && user && user.isAdmin) { %>
-                            <!-- Admin-only actions -->
-                            <div class="mt-2 space-y-3">
-                                <a id="modal-edit-link" href="#" class="w-full border-2 border-sky-600 text-sky-400 font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 hover:bg-sky-600/10 transition text-lg">
-                                    <i class="fas fa-pen-to-square"></i><span>Edit</span>
-                                </a>
-                                <form id="modal-delete-form" action="#" method="POST">
-                                    <button id="modal-delete-button" class="w-full border-2 border-red-600 text-red-400 font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 hover:bg-red-600/10 transition text-lg">
-                                        <i class="fas fa-trash"></i><span>Delete</span>
-                                    </button>
-                                </form>
-                            </div>
-                            <% } %>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="similar-movies-section" class="px-6 md:px-10 pb-10 border-t border-gray-800 mt-8"></div>
+    <% if (curatedSections.freshDrops && curatedSections.freshDrops.length) { %>
+      <section class="category-section">
+        <div class="category-header">
+          <div>
+            <p class="label">This month</p>
+            <h3>Fresh arrivals</h3>
+          </div>
+          <a class="category-link" href="<%= catalogLink %>">Open catalog</a>
         </div>
-    </div>
+        <div class="category-row">
+          <% curatedSections.freshDrops.forEach(movie => { %>
+            <article class="category-card category-card--compact" data-movie-card="<%= movie.title %>" data-movie-card-hover="<%= movie.title %>">
+              <div class="category-card__art">
+                <img src="<%= movie.poster || movie.backdrop || 'https://placehold.co/320x480/111/eee?text=Poster' %>" alt="<%= movie.title %> art">
+              </div>
+              <div class="category-card__info">
+                <p class="category-card__meta">IMDb <strong><%= Number(movie.rating || 0).toFixed(1) %></strong> • <%= movie.year || '—' %></p>
+                <h4><%= movie.title %></h4>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      </section>
+    <% } %>
+
+    <% if (curatedSections.dramaClassics && curatedSections.dramaClassics.length) { %>
+      <section class="category-section">
+        <div class="category-header">
+          <div>
+            <p class="label">Storytelling legends</p>
+            <h3>Drama classics</h3>
+          </div>
+          <a class="category-link" href="/platform/prime%20video">See library</a>
+        </div>
+        <div class="category-row">
+          <% curatedSections.dramaClassics.forEach(movie => { %>
+            <article class="category-card category-card--tall" data-movie-card="<%= movie.title %>" data-movie-card-hover="<%= movie.title %>">
+              <div class="category-card__art">
+                <img src="<%= movie.backdrop || movie.poster || 'https://placehold.co/640x360/111/eee?text=Poster' %>" alt="<%= movie.title %> art">
+              </div>
+              <div class="category-card__info">
+                <p class="category-card__meta"><%= movie.platform || 'Featured' %> • <%= movie.year || '—' %></p>
+                <h4><%= movie.title %></h4>
+                <p><%= movie.description ? (movie.description.length > 90 ? movie.description.slice(0, 90) + '…' : movie.description) : 'No synopsis yet.' %></p>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      </section>
+    <% } %>
+
+    <% if (curatedSections.awardBuzz && curatedSections.awardBuzz.length) { %>
+      <section class="category-section">
+        <div class="category-header">
+          <div>
+            <p class="label">Critics’ table</p>
+            <h3>Award favorites</h3>
+          </div>
+          <a class="category-link" href="/admin/films">View insights</a>
+        </div>
+        <div class="category-row">
+          <% curatedSections.awardBuzz.forEach(movie => { %>
+            <article class="category-card category-card--wide" data-movie-card="<%= movie.title %>" data-movie-card-hover="<%= movie.title %>">
+              <div class="category-card__art">
+                <img src="<%= movie.backdrop || movie.poster || 'https://placehold.co/640x360/111/eee?text=Poster' %>" alt="<%= movie.title %> art">
+              </div>
+              <div class="category-card__info">
+                <p class="category-card__meta"><%= movie.platform || 'Featured' %> • <%= movie.year || '—' %></p>
+                <h4><%= movie.title %></h4>
+                <p><%= movie.description ? (movie.description.length > 70 ? movie.description.slice(0, 70) + '…' : movie.description) : 'No synopsis yet.' %></p>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      </section>
+    <% } %>
+  </section>
 </div>
 
-<!-- Search Overlay -->
-<div id="search-overlay" class="animated-overlay fixed inset-0 z-[70] bg-black/90 backdrop-blur-lg flex-col p-4 pt-24 overflow-y-auto" style="display: none;">
-    <div class="content-wrapper w-full max-w-5xl mx-auto">
-        <button id="close-search-button" class="absolute top-6 right-6 text-gray-400 hover:text-white transition"><i class="fas fa-times text-4xl"></i></button>
-        <div class="relative">
-            <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 text-2xl"></i>
-            <input type="text" id="search-input" placeholder="Search films, directors, genres..." class="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-5 pl-16 pr-6 text-white text-2xl focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
-        </div>
-        <div id="search-results-container" class="mt-8">
-            <div id="search-initial-state">
-                 <h3 class="font-bold text-white text-xl mb-4">Popular Genres</h3>
-                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="search-genres-grid"></div>
-            </div>
-            <div id="search-results-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
-            <p id="search-no-results" class="text-center text-gray-400 text-lg hidden">No results found.</p>
-        </div>
+<div id="movieModal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal__dialog">
+    <button class="modal__close" type="button" data-modal-close>&times;</button>
+    <div class="modal__media">
+      <img id="modalPoster" src="https://placehold.co/600x800/111/eee?text=Poster" alt="Poster preview">
     </div>
+    <div class="modal__body">
+      <h2 class="modal__title" id="modalTitle">Movie title</h2>
+      <p class="modal__meta" id="modalMeta"></p>
+      <p class="modal__description" id="modalDescription"></p>
+      <div class="modal__genres" id="modalGenres"></div>
+      <p class="helper-text"><strong>Director:</strong> <span id="modalDirector"></span></p>
+      <p class="helper-text"><strong>Cast:</strong> <span id="modalCast"></span></p>
+      <div class="hero-actions" style="margin-top:1rem;">
+        <button class="btn btn-primary" type="button" data-modal-watchlist>Add to watchlist</button>
+        <a class="btn btn-secondary" href="#" id="modalTrailerLink" target="_blank" rel="noopener">Watch trailer</a>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-    // ** Server-passed data **
-    const allMovieData = <%- JSON.stringify(movies) %>;
-    window.__CINEVERSE_MOVIES__ = allMovieData;
-    const userMyList = <%- JSON.stringify(user && user.myList ? user.myList : []) %>;
-    const isAdmin = <%- JSON.stringify(!!(user && user.isAdmin)) %>;
-    window.__CINEVERSE_USER__ = {
-        id: <%- JSON.stringify(user ? (user._id ? user._id.toString() : null) : null) %>,
-        isAdmin
-    };
-    const catalogSpotlights = <%- JSON.stringify(catalogSpotlights || []) %>;
-    const virtualRooms = <%- JSON.stringify(virtualRooms || []) %>;
-    const dbStatusPayload = <%- JSON.stringify(dbStatus || []) %>;
-    window.__CINEVERSE_FABRIC__ = { catalogSpotlights, virtualRooms, dbStatus: dbStatusPayload };
-
-    const initialCarouselData = [
-        { title: 'Sci-Fi Epics', genres: ['Sci-Fi'] },
-        { title: 'Director\'s Spotlight: Christopher Nolan', director: 'Christopher Nolan' },
-        { title: 'Critically Acclaimed Dramas', genres: ['Drama'] },
-        { title: 'Action Packed', genres: ['Action'] },
-        { title: 'Animated Wonders', genres: ['Animation'] }
-    ];
-
-    const hideLoader = () => {
-        const loaderEl = document.getElementById('loader');
-        if (loaderEl) loaderEl.classList.add('hidden');
-    };
-
-    window.addEventListener('load', hideLoader);
-    setTimeout(hideLoader, 2500);
-
-    document.addEventListener('DOMContentLoaded', () => {
-        let myList = userMyList;
-        let currentFilter = 'All';
-        let heroCarouselInterval;
-        let currentHeroSlide = 0;
-        const featuredHeroMovies = Object.keys(allMovieData).slice(0, 5);
-
-        const cache = {
-            loader: document.getElementById('loader'),
-            heroSection: document.getElementById('hero-section'),
-            modal: document.getElementById('movie-modal'),
-            searchOverlay: document.getElementById('search-overlay'),
-            mainCarouselContainer: document.getElementById('carousel-container-main'),
-            genreFilterBar: document.getElementById('genre-filter-bar'),
-            trailerWrapper: document.getElementById('modal-trailer-wrapper'),
-            trailerFrame: document.getElementById('modal-trailer-frame'),
-            trailerPlayButton: document.getElementById('modal-play-button'),
-            trailerCloseButton: document.getElementById('modal-close-trailer')
-        };
-        const statsRefs = {
-            totalMovies: document.getElementById('stat-total-movies'),
-            genres: document.getElementById('stat-genres'),
-            directors: document.getElementById('stat-directors'),
-            rating: document.getElementById('stat-rating'),
-            watch: document.getElementById('stat-watch'),
-            list: document.getElementById('stat-list'),
-            curationBar: document.getElementById('stat-curation-progress'),
-            heroTotals: document.getElementById('hero-total-titles'),
-            heroAvg: document.getElementById('hero-avg-rating'),
-            heroGenres: document.getElementById('hero-genre-count'),
-            heroWatch: document.getElementById('hero-watchlist-count'),
-            heroSessions: document.getElementById('hero-active-sessions'),
-            heroRails: document.getElementById('hero-rails'),
-            heroPills: document.getElementById('hero-genre-pills'),
-            heroFeaturedTitle: document.getElementById('hero-featured-title'),
-            heroFeaturedMeta: document.getElementById('hero-featured-meta')
-        };
-
-        function normalizeTrailerUrl(url = '') {
-            if (!url) return '';
-            const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([A-Za-z0-9_-]{6,})/i);
-            if (ytMatch) {
-                return `https://www.youtube.com/embed/${ytMatch[1]}`;
-            }
-            return url;
-        }
-
-        function hideModalTrailer() {
-            if (cache.trailerWrapper) cache.trailerWrapper.classList.add('hidden');
-            if (cache.trailerFrame) cache.trailerFrame.src = '';
-        }
-
-        function enableModalTrailer(rawUrl) {
-            if (!cache.trailerPlayButton) return;
-            if (!rawUrl) {
-                cache.trailerPlayButton.classList.add('hidden');
-                hideModalTrailer();
-                return;
-            }
-            cache.trailerPlayButton.dataset.trailer = rawUrl;
-            cache.trailerPlayButton.classList.remove('hidden');
-        }
-
-        function populateCurationStats() {
-            const movieArray = Object.values(allMovieData);
-            const uniqueDirectors = new Set(movieArray.map(m => (m.director || '').toLowerCase().trim()).filter(Boolean));
-            const averageGenres = movieArray.reduce((sum, m) => sum + (m.genres || []).length, 0) / Math.max(1, movieArray.length);
-            const uniqueGenres = new Set(movieArray.flatMap(m => m.genres || []));
-            const avgRating = movieArray.reduce((sum, m) => sum + Number(m.rating || 0), 0) / Math.max(movieArray.length, 1);
-            const culturalScore = Math.min(100, Math.round((uniqueGenres.size / 12) * 100));
-
-            statsRefs.totalMovies && (statsRefs.totalMovies.textContent = movieArray.length);
-            statsRefs.genres && (statsRefs.genres.textContent = uniqueGenres.size);
-            statsRefs.directors && (statsRefs.directors.textContent = uniqueDirectors.size);
-            statsRefs.rating && (statsRefs.rating.textContent = avgRating.toFixed(1));
-
-            const simulatedWatch = movieArray.length * 3 + Math.round(Math.random() * 40);
-            const simulatedList = myList.length * 5 + Math.round(Math.random() * 20);
-            statsRefs.watch && (statsRefs.watch.textContent = simulatedWatch);
-            statsRefs.list && (statsRefs.list.textContent = simulatedList);
-            statsRefs.curationBar && (statsRefs.curationBar.style.width = `${culturalScore}%`);
-
-            if (statsRefs.heroTotals) statsRefs.heroTotals.textContent = movieArray.length;
-            if (statsRefs.heroAvg) statsRefs.heroAvg.textContent = avgRating.toFixed(2);
-            if (statsRefs.heroGenres) statsRefs.heroGenres.textContent = uniqueGenres.size;
-            if (statsRefs.heroWatch) statsRefs.heroWatch.textContent = simulatedList;
-            if (statsRefs.heroSessions) statsRefs.heroSessions.textContent = Math.max(1, simulatedWatch - simulatedList);
-            if (statsRefs.heroRails) statsRefs.heroRails.textContent = Math.max(4, movieArray.length * 2);
-
-            if (statsRefs.heroPills) {
-                const pillGenres = Array.from(uniqueGenres).slice(0, 6);
-                statsRefs.heroPills.innerHTML = pillGenres.length
-                    ? pillGenres.map(g => `<span>${g}</span>`).join('')
-                    : '<span>Add a title to unlock live pills</span>';
-            }
-
-            if (statsRefs.heroFeaturedTitle) {
-                const featured = movieArray[0];
-                if (featured) {
-                    statsRefs.heroFeaturedTitle.textContent = featured.title;
-                    statsRefs.heroFeaturedMeta.textContent = `${featured.year || 'Year TBD'} • ${featured.runtime || 'Runtime TBD'} • ${featured.genres?.slice(0, 2).join(' / ') || 'Genre pending'}`;
-                }
-            }
-        }
-        populateCurationStats();
-        
-        function updateListButtonUI(button, movieTitle) {
-            if (!button) return;
-            const isInList = myList.includes(movieTitle);
-            button.classList.toggle('in-list', isInList);
-            const text = isInList ? 'In My List' : 'Add to My List';
-            button.innerHTML = `
-                <span class="icon-plus"><i class="fas fa-plus w-6"></i></span>
-                <span class="icon-check"><i class="fas fa-check w-6"></i></span>
-                <span>${text}</span>
-            `;
-        }
-
-        // Toggle My List via backend
-        function toggleMyList(movieTitle) {
-            const isInList = myList.includes(movieTitle);
-            const endpoint = isInList ? '/movies/list/remove' : '/movies/list/add';
-
-            fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ movieTitle })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    if (isInList) {
-                        myList = myList.filter(title => title !== movieTitle);
-                    } else {
-                        myList.push(movieTitle);
-                    }
-                    document.querySelectorAll(`[data-list-btn='${movieTitle}']`).forEach(btn => updateListButtonUI(btn, movieTitle));
-                    updateListButtonUI(document.getElementById('modal-my-list-button'), movieTitle);
-                    renderCarousels(currentFilter);
-                } else {
-                    alert('Could not update your list. Please try again.');
-                }
-            })
-            .catch(err => {
-                console.error('Error updating list:', err);
-                alert('An error occurred. Please try again.');
-            });
-        }
-        
-        function setupHeroCarousel() {
-            if (featuredHeroMovies.length === 0) {
-                if(cache.heroSection) cache.heroSection.innerHTML = `<div class="text-center w-full"><h2 class="text-3xl font-bold">No featured movies yet.</h2><p class="text-lg text-gray-400 mt-2">Add some movies to get started!</p></div>`;
-                return;
-            }
-            let slidesHTML = '';
-            let dotsHTML = '';
-            featuredHeroMovies.forEach((title, index) => {
-                const movie = allMovieData[title];
-                if (!movie) return;
-                slidesHTML += `
-                    <div class="hero-slide" data-slide-index="${index}">
-                        <div class="absolute inset-0 bg-black/30 z-10"></div>
-                        <img src="${movie.backdrop}" alt="${title} Background" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/1920x1080/0a0a0a/f8fafc?text=Backdrop+Not+Found';">
-                        <div class="absolute inset-0 hero-gradient-overlay"></div>
-                        <div class="relative h-full flex items-center z-20 container mx-auto px-4 sm:px-6 w-full lg:w-3/5 xl:w-1/2">
-                            <div>
-                                <h2 class="hero-component text-5xl md:text-7xl font-black hero-text-shadow text-balance">${title}</h2>
-                                <div class="hero-component flex flex-wrap items-center gap-4 mt-6 text-sm" style="animation-delay: 200ms;">
-                                    <div class="hero-meta-item"><i class="fas fa-star text-yellow-400"></i> <strong>${movie.rating || 'N/A'}</strong></div>
-                                    <div class="hero-meta-item"><span>${movie.year || 'Unknown'}</span></div>
-                                    <div class="hero-meta-item"><span>${(movie.genres || []).slice(0, 2).join(' &middot; ')}</span></div>
-                                </div>
-                                <p class="hero-component mt-4 text-gray-200 text-lg max-w-prose" style="animation-delay: 400ms;">${movie.description || 'No description available.'}</p>
-                                <div class="hero-component mt-8 flex flex-wrap gap-4" style="animation-delay: 600ms;">
-                                    <button class="bg-white text-black font-bold py-3 px-8 rounded-lg flex items-center space-x-2 hover:bg-gray-200 transition text-lg transform hover:scale-105"><i class="fas fa-play"></i><span>Play</span></button>
-                                    <button class="movie-modal-trigger bg-gray-700/50 text-white font-bold py-3 px-8 rounded-lg flex items-center space-x-2 hover:bg-gray-600/70 transition backdrop-blur-sm text-lg transform hover:scale-105" data-title="${title}"><i class="fas fa-info-circle"></i><span>More Info</span></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                dotsHTML += `<div class="hero-dot" data-dot-index="${index}"></div>`;
-            });
-            cache.heroSection.innerHTML = `
-                ${slidesHTML}
-                <button id="hero-prev" class="hero-nav-arrow left-4 md:left-8"><i class="fas fa-chevron-left"></i></button>
-                <button id="hero-next" class="hero-nav-arrow right-4 md:right-8"><i class="fas fa-chevron-right"></i></button>
-                <div class="hero-dots-container">${dotsHTML}</div>
-            `;
-            showHeroSlide(0);
-            startHeroCarousel();
-        }
-
-        function showHeroSlide(index) {
-            currentHeroSlide = index;
-            const slides = document.querySelectorAll('.hero-slide');
-            slides.forEach((slide, i) => {
-                const isActive = i === index;
-                slide.classList.toggle('active', isActive);
-                if (isActive) {
-                    slide.querySelectorAll('.hero-component').forEach((el, j) => {
-                        el.style.animationDelay = `${200 * (j + 1)}ms`;
-                    });
-                }
-            });
-            document.querySelectorAll('.hero-dot').forEach((dot, i) => {
-                dot.classList.toggle('active', i === index);
-            });
-        }
-
-        function nextHeroSlide() {
-            if (featuredHeroMovies.length === 0) return;
-            const nextIndex = (currentHeroSlide + 1) % featuredHeroMovies.length;
-            showHeroSlide(nextIndex);
-        }
-
-        function prevHeroSlide() {
-            if (featuredHeroMovies.length === 0) return;
-            const prevIndex = (currentHeroSlide - 1 + featuredHeroMovies.length) % featuredHeroMovies.length;
-            showHeroSlide(prevIndex);
-        }
-
-        function startHeroCarousel() {
-            clearInterval(heroCarouselInterval);
-            heroCarouselInterval = setInterval(nextHeroSlide, 7000);
-        }
-
-        function createCarouselItem(title) {
-            const movie = allMovieData[title];
-            if (!movie) return '';
-            const isInList = myList.includes(title);
-            return `
-                <div class="carousel-item flex-shrink-0 w-48 md:w-56 group z-10">
-                    <div class="movie-modal-trigger cursor-pointer rounded-lg overflow-hidden relative" data-title="${title}">
-                        <img src="${movie.poster}" alt="${title}" class="w-full h-auto object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/500x750/1a1a1a/f8fafc?text=Poster+Not+Found';">
-                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
-                            <button class="w-12 h-12 bg-white/90 text-black rounded-full text-xl flex items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-200" style="transition-delay: 100ms;"><i class="fas fa-play"></i></button>
-                        </div>
-                    </div>
-                    <div class="mt-3 flex items-start justify-between">
-                        <h4 class="font-semibold text-white pr-2">${title}</h4>
-                        <button class="list-btn flex-shrink-0 w-8 h-8 rounded-full border-2 border-gray-600 flex items-center justify-center text-white transition-colors duration-300 ${isInList ? 'in-list' : ''}" data-list-btn="${title}">
-                            <span class="icon-plus"><i class="fas fa-plus"></i></span>
-                            <span class="icon-check"><i class="fas fa-check"></i></span>
-                        </button>
-                    </div>
-                    <p class="text-sm text-text-secondary">${movie.year || 'Unknown'}</p>
-                </div>
-            `;
-        }
-
-        function createCarouselHTML(title, movieTitles) {
-            if (movieTitles.length === 0) return '';
-            return `
-                <div class="carousel-wrapper relative">
-                    <h3 class="text-2xl font-bold text-white mb-6">${title}</h3>
-                    <div class="relative">
-                        <div class="carousel-container flex items-start space-x-6 pb-4 -mx-4 px-4 overflow-x-auto">
-                            ${movieTitles.map(createCarouselItem).join('')}
-                        </div>
-                        <button data-direction="left" class="carousel-arrow absolute top-1/2 -mt-8 left-0 -translate-x-1/2 w-14 h-14 bg-black/60 rounded-full text-white z-20 hidden md:flex items-center justify-center hover:bg-black"><i class="fas fa-chevron-left"></i></button>
-                        <button data-direction="right" class="carousel-arrow absolute top-1/2 -mt-8 right-0 translate-x-1/2 w-14 h-14 bg-black/60 rounded-full text-white z-20 hidden md:flex items-center justify-center hover:bg-black"><i class="fas fa-chevron-right"></i></button>
-                    </div>
-                </div>`;
-        }
-
-        function renderCarousels(filterGenre = 'All') {
-            let html = '';
-            if (myList.length > 0) {
-                html += createCarouselHTML('My List', myList);
-            }
-            if (Object.keys(allMovieData).length === 0 && myList.length === 0) {
-                if(cache.mainCarouselContainer) cache.mainCarouselContainer.innerHTML = `<div class="text-center text-gray-400 py-16"><h3 class="text-2xl font-bold">No movies in the database yet.</h3><p>An admin can add movies to get started.</p></div>`;
-                return;
-            }
-            if (filterGenre === 'All') {
-                initialCarouselData.forEach(cat => {
-                    const movies = Object.keys(allMovieData).filter(title => {
-                        const movie = allMovieData[title];
-                        if (!movie) return false;
-                        if (cat.genres) return (movie.genres || []).some(g => cat.genres.includes(g));
-                        if (cat.director) return movie.director === cat.director;
-                        return false;
-                    });
-                    if (movies.length) {
-                      html += createCarouselHTML(cat.title, movies);
-                    }
-                });
-                const allTitles = Object.keys(allMovieData);
-                if (allTitles.length) {
-                    html += createCarouselHTML('All titles', allTitles);
-                }
-            } else {
-                const movies = Object.keys(allMovieData).filter(title => (allMovieData[title].genres || []).includes(filterGenre));
-                html += createCarouselHTML(`${filterGenre} Films`, movies);
-            }
-            if (!html) {
-                const allTitles = Object.keys(allMovieData);
-                if (allTitles.length) {
-                    const fallback = allTitles.sort((a, b) => {
-                        const movieA = allMovieData[a];
-                        const movieB = allMovieData[b];
-                        return (Number(movieB.rating) || 0) - (Number(movieA.rating) || 0);
-                    });
-                    html = createCarouselHTML('All titles', fallback);
-                }
-            }
-            if(cache.mainCarouselContainer) cache.mainCarouselContainer.innerHTML = html || `<div class="text-center text-gray-400 py-16"><h3 class="text-2xl font-bold">No films found in "${filterGenre}"</h3></div>`;
-            setupCarouselObservers();
-        }
-
-        function getTopTitlesByRating(limit = 10) {
-            return Object.entries(allMovieData)
-                .sort(([, a], [, b]) => (Number(b.rating) || 0) - (Number(a.rating) || 0))
-                .slice(0, limit)
-                .map(([title]) => title);
-        }
-
-        function getRecentTitles(limit = 10) {
-            return Object.entries(allMovieData)
-                .filter(([, data]) => Number(data.year))
-                .sort(([, a], [, b]) => Number(b.year || 0) - Number(a.year || 0))
-                .slice(0, limit)
-                .map(([title]) => title);
-        }
-
-        function getGenreFavorites(limit = 10) {
-            const genreCounts = {};
-            Object.values(allMovieData).forEach(movie => {
-                (movie.genres || []).forEach(genre => {
-                    genreCounts[genre] = (genreCounts[genre] || 0) + 1;
-                });
-            });
-            const favoriteGenre = Object.entries(genreCounts).sort((a, b) => b[1] - a[1])[0]?.[0];
-            if (!favoriteGenre) return [];
-            return Object.entries(allMovieData)
-                .filter(([, data]) => (data.genres || []).includes(favoriteGenre))
-                .sort(([, a], [, b]) => (Number(b.rating) || 0) - (Number(a.rating) || 0))
-                .slice(0, limit)
-                .map(([title]) => title);
-        }
-
-        function getDirectorSpotlight(limit = 8) {
-            const directorCounts = {};
-            Object.values(allMovieData).forEach(movie => {
-                if (!movie.director) return;
-                const key = movie.director.trim();
-                directorCounts[key] = (directorCounts[key] || 0) + 1;
-            });
-            const topDirector = Object.entries(directorCounts).sort((a, b) => b[1] - a[1])[0]?.[0];
-            if (!topDirector) return [];
-            return Object.entries(allMovieData)
-                .filter(([, data]) => (data.director || '').trim() === topDirector)
-                .slice(0, limit)
-                .map(([title]) => title);
-        }
-
-        function renderCuratedRows() {
-            if (!cache.curatedRows) return;
-            const blocks = [];
-            const loveThese = getGenreFavorites(10);
-            if (loveThese.length) blocks.push(createCarouselHTML("We think you'll love these", loveThese));
-            const topRated = getTopTitlesByRating(10);
-            if (topRated.length) blocks.push(createCarouselHTML('Top 10 World Cinema', topRated));
-            const recent = getRecentTitles(10);
-            if (recent.length) blocks.push(createCarouselHTML('Fresh arrivals', recent));
-            const directorRow = getDirectorSpotlight(8);
-            if (directorRow.length) blocks.push(createCarouselHTML('Director spotlight', directorRow));
-            if (!blocks.length) {
-                initialCarouselData.forEach(cat => {
-                    const movies = Object.keys(allMovieData).filter(title => {
-                        const movie = allMovieData[title];
-                        if (!movie) return false;
-                        if (cat.genres) return (movie.genres || []).some(g => cat.genres.includes(g));
-                        if (cat.director) return movie.director === cat.director;
-                        return false;
-                    });
-                    if (movies.length) blocks.push(createCarouselHTML(cat.title, movies));
-                });
-            }
-            cache.curatedRows.innerHTML = blocks.join('') || `<div class="text-center text-gray-400 py-8">Add more films to unlock personalized rows.</div>`;
-        }
-
-        function renderGenreFilters() {
-            const prioritizedGenres = ['Action', 'Crime', 'Sci-fi', 'Sport/Action', 'Sports', 'Thriller'];
-            const uniqueGenres = new Set(Object.values(allMovieData).flatMap(m => m.genres || []));
-            const rest = [...uniqueGenres].filter(genre => !prioritizedGenres.includes(genre)).sort();
-            const genres = ['All', ...prioritizedGenres, ...rest];
-            if(cache.genreFilterBar) {
-                cache.genreFilterBar.innerHTML = genres.map(genre => `
-                    <button class="genre-filter-button whitespace-nowrap px-5 py-2 rounded-full text-sm font-semibold bg-gray-800/50 text-gray-300 hover:bg-gray-700/70 flex-shrink-0 transition-all duration-300 border border-transparent" data-genre="${genre}">
-                        ${genre}
-                    </button>`).join('');
-                
-                const allButton = cache.genreFilterBar.querySelector('[data-genre="All"]');
-                if (allButton) {
-                    allButton.classList.add('active');
-                }
-            }
-        }
-
-        function renderSimilarMovies(genres = [], currentTitle) {
-            const similar = Object.keys(allMovieData)
-                .filter(title => {
-                    const movie = allMovieData[title];
-                    return title !== currentTitle && (movie.genres || []).some(g => genres.includes(g));
-                })
-                .slice(0, 5);
-            
-            const section = document.getElementById('similar-movies-section');
-            if (section) {
-                if (similar.length === 0) {
-                    section.innerHTML = '';
-                    return;
-                }
-                section.innerHTML = `
-                    <h3 class="text-2xl font-bold text-white mb-6">You Might Also Like</h3>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                        ${similar.map(title => `
-                            <div class="movie-modal-trigger cursor-pointer group" data-title="${title}">
-                                <img src="${allMovieData[title].poster}" class="rounded-lg transition-transform group-hover:scale-105" onerror="this.onerror=null;this.src='https://placehold.co/500x750/1a1a1a/f8fafc?text=Poster+Not+Found';">
-                                <p class="text-sm text-white mt-2 truncate font-semibold">${title}</p>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }
-        }
-
-        function openModal(title) {
-            const movie = allMovieData[title];
-            if (!movie) return;
-
-            document.getElementById('modal-title').textContent = title;
-            document.getElementById('modal-backdrop').src = movie.backdrop;
-            document.getElementById('modal-poster').src = movie.poster;
-            document.getElementById('modal-description').textContent = movie.description || 'No description available.';
-            document.getElementById('modal-rating').textContent = `${movie.rating || 'N/A'} / 10`;
-            document.getElementById('modal-year').textContent = movie.year || 'Unknown';
-            document.getElementById('modal-runtime').textContent = movie.runtime || 'N/A';
-            document.getElementById('modal-director').textContent = movie.director || 'Unknown';
-            document.getElementById('modal-cast').textContent = (movie.cast || []).join(', ');
-            document.getElementById('modal-genres').innerHTML = (movie.genres || []).map(g => `<span class="bg-gray-700/50 text-text-secondary text-xs font-semibold px-2.5 py-1 rounded backdrop-blur-sm">${g}</span>`).join('');
-            enableModalTrailer(movie.trailerUrl || movie.trailer || '');
-            
-            const listButton = document.getElementById('modal-my-list-button');
-            if(listButton) {
-                listButton.dataset.listBtn = title;
-                updateListButtonUI(listButton, title);
-            }
-
-            // Admin actions
-            if (isAdmin) {
-                const editLink = document.getElementById('modal-edit-link');
-                const deleteForm = document.getElementById('modal-delete-form');
-                const deleteBtn = document.getElementById('modal-delete-button');
-
-                if (movie && movie._id) {
-                    if (editLink) editLink.href = `/movies/edit/${movie._id}`;
-                    if (deleteForm) deleteForm.action = `/movies/delete/${movie._id}`;
-                    if (deleteBtn && deleteForm) {
-                        deleteBtn.onclick = (e) => {
-                            e.preventDefault();
-                            if (confirm('Are you sure you want to delete this movie?')) {
-                                deleteForm.submit();
-                            }
-                        };
-                    }
-                } else {
-                    // Hide admin buttons if _id not available
-                    if (editLink) editLink.style.display = 'none';
-                    if (deleteBtn) deleteBtn.style.display = 'none';
-                }
-            }
-
-            renderSimilarMovies(movie.genres, title);
-            
-            if(cache.modal) {
-                cache.modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
-        }
-
-        const closeModal = () => {
-            if(cache.modal) {
-                cache.modal.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-            hideModalTrailer();
-        };
-        
-        function handleSearch() {
-            const query = document.getElementById('search-input').value.toLowerCase().trim();
-            const resultsGrid = document.getElementById('search-results-grid');
-            const noResultsMsg = document.getElementById('search-no-results');
-            const initialState = document.getElementById('search-initial-state');
-
-            if (query.length < 2) {
-                if(resultsGrid) resultsGrid.innerHTML = '';
-                if(noResultsMsg) noResultsMsg.classList.add('hidden');
-                if(initialState) initialState.style.display = 'block';
-                return;
-            }
-            if(initialState) initialState.style.display = 'none';
-
-            const results = Object.entries(allMovieData).filter(([title, data]) => 
-                title.toLowerCase().includes(query) ||
-                (data.genres || []).some(g => g.toLowerCase().includes(query)) ||
-                (data.director || '').toLowerCase().includes(query)
-            );
-
-            if (results.length === 0) {
-                if(noResultsMsg) noResultsMsg.classList.remove('hidden');
-                if(resultsGrid) resultsGrid.innerHTML = '';
-            } else {
-                if(noResultsMsg) noResultsMsg.classList.add('hidden');
-                if(resultsGrid) resultsGrid.innerHTML = results.map(([title, data]) => `
-                    <div class="movie-modal-trigger cursor-pointer group" data-title="${title}">
-                        <img src="${data.poster}" alt="${title}" class="rounded-lg transition-transform group-hover:scale-105" onerror="this.onerror=null;this.src='https://placehold.co/500x750/1a1a1a/f8fafc?text=Poster+Not+Found';">
-                        <p class="text-sm text-white mt-2 truncate">${title}</p>
-                    </div>
-                `).join('');
-            }
-        }
-        
-        function setupSearch() {
-            const genres = ['Sci-Fi', 'Drama', 'Action', 'Thriller', 'Animation', 'Comedy', 'Crime', 'Mystery'];
-            const colors = ['bg-sky-500', 'bg-indigo-500', 'bg-red-500', 'bg-emerald-500', 'bg-amber-500', 'bg-purple-500', 'bg-slate-500', 'bg-rose-500'];
-            const container = document.getElementById('search-genres-grid');
-            if(container) {
-                container.innerHTML = genres.map((genre, i) => `
-                    <div class="h-28 rounded-lg relative overflow-hidden ${colors[i]} flex items-center justify-center text-white text-2xl font-bold cursor-pointer transition-transform hover:scale-105">
-                        ${genre}
-                    </div>
-                `).join('');
-            }
-        }
-
-        function setupCarouselObservers() {
-            const observer = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.1 });
-            document.querySelectorAll('.carousel-wrapper').forEach(cw => observer.observe(cw));
-        }
-
-        function animateFabricSections() {
-            const observer = new IntersectionObserver((entries, obs) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('fabric-card-visible');
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.2 });
-            document.querySelectorAll('.fabric-card, .spotlight-card, .watch-party-card').forEach(card => observer.observe(card));
-        }
-
-        function setupEventListeners() {
-            const closeModalButton = document.getElementById('close-modal-button');
-            if (closeModalButton) closeModalButton.addEventListener('click', closeModal);
-            
-            if(cache.modal) cache.modal.addEventListener('click', e => {
-                if (e.target.closest('.content-wrapper') === null) closeModal();
-            });
-
-            document.body.addEventListener('click', e => {
-                const modalTrigger = e.target.closest('.movie-modal-trigger');
-                if (modalTrigger) {
-                    e.stopPropagation();
-                    openModal(modalTrigger.dataset.title);
-                }
-                const listBtn = e.target.closest('[data-list-btn]');
-                if (listBtn) toggleMyList(listBtn.dataset.listBtn);
-
-                const genreBtn = e.target.closest('.genre-filter-button');
-                if (genreBtn) {
-                    const genre = genreBtn.dataset.genre;
-                    if (genre === currentFilter) return;
-                    currentFilter = genre;
-                    document.querySelectorAll('.genre-filter-button').forEach(b => b.classList.remove('active'));
-                    genreBtn.classList.add('active');
-                    renderCarousels(genre);
-                }
-                
-                const arrowBtn = e.target.closest('.carousel-arrow');
-                if(arrowBtn){
-                    const carousel = arrowBtn.closest('.relative').querySelector('.carousel-container');
-                    if (carousel) carousel.scrollBy({ left: arrowBtn.dataset.direction === 'left' ? -carousel.offsetWidth * 0.8 : carousel.offsetWidth * 0.8, behavior: 'smooth' });
-                }
-
-                if (e.target.closest('#hero-next')) { nextHeroSlide(); startHeroCarousel(); }
-                if (e.target.closest('#hero-prev')) { prevHeroSlide(); startHeroCarousel(); }
-                const dot = e.target.closest('.hero-dot');
-                if (dot) {
-                    showHeroSlide(parseInt(dot.dataset.dotIndex));
-                    startHeroCarousel();
-                }
-                
-                const profileButton = e.target.closest('#profile-button');
-                const profileDropdown = document.getElementById('profile-dropdown');
-                if (profileButton && profileDropdown) {
-                    profileDropdown.classList.toggle('active');
-                } else if (profileDropdown && !e.target.closest('#profile-dropdown')) {
-                    profileDropdown.classList.remove('active');
-                }
-                
-                if (e.target.closest('#search-button') && cache.searchOverlay) {
-                    cache.searchOverlay.style.display = 'flex';
-                    document.body.style.overflow = 'hidden';
-                }
-                const closeSearchButton = e.target.closest('#close-search-button');
-                if (closeSearchButton && cache.searchOverlay) {
-                    cache.searchOverlay.style.display = 'none';
-                    document.body.style.overflow = '';
-                }
-            });
-            
-            const searchInput = document.getElementById('search-input');
-            if (searchInput) searchInput.addEventListener('input', handleSearch);
-
-            if (cache.heroSection) {
-                cache.heroSection.addEventListener('mouseenter', () => clearInterval(heroCarouselInterval));
-                cache.heroSection.addEventListener('mouseleave', () => startHeroCarousel());
-            }
-
-            const discoverFlow = document.getElementById('discover-flow');
-            if (discoverFlow) {
-                discoverFlow.addEventListener('click', () => {
-                    document.getElementById('genre-filter-bar-wrapper')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                });
-            }
-
-            cache.trailerPlayButton?.addEventListener('click', () => {
-                const src = cache.trailerPlayButton.dataset.trailer;
-                const embed = normalizeTrailerUrl(src);
-                if (!embed || !cache.trailerFrame || !cache.trailerWrapper) return;
-                const autoplayUrl = embed.includes('?') ? `${embed}&autoplay=1` : `${embed}?autoplay=1`;
-                cache.trailerFrame.src = autoplayUrl;
-                cache.trailerWrapper.classList.remove('hidden');
-            });
-            cache.trailerCloseButton?.addEventListener('click', hideModalTrailer);
-
-             window.addEventListener('scroll', () => {
-                const header = document.getElementById('main-header');
-                const genreBar = document.getElementById('genre-filter-bar-wrapper');
-                const heroSection = document.getElementById('hero-section');
-                if(header) header.classList.toggle('glass-nav', window.scrollY > 50);
-                if(genreBar && heroSection) genreBar.classList.toggle('glass-nav', window.scrollY > heroSection.offsetHeight - 70);
-            });
-        }
-
-        function init() {
-            setupHeroCarousel();
-            renderGenreFilters();
-            renderCuratedRows();
-            renderCarousels();
-            setupSearch();
-            setupEventListeners();
-            setTimeout(() => {
-                if(cache.loader) cache.loader.classList.add('hidden')
-            }, 500);
-            setupCarouselObservers();
-            animateFabricSections();
-        }
-
-        init();
-    });
+  window.__CINEVERSE_MOVIES__ = <%- JSON.stringify(movies || {}) %>;
+  window.__CINEVERSE_VISIBLE__ = <%- JSON.stringify(visibleMovies || []) %>;
+  window.__CINEVERSE_MYLIST__ = <%- JSON.stringify(user && user.myList ? user.myList : []) %>;
+  window.__CINEVERSE_USER__ = {
+    id: <%- JSON.stringify(user && user._id ? String(user._id) : null) %>,
+    isAdmin: <%- JSON.stringify(Boolean(user && user.isAdmin)) %>
+  };
+  window.__CINEVERSE_PLATFORM__ = <%- JSON.stringify(activePlatform || '') %>;
 </script>

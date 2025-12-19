@@ -16,7 +16,9 @@ if (dashboardRoot) {
   const dbHealthCanvas = document.getElementById('db-health-chart');
   const dbHealthLegend = document.getElementById('db-health-legend');
   const genreLegend = document.getElementById('genre-legend');
-  const genreColors = ['#38bdf8', '#f472b6', '#34d399', '#facc15', '#c084fc', '#f87171'];
+  const genreColors = ['#5be7ff', '#ff7f50', '#7c82ff', '#5df2b3', '#ffc857', '#ff4d4f'];
+  const axisColor = '#93a0c7';
+  const legendColor = '#d1d8ff';
 
   const CACHE_KEY = 'cineverse-dashboard-cache';
   const CACHE_TTL = 1000 * 20;
@@ -34,12 +36,14 @@ if (dashboardRoot) {
 
   const statusBadge = (status = 'unknown') => {
     const palette = {
-      online: 'text-green-300 border-green-500/40 bg-green-500/10',
-      offline: 'text-gray-300 border-gray-500/40 bg-gray-500/10',
-      error: 'text-red-300 border-red-500/40 bg-red-500/10',
-      disabled: 'text-yellow-300 border-yellow-500/40 bg-yellow-500/10'
+      online: 'var(--green)',
+      offline: 'var(--text-soft)',
+      error: 'var(--accent)',
+      disabled: 'var(--yellow)',
+      unknown: 'var(--text-muted)'
     };
-    return `<span class="px-2 py-1 rounded-full border text-xs uppercase tracking-wide ${palette[status] || palette.offline}">${status}</span>`;
+    const color = palette[status] || palette.unknown;
+    return `<span class="badge" style="background:${color};color:#fff;">${status}</span>`;
   };
 
   function registerGlowPlugin() {
@@ -49,7 +53,7 @@ if (dashboardRoot) {
         beforeDatasetsDraw(chart) {
           const ctx = chart.ctx;
           ctx.save();
-          ctx.shadowColor = 'rgba(56, 189, 248, 0.35)';
+          ctx.shadowColor = 'rgba(91, 231, 255, 0.25)';
           ctx.shadowBlur = 18;
           ctx.shadowOffsetY = 10;
         },
@@ -73,8 +77,8 @@ if (dashboardRoot) {
             {
               label: 'Catalog size',
               data: [],
-              borderColor: 'rgba(56,189,248,0.9)',
-              backgroundColor: 'rgba(56,189,248,0.2)',
+              borderColor: '#5be7ff',
+              backgroundColor: 'rgba(91,231,255,0.2)',
               tension: 0.35,
               fill: true,
               borderWidth: 3
@@ -82,8 +86,8 @@ if (dashboardRoot) {
             {
               label: 'Active cinephiles',
               data: [],
-              borderColor: 'rgba(236,72,153,0.9)',
-              backgroundColor: 'rgba(236,72,153,0.15)',
+              borderColor: '#ff7f50',
+              backgroundColor: 'rgba(255,127,80,0.15)',
               tension: 0.35,
               fill: true,
               borderWidth: 3
@@ -91,8 +95,8 @@ if (dashboardRoot) {
             {
               label: 'Avg. rating x10',
               data: [],
-              borderColor: 'rgba(52,211,153,0.9)',
-              backgroundColor: 'rgba(52,211,153,0.15)',
+              borderColor: '#7c82ff',
+              backgroundColor: 'rgba(124,130,255,0.15)',
               tension: 0.35,
               fill: true,
               borderWidth: 3
@@ -102,12 +106,12 @@ if (dashboardRoot) {
         options: {
           maintainAspectRatio: false,
           plugins: {
-            legend: { labels: { color: '#e5e7eb' } },
+            legend: { labels: { color: legendColor } },
             cineGlow: {}
           },
           scales: {
-            x: { ticks: { color: '#94a3b8' } },
-            y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+            x: { ticks: { color: axisColor }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { ticks: { color: axisColor }, grid: { color: 'rgba(255,255,255,0.06)' } }
           }
         }
       });
@@ -119,7 +123,7 @@ if (dashboardRoot) {
           labels: [],
           datasets: [{
             data: [],
-            backgroundColor: ['#34d399', '#60a5fa', '#f472b6', '#f87171', '#facc15']
+            backgroundColor: ['#5df2b3', '#5be7ff', '#ff7f50', '#7c82ff', '#ffc857']
           }]
         },
         options: {
@@ -127,9 +131,9 @@ if (dashboardRoot) {
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: 'rgba(15,23,42,0.95)',
-              titleColor: '#e2e8f0',
-              bodyColor: '#cbd5f5',
+              backgroundColor: 'rgba(4,8,25,0.95)',
+              titleColor: '#f5f7ff',
+              bodyColor: '#cdd5ff',
               callbacks: {
                 label: ctx => `${ctx.label}: ${ctx.parsed} titles`
               }
@@ -149,14 +153,14 @@ if (dashboardRoot) {
 
     const ctx = throughputCanvas.getContext('2d');
     const gradBlue = ctx.createLinearGradient(0, 0, 0, throughputCanvas.height);
-    gradBlue.addColorStop(0, 'rgba(56,189,248,0.45)');
-    gradBlue.addColorStop(1, 'rgba(56,189,248,0)');
-    const gradPink = ctx.createLinearGradient(0, 0, 0, throughputCanvas.height);
-    gradPink.addColorStop(0, 'rgba(236,72,153,0.45)');
-    gradPink.addColorStop(1, 'rgba(236,72,153,0)');
-    const gradGreen = ctx.createLinearGradient(0, 0, 0, throughputCanvas.height);
-    gradGreen.addColorStop(0, 'rgba(52,211,153,0.45)');
-    gradGreen.addColorStop(1, 'rgba(52,211,153,0)');
+    gradBlue.addColorStop(0, 'rgba(91,231,255,0.45)');
+    gradBlue.addColorStop(1, 'rgba(91,231,255,0)');
+    const gradOrange = ctx.createLinearGradient(0, 0, 0, throughputCanvas.height);
+    gradOrange.addColorStop(0, 'rgba(255,127,80,0.45)');
+    gradOrange.addColorStop(1, 'rgba(255,127,80,0)');
+    const gradIndigo = ctx.createLinearGradient(0, 0, 0, throughputCanvas.height);
+    gradIndigo.addColorStop(0, 'rgba(124,130,255,0.45)');
+    gradIndigo.addColorStop(1, 'rgba(124,130,255,0)');
 
     const timeline = data.movieMetrics?.timeline || { labels: [], data: [] };
     const safeLabels = timeline.labels?.length ? timeline.labels : ['T-3', 'T-2', 'T-1', 'Now'];
@@ -165,9 +169,9 @@ if (dashboardRoot) {
     throughputChart.data.datasets[0].data = safeData;
     throughputChart.data.datasets[0].backgroundColor = gradBlue;
     throughputChart.data.datasets[1].data = safeData.map(value => Math.round(value * 0.65));
-    throughputChart.data.datasets[1].backgroundColor = gradPink;
+    throughputChart.data.datasets[1].backgroundColor = gradOrange;
     throughputChart.data.datasets[2].data = safeData.map(value => Math.max(1, Math.round(value * (data.movieMetrics.averageRating / 10))));
-    throughputChart.data.datasets[2].backgroundColor = gradGreen;
+    throughputChart.data.datasets[2].backgroundColor = gradIndigo;
     throughputChart.update();
     chartUpdatedEl && (chartUpdatedEl.textContent = `Updated ${new Date().toLocaleTimeString()}`);
 
@@ -182,7 +186,7 @@ if (dashboardRoot) {
     dbHealthChart.update();
     if (dbHealthLegend) {
       dbHealthLegend.innerHTML = genreLabels.map((label, idx) => `
-        <li class="flex items-center justify-between">
+        <li style="display:flex; justify-content:space-between;">
           <span>${label}</span>
           <span>${genreData[idx]} titles</span>
         </li>
@@ -190,8 +194,8 @@ if (dashboardRoot) {
     }
     if (genreLegend) {
       genreLegend.innerHTML = genreLabels.map((label, idx) => `
-        <li class="flex items-center gap-2">
-          <span class="inline-block w-3 h-3 rounded-full" style="background:${colors[idx]}"></span>
+        <li style="display:flex; align-items:center; gap:0.5rem;">
+          <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:${colors[idx]};"></span>
           <span>${label}</span>
         </li>
       `).join('');
@@ -206,23 +210,22 @@ if (dashboardRoot) {
     const genreEntries = Object.entries(data.movieMetrics.genres || {});
     genreCountEl.textContent = genreEntries.length;
     genreListEl.innerHTML = genreEntries
-      .map(([genre, count]) => `<span class="px-3 py-1 rounded-full bg-gray-800/80 border border-gray-700">${genre}: ${count}</span>`)
+      .map(([genre, count]) => `<span class="tag">${genre}: ${count}</span>`)
       .join('');
 
+    const atlasStatus = data.nosql?.mongo?.status || 'unknown';
     const infraCards = [
       {
-        title: 'MongoDB Atlas',
-        status: data.nosql?.mongo?.status || 'unknown',
+        title: 'MongoDB Atlas (users)',
+        status: atlasStatus,
         body: data.nosql?.mongo?.stats
-          ? `${data.nosql.mongo.stats.collections} collections • profiles & auth`
-          : 'Identity + login state'
+          ? `${data.nosql.mongo.stats.collections} collections • users & auth`
+          : data.nosql?.mongo?.error || 'Identity + login state'
       },
       {
-        title: 'PostgreSQL Catalog',
-        status: data.relational?.postgres?.status || 'unknown',
-        body: data.relational?.postgres?.timestamp
-          ? `Heartbeat ${new Date(data.relational.postgres.timestamp).toLocaleTimeString()}`
-          : data.relational?.postgres?.error || 'Film metadata source'
+        title: 'MongoDB Atlas (catalog)',
+        status: atlasStatus,
+        body: `${data.movieMetrics?.totalMovies || 0} titles • movies collection`
       },
       {
         title: 'Redis Stream',
@@ -238,57 +241,59 @@ if (dashboardRoot) {
 
     authMetricsEl.innerHTML = infraCards
       .map(item => `
-        <article class="p-4 bg-gray-900/60 rounded-2xl border border-gray-800">
-          <div class="flex items-center justify-between mb-2">
-            <h3 class="font-semibold">${item.title}</h3>
+        <article class="card status-card" data-status="${item.status}">
+          <div class="section-header" style="margin-bottom:0.5rem;">
+            <h3 style="margin:0;">${item.title}</h3>
             ${statusBadge(item.status)}
           </div>
-          <p class="text-gray-400 text-sm">${item.body}</p>
+          <p class="helper-text">${item.body}</p>
         </article>
       `)
       .join('');
 
     if (overviewEl) {
       overviewEl.innerHTML = `
-        <article class="p-4 rounded-xl border border-gray-800 bg-gray-950/60">
-          <p class="text-xs uppercase tracking-wide text-gray-400">Total titles</p>
-          <p class="text-3xl font-black mt-1">${data.movieMetrics.totalMovies}</p>
-        </article>
-        <article class="p-4 rounded-xl border border-gray-800 bg-gray-950/60">
-          <p class="text-xs uppercase tracking-wide text-gray-400">Registered users</p>
-          <p class="text-3xl font-black mt-1">${data.movieMetrics.userCount}</p>
-        </article>
-        <article class="p-4 rounded-xl border border-gray-800 bg-gray-950/60">
-          <p class="text-xs uppercase tracking-wide text-gray-400">Tracked genres</p>
-          <p class="text-3xl font-black mt-1">${Object.keys(data.movieMetrics.genres || {}).length}</p>
-        </article>
-        <article class="p-4 rounded-xl border border-gray-800 bg-gray-950/60">
-          <p class="text-xs uppercase tracking-wide text-gray-400">Avg. rating</p>
-          <p class="text-3xl font-black mt-1">${data.movieMetrics.averageRating}</p>
-        </article>
+        <h3 style="margin-top:0;">Catalog snapshots</h3>
+        <div class="stat-grid" style="margin-top:1rem;">
+          <article class="stat-card">
+            <span>Total titles</span>
+            <strong>${data.movieMetrics.totalMovies}</strong>
+          </article>
+          <article class="stat-card">
+            <span>Registered users</span>
+            <strong>${data.movieMetrics.userCount}</strong>
+          </article>
+          <article class="stat-card">
+            <span>Tracked genres</span>
+            <strong>${Object.keys(data.movieMetrics.genres || {}).length}</strong>
+          </article>
+          <article class="stat-card">
+            <span>Average rating</span>
+            <strong>${data.movieMetrics.averageRating}</strong>
+          </article>
+        </div>
       `;
     }
 
     if (audienceEl) {
       const topGenres = (data.movieMetrics.topGenres || [])
-        .map(item => `<li class="flex justify-between"><span>${item.genre}</span><span>${item.count} titles</span></li>`)
+        .map(item => `<li style="display:flex; justify-content:space-between;"><span>${item.genre}</span><span>${item.count} titles</span></li>`)
         .join('');
       audienceEl.innerHTML = `
-        <p class="text-sm text-gray-400 mb-2">Top audience moods</p>
-        <ul class="space-y-2 text-sm text-gray-200">${topGenres || '<li>No genres tracked</li>'}</ul>
-        <div class="mt-4 rounded-xl border border-gray-800 bg-gray-950/40 p-3 text-xs text-gray-400">
-          <p class="uppercase tracking-wide text-white/60 mb-1">Catalog heartbeat</p>
-          <p><strong>PostgreSQL:</strong> ${infraCards[1].body}</p>
-          <p><strong>MongoDB:</strong> ${infraCards[0].status}</p>
+        <p><strong>Top genres</strong></p>
+        <ul style="list-style:none; padding:0; margin:0.5rem 0;">${topGenres || '<li>No genres tracked</li>'}</ul>
+        <div class="helper-text" style="margin-top:1rem;">
+          <p><strong>Catalog DB:</strong> ${infraCards[1].body}</p>
+          <p><strong>Atlas status:</strong> ${infraCards[0].status}</p>
         </div>
       `;
     }
 
     securityEl.innerHTML = `
-      <p class="text-gray-300 text-sm"><strong>MD5 sample:</strong> ${data.security?.md5 || 'n/a'}</p>
-      <p class="text-gray-300 text-sm"><strong>SHA-256 sample:</strong> ${data.security?.sha256 || 'n/a'}</p>
-      <p class="text-gray-300 text-sm"><strong>TLS enabled:</strong> ${data.security?.tlsEnabled ? 'Yes' : 'No'}</p>
-      <p class="text-gray-500 text-xs">${data.security?.httpsRecommendation || ''}</p>
+      <p><strong>MD5 sample:</strong> ${data.security?.md5 || 'n/a'}</p>
+      <p><strong>SHA-256 sample:</strong> ${data.security?.sha256 || 'n/a'}</p>
+      <p><strong>TLS enabled:</strong> ${data.security?.tlsEnabled ? 'Yes' : 'No'}</p>
+      <p>${data.security?.httpsRecommendation || ''}</p>
     `;
 
     updateCharts(data);

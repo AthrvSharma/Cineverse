@@ -1,0 +1,52 @@
+<div class="admin-console">
+  <section class="bulk-card" style="margin-top:0;">
+    <div>
+      <h2 style="margin-bottom:0.35rem;">Catalog overview</h2>
+      <p class="helper-text">Track every title, watchlist engagement, and jump into edits in seconds.</p>
+    </div>
+    <div class="helper-text" style="font-size:12px;">Total films: <strong><%= movies.length %></strong></div>
+  </section>
+
+  <section class="admin-grid">
+    <% if (!movies.length) { %>
+      <article class="admin-card">
+        <p>You have not added any films yet. Use the + button on the sidebar to seed the catalog.</p>
+      </article>
+    <% } else { %>
+      <% movies.forEach(movie => { %>
+        <% const haystack = [
+             movie.title,
+             movie.description || movie.snippet || '',
+             movie.platform || 'Featured',
+             movie.genres ? movie.genres.join(' ') : '',
+             movie.year
+           ].join(' ').replace(/"/g, '&quot;'); %>
+        <article class="admin-card" data-search-haystack="<%= haystack %>">
+          <header class="admin-card__header">
+            <img src="<%= movie.poster || 'https://placehold.co/120x180/111/eee?text=Poster' %>" alt="<%= movie.title %> poster">
+            <div>
+              <p class="label"><%= movie.platform || 'Featured' %></p>
+              <h3><%= movie.title %></h3>
+              <p class="helper-text" style="margin-top:0.3rem;">Rating <strong><%= movie.rating || '0.0' %></strong> • Watchlist <strong><%= movie.watchCount %></strong></p>
+            </div>
+          </header>
+          <p class="helper-text" style="margin-top:0.8rem;"><%= movie.snippet %></p>
+          <div class="admin-card__stats">
+            <span class="stat-tag"><i class="fa fa-users"></i> <%= movie.watchCount %> saves</span>
+            <span class="stat-tag"><i class="fa fa-star"></i> IMDb <%= movie.rating || '0.0' %></span>
+            <span class="stat-tag"><i class="fa fa-clock"></i> <%= movie.runtime || '—' %></span>
+          </div>
+          <div class="admin-card__actions">
+            <a class="btn btn-primary" href="/movies/edit/<%= movie.id %>">Edit</a>
+            <form action="/movies/delete/<%= movie.id %>" method="POST" onsubmit="return confirm('Delete <%= movie.title %>?');">
+              <button class="btn btn-secondary" type="submit">Delete</button>
+            </form>
+          </div>
+        </article>
+      <% }) %>
+    <% } %>
+  </section>
+  <p class="helper-text empty-state" data-platform-empty style="display:none; margin-top:12px;">
+    No titles match this search yet.
+  </p>
+</div>

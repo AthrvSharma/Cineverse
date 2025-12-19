@@ -1,89 +1,90 @@
-<main class="pt-28 pb-12">
-  <section class="container mx-auto px-4 space-y-8" data-dashboard-root>
-    <header class="floating-panel p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6 shine-border" data-animate>
-      <div>
-        <p class="floating-chip text-xs mb-2">Mission Control</p>
-        <h1 class="text-4xl font-black">Operational Dashboard</h1>
-        <p class="text-gray-400 max-w-2xl">MongoDB logins, PostgreSQL catalog throughput, Redis cache health, and transport security all beam into this panel so curators can scale confidently.</p>
-      </div>
-      <div class="flex gap-3">
-        <a href="/" class="neon-button px-5 py-3 border border-white/20 rounded-full text-sm font-semibold text-white hover:text-white">Back to catalog</a>
-        <button id="refresh-dashboard" class="neon-button px-5 py-3 bg-gradient-to-r from-sky-500 to-indigo-500 text-white rounded-full font-semibold shadow-lg shadow-sky-500/30">Refresh now</button>
-      </div>
-    </header>
-
-    <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4" id="auth-metrics" data-animate>
-      <!-- populated by realtime-dashboard.js -->
-    </section>
-
-    <section class="grid gap-6 lg:grid-cols-3" data-animate>
-      <div class="glass-card p-6 lg:col-span-2 chart-card">
-        <div class="flex items-center justify-between mb-2">
-          <div>
-            <p class="floating-chip text-xs">Realtime traffic</p>
-            <h2 class="text-2xl font-semibold mt-2">Content throughput & audience pulse</h2>
-          </div>
-          <span class="text-sm text-gray-400" id="chart-updated">Awaiting signal</span>
-        </div>
-        <div class="chart-canvas-wrapper">
-          <canvas id="throughput-chart"></canvas>
-        </div>
-      </div>
-      <div class="glass-card p-6 chart-card">
-        <p class="floating-chip text-xs">Audience palette</p>
-        <h2 class="text-2xl font-semibold mt-2">Genre distribution</h2>
-        <div class="chart-canvas-wrapper">
-          <canvas id="db-health-chart" class="mt-6"></canvas>
-        </div>
-        <ul class="mt-4 space-y-2 text-sm text-gray-300" id="db-health-legend"></ul>
-        <ul class="mt-2 space-y-2 text-sm text-gray-300" id="genre-legend"></ul>
-      </div>
-    </section>
-
-    <section class="grid gap-6 lg:grid-cols-3" id="catalog-panels" data-animate>
-      <div class="bg-gray-900/70 rounded-2xl p-6 border border-gray-800 lg:col-span-2">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-2xl font-semibold">Catalog overview</h2>
-          <span class="text-xs uppercase tracking-wide text-gray-400">Realtime movie data</span>
-        </div>
-        <div class="grid md:grid-cols-2 gap-4" id="catalog-overview"></div>
-      </div>
-      <div class="bg-gray-900/70 rounded-2xl p-6 border border-gray-800">
-        <h2 class="text-2xl font-semibold mb-3">Audience highlights</h2>
-        <div id="audience-panel" class="space-y-3 text-sm text-gray-300"></div>
-        <div id="security-panel" class="mt-5 space-y-2 text-sm text-gray-400"></div>
-      </div>
-    </section>
-
-    <section class="bg-gray-900/70 rounded-2xl p-6 border border-gray-800" data-animate>
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <h2 class="text-2xl font-semibold">Movie Analytics</h2>
-          <p class="text-gray-400 text-sm">Powered by PostgreSQL snapshots with Redis acceleration.</p>
-        </div>
-        <div class="text-right">
-          <p class="text-3xl font-black" id="total-movies">0</p>
-          <p class="text-xs uppercase tracking-widest text-gray-400">Total titles</p>
-        </div>
-      </div>
-      <div class="grid md:grid-cols-3 gap-4">
-        <div class="p-4 rounded-xl bg-gray-800/60 border border-gray-700">
-          <p class="text-gray-400 text-sm uppercase">Average Rating</p>
-          <p class="text-4xl font-black" id="avg-rating">0</p>
-        </div>
-        <div class="p-4 rounded-xl bg-gray-800/60 border border-gray-700">
-          <p class="text-gray-400 text-sm uppercase">Registered Users</p>
-          <p class="text-4xl font-black" id="user-count">0</p>
-        </div>
-        <div class="p-4 rounded-xl bg-gray-800/60 border border-gray-700">
-          <p class="text-gray-400 text-sm uppercase">Tracked Genres</p>
-          <p class="text-4xl font-black" id="genre-count">0</p>
-        </div>
-      </div>
-      <div class="mt-6">
-        <h3 class="text-lg font-semibold mb-2">Genre distribution</h3>
-        <div id="genre-list" class="flex flex-wrap gap-2 text-sm"></div>
-      </div>
-    </section>
+  <section class="dashboard-header" data-dashboard-root data-animate>
+    <div>
+      <p class="hero__badge">Mission control</p>
+      <h1 class="section-title" style="margin-top: 0.5rem;">Operational dashboard</h1>
+      <p class="section-description">MongoDB Atlas (users + catalog), Redis cache health, and TLS posture all converge here so you can publish with confidence.</p>
+    </div>
+    <div class="hero__actions">
+      <a class="btn btn-ghost" href="/">Back to catalog</a>
+      <button class="btn btn-accent" id="refresh-dashboard" type="button">Refresh data</button>
+    </div>
   </section>
-</main>
+
+  <section class="dashboard-panels" id="auth-metrics" style="margin-top: 2rem;" data-animate></section>
+
+  <section class="dashboard-grid" style="margin-top: 2rem; grid-template-columns: 2fr 1fr; gap: 1.5rem;" data-animate>
+    <div class="chart-wrap chart-wrap--line">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title" style="font-size: 1.5rem;">Audience pulse</h2>
+          <p class="section-description">Catalog size, sessions, and rating trends.</p>
+        </div>
+        <span class="helper-text" id="chart-updated">Awaiting signal</span>
+      </div>
+      <canvas id="throughput-chart"></canvas>
+    </div>
+    <div class="chart-stack">
+      <div class="chart-wrap chart-wrap--pie">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title" style="font-size: 1.25rem;">Pie chart 1</h2>
+            <p class="section-description">Hooked to genre distribution.</p>
+          </div>
+        </div>
+        <canvas id="db-health-chart"></canvas>
+        <div class="helper-text" id="db-health-legend" style="margin-top: 1rem;"></div>
+        <div class="helper-text" id="genre-legend"></div>
+      </div>
+      <div class="chart-wrap chart-wrap--ghost">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title" style="font-size: 1.25rem;">Pie chart 2</h2>
+            <p class="section-description">Awaiting your metrics.</p>
+          </div>
+        </div>
+        <div class="chart-placeholder">
+          <span>Ready when you are.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dashboard-grid" style="margin-top: 2rem; grid-template-columns: 2fr 1fr; gap: 1.5rem;" data-animate>
+    <div class="card" id="catalog-overview"></div>
+    <div class="card">
+      <h3 style="margin-top: 0;">Audience + security</h3>
+      <div id="audience-panel" class="helper-text" style="margin-top: 0.75rem;"></div>
+      <div id="security-panel" class="helper-text" style="margin-top: 1.25rem;"></div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top: 2rem;" data-animate>
+    <div class="section-header" style="margin-bottom: 1.5rem;">
+      <div>
+        <h2 class="section-title" style="font-size: 1.6rem;">Movie analytics</h2>
+        <p class="section-description">Snapshots pulled from MongoDB Atlas and cached with Redis.</p>
+      </div>
+      <div style="text-align: right;">
+        <strong id="total-movies" style="font-size: 2.4rem; display: block;">0</strong>
+        <span class="helper-text">Total titles</span>
+      </div>
+    </div>
+    <div class="stat-grid">
+      <article class="stat-card">
+        <span>Average rating</span>
+        <strong id="avg-rating">0.0</strong>
+      </article>
+      <article class="stat-card">
+        <span>Registered users</span>
+        <strong id="user-count">0</strong>
+      </article>
+      <article class="stat-card">
+        <span>Tracked genres</span>
+        <strong id="genre-count">0</strong>
+      </article>
+    </div>
+    <div style="margin-top: 1.5rem;">
+      <h3 style="margin: 0 0 0.75rem;">Genres in catalog</h3>
+      <div id="genre-list" class="filter-bar" style="margin-top: 0;"></div>
+    </div>
+  </section>

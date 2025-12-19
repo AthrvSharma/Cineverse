@@ -1,0 +1,65 @@
+<div class="platform-grid" data-platform-page>
+  <section class="bulk-card" style="margin-top:0;">
+    <div>
+      <p class="label" style="font-size:12px; letter-spacing:3px; opacity:0.7;">Platform</p>
+      <h2 style="margin:0 0 0.3rem;"><%= platformLabel %> Collection</h2>
+      <p class="helper-text">
+        Curated from
+        <a href="/" style="color:var(--accent-red, #e50914); text-decoration:none;">Cineverse</a>
+      </p>
+    </div>
+    <div class="provider-nav">
+      <% const providers = ['All', ...(platforms || [])]; %>
+      <% providers.forEach(name => {
+           const slug = encodeURIComponent(name.toLowerCase());
+           const isAll = name === 'All';
+           const href = isAll ? '/' : ('/platform/' + slug + '/catalog');
+           const active = (!activePlatform && isAll) || activePlatform === name.toLowerCase();
+      %>
+        <a class="provider-chip <%= active ? 'active' : '' %>" href="<%= href %>"><%= name %></a>
+      <% }) %>
+    </div>
+  </section>
+
+  <section class="admin-grid">
+    <% movies.forEach(movie => { %>
+      <% const haystack = [
+           movie.title,
+           movie.description,
+           movie.platform || platformLabel,
+           movie.genres ? movie.genres.join(' ') : '',
+           movie.year
+         ].join(' ').replace(/"/g, '&quot;'); %>
+      <article class="admin-card" data-search-haystack="<%= haystack %>">
+        <header class="admin-card__header">
+          <img src="<%= movie.poster || 'https://placehold.co/120x180/111/eee?text=Poster' %>" alt="<%= movie.title %> poster">
+          <div>
+            <p class="label" style="font-size:11px; letter-spacing:2px; opacity:0.8;">
+              <%= movie.platform || platformLabel %>
+            </p>
+            <h3><%= movie.title %></h3>
+            <p class="helper-text" style="margin-top:0.35rem;">
+              IMDb <strong><%= movie.rating || '0.0' %></strong> • <%= movie.runtime || '—' %>
+            </p>
+          </div>
+        </header>
+        <p class="helper-text">
+          <%= movie.description.length > 160
+                ? movie.description.slice(0, 160) + '…'
+                : movie.description %>
+        </p>
+        <div class="admin-card__stats">
+          <% (movie.genres || []).slice(0,3).forEach(genre => { %>
+            <span class="stat-tag"><%= genre %></span>
+          <% }) %>
+        </div>
+        <div class="admin-card__actions">
+          <a class="btn btn-primary" href="/movies/edit/<%= movie.id %>">View detail</a>
+        </div>
+      </article>
+    <% }) %>
+  </section>
+  <p class="helper-text empty-state" data-platform-empty style="display:none; margin-top:12px;">
+    No titles match this search yet.
+  </p>
+</div>

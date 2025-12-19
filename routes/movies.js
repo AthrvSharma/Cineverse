@@ -1,16 +1,19 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const { parse } = require('csv-parse/sync');
+const { Types } = require('mongoose');
 const movieStore = require('../models/Movie');
 const User  = require('../models/User');
 const movieController = require('../controllers/movieController');
 const { ensureAuthenticated, ensureAdmin } = require('../config/auth');
+const { adjustWatchlistCount, recordTrailerView } = require('../services/engagementService');
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
 // --- Helpers ---
 const isUrl = (s = '') => /^https?:\/\/.+/i.test(s);
-const isValidId = value => {
-  const numeric = Number(value);
-  return Number.isInteger(numeric) && numeric > 0;
-};
+const isValidId = value => Types.ObjectId.isValid(String(value));
 
 // =========================
 // Add Movie (Admin Only)
@@ -29,7 +32,7 @@ router.post('/add', ensureAuthenticated, ensureAdmin, async (req, res) => {
   try {
     const {
       title, poster, backdrop, genres,
-      description, year, director, cast, rating, runtime, trailerUrl
+      description, year, director, cast, rating, runtime, trailerUrl, platform
     } = req.body;
 
     const errors = [];
@@ -45,7 +48,7 @@ router.post('/add', ensureAuthenticated, ensureAdmin, async (req, res) => {
       return res.render('add-movie', {
         editing: false,
         errors,
-        title, poster, backdrop, genres, description, year, director, cast, rating, runtime, trailerUrl
+        title, poster, backdrop, genres, description, year, director, cast, rating, runtime, trailerUrl, platform
       });
     }
 
@@ -60,7 +63,8 @@ router.post('/add', ensureAuthenticated, ensureAdmin, async (req, res) => {
       cast: cast.split(',').map(s => s.trim()).filter(Boolean),
       rating: Number(rating),
       runtime: runtime.trim(),
-      trailerUrl: (trailerUrl || '').trim()
+      trailerUrl: (trailerUrl || '').trim(),
+      platform: (platform || '').trim() || 'Featured'
     };
 
     await movieController.createMovie(moviePayload);
@@ -90,7 +94,7 @@ router.get('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
       return res.redirect('/');
     }
 
-    const m = await movieStore.findMovieById(Number(id));
+    const m = await movieStore.findMovieById(id);
     if (!m) {
       req.flash('error_msg', 'Movie not found.');
       return res.redirect('/');
@@ -111,7 +115,8 @@ router.get('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
       cast: (m.cast || []).join(', '),
       rating: m.rating,
       runtime: m.runtime,
-      trailerUrl: m.trailerUrl || ''
+      trailerUrl: m.trailerUrl || '',
+      platform: m.platform || 'Featured'
     });
   } catch (err) {
     console.error('Load edit form error:', err);
@@ -131,10 +136,9 @@ router.post('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
 
     const {
       title, poster, backdrop, genres,
-      description, year, director, cast, rating, runtime, trailerUrl
+      description, year, director, cast, rating, runtime, trailerUrl, platform
     } = req.body;
 
-    const numericId = Number(id);
     const update = {
       title: (title || '').trim(),
       poster: (poster || '').trim(),
@@ -146,7 +150,8 @@ router.post('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
       cast: (cast || '').split(',').map(s => s.trim()).filter(Boolean),
       rating: Number(rating),
       runtime: (runtime || '').trim(),
-      trailerUrl: (trailerUrl || '').trim()
+      trailerUrl: (trailerUrl || '').trim(),
+      platform: (platform || '').trim() || 'Featured'
     };
 
     if (!isUrl(update.poster) || !isUrl(update.backdrop)) {
@@ -158,7 +163,7 @@ router.post('/edit/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
       return res.redirect(`/movies/edit/${id}`);
     }
 
-    await movieController.updateMovie(numericId, update);
+    await movieController.updateMovie(id, update);
     req.flash('success_msg', 'Movie updated successfully!');
     res.redirect('/');
   } catch (err) {
@@ -184,13 +189,81 @@ router.post('/delete/:id', ensureAuthenticated, ensureAdmin, async (req, res) =>
       return res.redirect('/');
     }
 
-    await movieController.deleteMovie(Number(id));
+    await movieController.deleteMovie(id);
     req.flash('success_msg', 'Movie deleted successfully!');
     res.redirect('/');
   } catch (err) {
     console.error('Delete movie error:', err);
     req.flash('error_msg', 'Failed to delete movie.');
     res.redirect('/');
+  }
+});
+
+// =========================
+// Bulk Upload (Admin Only)
+// =========================
+
+router.post('/bulk-upload', ensureAuthenticated, ensureAdmin, upload.single('csvFile'), async (req, res) => {
+  try {
+    if (!req.file) {
+      req.flash('error_msg', 'Please attach a CSV file.');
+      return res.redirect('back');
+    }
+    const csv = req.file.buffer.toString('utf8');
+    const rows = parse(csv, { columns: true, skip_empty_lines: true, trim: true });
+    if (!rows.length) {
+      req.flash('error_msg', 'CSV appears empty.');
+      return res.redirect('back');
+    }
+    const movies = rows
+      .map(row => {
+        const normalized = Object.keys(row).reduce((acc, key) => {
+          acc[key.trim().toLowerCase()] = typeof row[key] === 'string' ? row[key].trim() : row[key];
+          return acc;
+        }, {});
+        const title = normalized.title;
+        const poster = normalized.poster;
+        const backdrop = normalized.backdrop;
+        const genres = (normalized.genres || '')
+          .split(/[,|]/)
+          .map(item => item.trim())
+          .filter(Boolean);
+        const cast = (normalized.cast || normalized.cast_members || '')
+          .split(/[,|]/)
+          .map(item => item.trim())
+          .filter(Boolean);
+        if (!title || !poster || !backdrop) {
+          return null;
+        }
+        return {
+          title,
+          poster,
+          backdrop,
+          genres,
+          description: normalized.description || 'No description provided.',
+          year: Number(normalized.year) || new Date().getFullYear(),
+          director: normalized.director || 'Unknown',
+          cast,
+          rating: Number(normalized.rating || normalized.score || 0) || 0,
+          runtime: normalized.runtime || '—',
+          trailerUrl: normalized.trailer_url || normalized.trailer || '',
+          platform: normalized.platform || normalized.service || 'Featured'
+        };
+      })
+      .filter(Boolean);
+
+    if (!movies.length) {
+      req.flash('error_msg', 'No valid rows were detected in the CSV.');
+      return res.redirect('back');
+    }
+
+    const inserted = await movieController.createMoviesBulk(movies);
+    req.flash('success_msg', `Bulk upload complete. Added ${inserted.length} new movies.`);
+    res.redirect('back');
+  } catch (error) {
+    console.error('Bulk upload error:', error);
+    req.flash('error_msg', 'Failed to import CSV file.');
+    res.redirect('back');
   }
 });
 
@@ -204,10 +277,13 @@ router.post('/list/add', ensureAuthenticated, async (req, res) => {
     const { movieTitle } = req.body;
     if (!movieTitle) return res.status(400).json({ success: false, msg: 'movieTitle required' });
 
-    await User.updateOne(
+    const result = await User.updateOne(
       { _id: req.user._id },
       { $addToSet: { myList: movieTitle } }
     );
+    if (result.modifiedCount) {
+      await adjustWatchlistCount(movieTitle, 1);
+    }
 
     res.json({ success: true });
   } catch (err) {
@@ -222,14 +298,29 @@ router.post('/list/remove', ensureAuthenticated, async (req, res) => {
     const { movieTitle } = req.body;
     if (!movieTitle) return res.status(400).json({ success: false, msg: 'movieTitle required' });
 
-    await User.updateOne(
+    const result = await User.updateOne(
       { _id: req.user._id },
       { $pull: { myList: movieTitle } }
     );
+    if (result.modifiedCount) {
+      await adjustWatchlistCount(movieTitle, -1);
+    }
 
     res.json({ success: true });
   } catch (err) {
     console.error('Remove from my list error:', err);
+    res.status(500).json({ success: false });
+  }
+});
+
+router.post('/engagement/trailer', ensureAuthenticated, async (req, res) => {
+  try {
+    const { movieTitle } = req.body;
+    if (!movieTitle) return res.status(400).json({ success: false, msg: 'movieTitle required' });
+    await recordTrailerView(movieTitle, { userId: req.user._id });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Trailer engagement error:', err);
     res.status(500).json({ success: false });
   }
 });
