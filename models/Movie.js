@@ -156,5 +156,6 @@ module.exports = {
   createMovie,
   updateMovie,
   deleteMovie,
-  createMoviesBulk
+  createMoviesBulk,
+  MovieModel: Movie
 };

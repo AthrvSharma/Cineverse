@@ -193,7 +193,7 @@
   }
 
   async function syncWatchlist(title, add) {
-    if (!user || !user.id) return;
+    if (!user || !user._id) return;
     await fetch(add ? '/movies/list/add' : '/movies/list/remove', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

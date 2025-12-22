@@ -30,8 +30,15 @@ router.post('/subscribe', ensureAuthenticated, async (req, res) => {
     req.user.subscriptionPlatforms = planConfig.platforms;
     req.user.subscribedAt = new Date();
     await req.user.save();
-    req.flash('success_msg', `You are now on the ${planConfig.name} plan.`);
-    res.redirect('/?planSuccess=' + encodeURIComponent(planConfig.name));
+    req.login(req.user, (err) => {
+      if (err) {
+        console.error('Login error after subscription:', err);
+        req.flash('error_msg', 'Subscription saved but session error. Please log in again.');
+        return res.redirect('/users/login');
+      }
+      req.flash('success_msg', `You are now on the ${planConfig.name} plan.`);
+      res.redirect('/');
+    });
   } catch (error) {
     console.error('Subscription update error:', error);
     req.flash('error_msg', 'Unable to save your subscription. Please try again.');
