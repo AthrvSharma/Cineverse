@@ -36,9 +36,12 @@ const sessionOptions = {
   saveUninitialized: false
 };
 
-const redisStore = createSessionStore(session);
-if (redisStore) {
-  sessionOptions.store = redisStore;
+// On Vercel (serverless), don't use Redis for sessions as connections don't persist
+if (!process.env.VERCEL) {
+  const redisStore = createSessionStore(session);
+  if (redisStore) {
+    sessionOptions.store = redisStore;
+  }
 }
 
 app.use(session(sessionOptions));
@@ -49,6 +52,19 @@ app.use(passport.session());
 
 // Connect flash
 app.use(flash());
+
+// Ensure MongoDB connection for serverless environments like Vercel
+app.use(async (req, res, next) => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.MONGO_URI);
+    }
+    next();
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    next(error);
+  }
+});
 
 // Rate limit APIs globally as a safety net
 app.use('/api', rateLimiterRedis({ prefix: 'global-api', windowInSeconds: 60, allowedHits: 100 }));

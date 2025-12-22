@@ -8,6 +8,11 @@ const { initSocketServer } = require('./sockets');
 const { ensureMovieIndexes } = require('./services/databaseScaling');
 const app = require('./app');
 
+// Handle unhandled rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 // Initialize shared services
 initRedis().catch(err => console.error('Redis init error:', err));
 
