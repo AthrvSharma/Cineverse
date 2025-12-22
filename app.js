@@ -48,12 +48,9 @@ const sessionOptions = {
   saveUninitialized: false
 };
 
-// On Vercel (serverless), don't use Redis for sessions as connections don't persist
-if (!process.env.VERCEL) {
-  const redisStore = createSessionStore(session);
-  if (redisStore) {
-    sessionOptions.store = redisStore;
-  }
+const redisStore = createSessionStore(session);
+if (redisStore) {
+  sessionOptions.store = redisStore;
 }
 
 app.use(session(sessionOptions));
@@ -76,10 +73,8 @@ app.use(async (req, res, next) => {
   }
 });
 
-// Rate limit APIs globally as a safety net (skip on Vercel if Redis not available)
-if (!process.env.VERCEL) {
-  app.use('/api', rateLimiterRedis({ prefix: 'global-api', windowInSeconds: 60, allowedHits: 100 }));
-}
+// Rate limit APIs globally as a safety net
+app.use('/api', rateLimiterRedis({ prefix: 'global-api', windowInSeconds: 60, allowedHits: 100 }));
 
 // Global variables
 app.use(function(req, res, next) {

@@ -1,10 +1,11 @@
 const redis = require('redis');
+const { createClient } = require('@vercel/kv');
 
 let client;
 const MOVIE_CACHE_KEY = 'cineverse:movies';
 
 function isRedisReady() {
-  return client && client.isReady;
+  return client && (client.isReady || client.isOpen); // KV uses isOpen
 }
 
 async function initRedis() {
@@ -12,32 +13,38 @@ async function initRedis() {
     return client;
   }
 
-  const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
-  const tempClient = redis.createClient({
-    url: redisUrl,
-    socket: {
-      // Limit retries so local dev doesn't get spammed when the host is unreachable
-      reconnectStrategy: attempts => (attempts <= 3 ? Math.min(attempts * 200, 1000) : false)
-    }
-  });
+  let tempClient;
+  if (process.env.KV_URL) {
+    // Use Vercel KV
+    tempClient = createClient({ url: process.env.KV_URL });
+  } else {
+    // Use regular Redis
+    const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+    tempClient = redis.createClient({
+      url: redisUrl,
+      socket: {
+        reconnectStrategy: attempts => (attempts <= 3 ? Math.min(attempts * 200, 1000) : false)
+      }
+    });
+  }
 
   tempClient.on('error', err => {
-    if (!tempClient.isReady) return;
-    console.error('[Redis] Client Error', err);
+    if (!isRedisReady()) return;
+    console.error('[Redis/KV] Client Error', err);
   });
 
   try {
     await tempClient.connect();
     client = tempClient;
-    console.log('[Redis] Connected to cache');
+    console.log('[Redis/KV] Connected to cache');
   } catch (err) {
-    console.warn('[Redis] Unable to establish connection. Continuing without cache.', err.message);
+    console.warn('[Redis/KV] Unable to establish connection. Continuing without cache.', err.message);
     try {
       if (tempClient.isOpen) {
         await tempClient.disconnect();
       }
     } catch (_) {
-      // Swallow disconnect errors; we're intentionally disabling redis when unavailable
+      // Swallow disconnect errors
     }
     client = null;
   }
