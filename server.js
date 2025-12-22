@@ -8,6 +8,9 @@ const { initSocketServer } = require('./sockets');
 const { ensureMovieIndexes } = require('./services/databaseScaling');
 const app = require('./app');
 
+// Suppress deprecation warnings
+process.noDeprecation = true;
+
 // Handle unhandled rejections
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);

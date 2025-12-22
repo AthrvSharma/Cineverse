@@ -6,9 +6,21 @@ const bodyParser = require('body-parser');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
+const mongoose = require('mongoose');
 const rateLimiterRedis = require('./middlewares/rateLimiterRedis');
 const createSessionStore = require('./services/sessionStore');
 const { applySecurityHeaders } = require('./services/securityService');
+
+// Global database connection for serverless
+let cachedDb = null;
+
+async function connectToDatabase() {
+  if (cachedDb && mongoose.connection.readyState === 1) {
+    return cachedDb;
+  }
+  cachedDb = await mongoose.connect(process.env.MONGO_URI);
+  return cachedDb;
+}
 
 // Passport Config
 require('./config/passport')(passport);
@@ -56,9 +68,7 @@ app.use(flash());
 // Ensure MongoDB connection for serverless environments like Vercel
 app.use(async (req, res, next) => {
   try {
-    if (mongoose.connection.readyState !== 1) {
-      await mongoose.connect(process.env.MONGO_URI);
-    }
+    await connectToDatabase();
     next();
   } catch (error) {
     console.error('MongoDB connection error:', error);
@@ -66,8 +76,10 @@ app.use(async (req, res, next) => {
   }
 });
 
-// Rate limit APIs globally as a safety net
-app.use('/api', rateLimiterRedis({ prefix: 'global-api', windowInSeconds: 60, allowedHits: 100 }));
+// Rate limit APIs globally as a safety net (skip on Vercel if Redis not available)
+if (!process.env.VERCEL) {
+  app.use('/api', rateLimiterRedis({ prefix: 'global-api', windowInSeconds: 60, allowedHits: 100 }));
+}
 
 // Global variables
 app.use(function(req, res, next) {
