@@ -1,11 +1,20 @@
+const mongoose = require('mongoose');
 const app = require('../app');
-const { initMongo } = require('../models/Movie');
 const { initRedis } = require('../services/redisCache');
+const { MongoURI } = require('../config/keys');
+const { ensureMovieIndexes } = require('../services/databaseScaling');
 
-// Initialize database and cache connections.
-// In a serverless environment, these might be re-established on cold starts.
-initMongo().catch(err => console.error('Mongo init error:', err));
-initRedis().catch(err => console.error('Redis init error:', err));
+// Initialize Redis
+initRedis().catch(err => console.error('[Redis] Init Error:', err));
+
+// Connect to MongoDB
+mongoose
+  .connect(MongoURI)
+  .then(async () => {
+    console.log('MongoDB Connected via api/index.js...');
+    await ensureMovieIndexes();
+  })
+  .catch(err => console.error('MongoDB Connection Error:', err));
 
 /*
 NOTE: The original WebSocket implementation from server.js has been removed.
