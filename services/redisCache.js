@@ -13,10 +13,13 @@ async function initRedis() {
   }
 
   const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+  console.log(`[Redis] Attempting to connect to: ${redisUrl.replace(/:([^@]+)@/, ':****@')}`);
+  
   const tempClient = redis.createClient({
     url: redisUrl,
     socket: {
-      reconnectStrategy: attempts => (attempts <= 3 ? Math.min(attempts * 200, 1000) : false)
+      connectTimeout: 10000, // 10 seconds
+      reconnectStrategy: false
     }
   });
 
