@@ -1,11 +1,10 @@
-const Redis = require('ioredis');
-const { Redis: UpstashRedis } = require('@upstash/redis');
+const redis = require('redis');
 
 let client;
 const MOVIE_CACHE_KEY = 'cineverse:movies';
 
 function isRedisReady() {
-  return client && client.status === 'ready';
+  return client && client.isReady;
 }
 
 async function initRedis() {
@@ -13,28 +12,33 @@ async function initRedis() {
     return client;
   }
 
-  if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
-    // Use Upstash Redis for serverless
-    client = new UpstashRedis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
-    });
-    console.log('[Upstash Redis] Connected to cache');
-  } else {
-    // Use regular Redis for local
-    const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
-    client = new Redis(redisUrl, {
-      retryDelayOnFailover: 100,
-      maxRetriesPerRequest: 3,
-    });
+  const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+  const tempClient = redis.createClient({
+    url: redisUrl,
+    socket: {
+      reconnectStrategy: attempts => (attempts <= 3 ? Math.min(attempts * 200, 1000) : false)
+    }
+  });
 
-    client.on('error', err => {
-      console.error('[Redis] Client Error', err);
-    });
+  tempClient.on('error', err => {
+    if (!tempClient.isReady) return;
+    console.error('[Redis] Client Error', err);
+  });
 
-    client.on('connect', () => {
-      console.log('[Redis] Connected to cache');
-    });
+  try {
+    await tempClient.connect();
+    client = tempClient;
+    console.log('[Redis] Connected to cache');
+  } catch (err) {
+    console.warn('[Redis] Unable to establish connection. Continuing without cache.', err.message);
+    try {
+      if (tempClient.isOpen) {
+        await tempClient.disconnect();
+      }
+    } catch (_) {
+      // Swallow disconnect errors; we're intentionally disabling redis when unavailable
+    }
+    client = null;
   }
 
   return client;
